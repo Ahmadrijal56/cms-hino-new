@@ -35,13 +35,12 @@ Coded by www.creative-tim.com
 
 // Argon Dashboard 2 MUI layouts
 import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
+import Holidays from "layouts/holidays";
 import Billing from "layouts/billing";
 import VirtualReality from "layouts/virtual-reality";
 import RTL from "layouts/rtl";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
-import SignUp from "layouts/authentication/sign-up";
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
@@ -58,12 +57,12 @@ const routes = [
   {
     type: "route",
     name: "Tables",
-    key: "tables",
-    route: "/tables",
+    key: "holiday",
+    route: "/holiday",
     icon: (
       <ArgonBox component="i" color="warning" fontSize="14px" className="ni ni-calendar-grid-58" />
     ),
-    component: <Tables />,
+    component: <Holidays />,
   },
   {
     type: "route",
@@ -107,15 +106,7 @@ const routes = [
       <ArgonBox component="i" color="warning" fontSize="14px" className="ni ni-single-copy-04" />
     ),
     component: <SignIn />,
-  },
-  {
-    type: "route",
-    name: "Sign Up",
-    key: "sign-up",
-    route: "/authentication/sign-up",
-    icon: <ArgonBox component="i" color="info" fontSize="14px" className="ni ni-collection" />,
-    component: <SignUp />,
-  },
+  }
 ];
 
 export default routes;

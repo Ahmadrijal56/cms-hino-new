@@ -71,7 +71,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
   useEffect(() => {
 
-    const items = JSON.parse(localStorage.getItem('items'));
+    const items = localStorage.getItem('token');
     if (!items) {
       navigate('/authentication/sign-in');
     }
@@ -146,6 +146,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
     </Menu>
   );
 
+  const handleLogout=()=>{
+    localStorage.clear();
+    navigate('/authentication/sign-in');
+  }
+
   return (
     <AppBar
       position={absolute ? "absolute" : navbarType}
@@ -181,7 +186,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
               />
             </ArgonBox>
             <ArgonBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in/basic">
+              <Link to="/authentication/sign-in" onClick={handleLogout} >
                 <IconButton sx={navbarIconButton} size="small">
                   <Icon
                     sx={({ palette: { dark, white } }) => ({
@@ -195,7 +200,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                     fontWeight="medium"
                     color={light && transparentNavbar ? "white" : "dark"}
                   >
-                    Sign in dsfdsfsd
+                    Sign Out
                   </ArgonTypography>
                 </IconButton>
               </Link>
