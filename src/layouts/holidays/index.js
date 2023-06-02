@@ -13,6 +13,8 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
+import { useState, useEffect } from "react";
+
 // @mui material components
 import Card from "@mui/material/Card";
 
@@ -26,13 +28,62 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import Table from "examples/Tables/Table";
 
+import axios from 'axios';
+
 // Data
 import authorsTableData from "layouts/holidays/data/authorsTableData";
-import projectsTableData from "layouts/holidays/data/projectsTableData";
 
 function Holidays() {
-  const { columns, rows } = authorsTableData;
-  const { columns: prCols, rows: prRows } = projectsTableData;
+  const [companyCode,setComapnyCode] = useState("104040000");
+  const [loading,setLoading] = useState(false);
+  const [dataGrid,setDataGrid] = useState([]);
+  const { rows } = authorsTableData;
+  const   columns= [
+    { name: "holidays_date", align: "left" },
+    { name: "description", align: "left" },
+  ]
+
+  useEffect(() => {
+
+    async function loadData() {
+      setLoading(true);
+      const headers = {
+        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      };
+  
+        try {
+              await axios
+                .get(process.env.REACT_APP_MAIN_API + "/allholiday/"+companyCode, {
+                  headers,
+                })
+                .then(async (response) => {
+                    if (response.status === 200) {
+                      setDataGrid(response.data)
+  
+                      // response.data.map(function (item) {
+  
+                      // });
+  
+                      setLoading(false);
+                    } else {
+                      alert("Invalid query");
+                      setLoading(false);
+                    }
+                });
+            } catch(error) {
+                alert(error)
+                setLoading(false)
+              }
+    }
+
+    loadData();
+
+  })
+
+  
 
   return (
     <DashboardLayout>
@@ -53,7 +104,7 @@ function Holidays() {
                 },
               }}
             >
-              <Table columns={columns} rows={rows} />
+              <Table columns={columns} rows={dataGrid} />
             </ArgonBox>
           </Card>
         </ArgonBox>
