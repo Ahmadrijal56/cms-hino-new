@@ -17,7 +17,6 @@ import { useState } from "react";
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
-import ArgonTypography from "components/ArgonTypography";
 import ArgonInput from "components/ArgonInput";
 import ArgonButton from "components/ArgonButton";
 

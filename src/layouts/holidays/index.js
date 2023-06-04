@@ -17,10 +17,15 @@ import { useState, useEffect } from "react";
 
 // @mui material components
 import Card from "@mui/material/Card";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
 import ArgonTypography from "components/ArgonTypography";
+import ArgonButton from "components/ArgonButton";
 
 // Argon Dashboard 2 MUI examples
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -29,19 +34,75 @@ import Footer from "examples/Footer";
 import Table from "examples/Tables/Table";
 
 import axios from 'axios';
+import moment from 'moment';
+import { message,  Modal, Button, Form, Input, Popconfirm, DatePicker } from 'antd';
 
-// Data
-import authorsTableData from "layouts/holidays/data/authorsTableData";
 
 function Holidays() {
   const [companyCode,setComapnyCode] = useState("104040000");
   const [loading,setLoading] = useState(false);
   const [dataGrid,setDataGrid] = useState([]);
-  const { rows } = authorsTableData;
+  const [open, setOpen] = useState(false);
+  const [keyHoliday, setKeyHoliday] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(0);
   const   columns= [
-    { name: "holidays_date", align: "left" },
-    { name: "description", align: "left" },
+    { name: "Date",  align: "center" },
+    { name: "Description", align: "center" },
   ]
+  
+  const handleOpen = () => {
+    setOpen(true);
+    setKeyHoliday(keyHoliday+1);
+  }
+  const handleClose = () => setOpen(false);
+
+  const onChangeDate=(date, dateString) => {
+    setSelectedDate(dateString);
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    message.error('Failed: '+ errorInfo);
+  };
+
+  //login via input
+  const onFinish = async (values) => {
+    setLoading(true)
+    const article = {
+      CompanyCode: companyCode,
+      Description: values.description,
+      Holidays_date: selectedDate,
+      Active:true
+    };
+    const headers = {
+      "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + localStorage.getItem("token"),
+      'crudtype': 'insert',
+    };
+    await axios
+      .post(process.env.REACT_APP_MAIN_API + "/holiday", article, {
+        headers,
+      })
+      .then(async (response) => {
+        if (
+          (await response.data) != null
+        ) {
+          if (response.status === 200)
+           {
+            setSelectedDate("");
+            setOpen(false);
+            setLoading(false)
+            message.success(response.data.Message)
+           }
+        }
+      })
+      .catch((error) => {
+        setLoading(false)
+        message.error(error + " (Accumulation Monthly) Token not valid !");
+      });
+     
+ };
 
   useEffect(() => {
 
@@ -61,38 +122,61 @@ function Holidays() {
                 })
                 .then(async (response) => {
                     if (response.status === 200) {
-                      setDataGrid(response.data)
+                      //setDataGrid(response.data)
   
-                      // response.data.map(function (item) {
+                      const resp =response.data.map(function (item) {
+                        return {
+                          Date: (
+                            <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                              {moment(item.holidays_date).format("DD MMM yyyy")}
+                            </ArgonTypography>
+                          ),
+                          Description: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                          {item.description}
+                        </ArgonTypography>
+                        }
   
-                      // });
+                      });
+                      setDataGrid(resp);
   
                       setLoading(false);
                     } else {
-                      alert("Invalid query");
+                      message.error("Invalid query");
                       setLoading(false);
                     }
                 });
             } catch(error) {
-                alert(error)
+                message.error(error)
                 setLoading(false)
               }
     }
 
     loadData();
+    console.log("componentDidUpdateFunction");
 
-  })
+  },[open])
 
   
 
   return (
     <DashboardLayout>
+        <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <DashboardNavbar />
       <ArgonBox py={3}>
         <ArgonBox mb={3}>
           <Card>
             <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
-              <ArgonTypography variant="h6">Authors table</ArgonTypography>
+              <ArgonTypography variant="h6">Holidays Date</ArgonTypography>
+              <ArgonBox >
+                <ArgonButton color="info" size="small" onClick={handleOpen} >
+                  Add Holidays
+                </ArgonButton>
+              </ArgonBox>
             </ArgonBox>
             <ArgonBox
               sx={{
@@ -110,6 +194,54 @@ function Holidays() {
         </ArgonBox>
       </ArgonBox>
       <Footer />
+                 <Modal
+                    open={open}
+                    title="Holiday input"
+                    onCancel={handleClose}
+                    key={keyHoliday}
+                    footer={null}
+                  >
+                    <Form
+                      name="basic"
+                      labelCol={{ span: 8 }}
+                      wrapperCol={{ span: 16 }}
+                      initialValues={{ remember: true }}
+                      onFinish={onFinish}
+                      onFinishFailed={onFinishFailed}
+                    >
+                      <Form.Item
+                        label="Date"
+                        name="date"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input the date",
+                          },
+                        ]}
+                      >
+                        <DatePicker onChange={onChangeDate} />
+                      </Form.Item>
+
+                      <Form.Item
+                        label="Description"
+                        name="description"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input the description",
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+
+                      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                        <Button type="primary" htmlType="submit">
+                          Add Holiday
+                        </Button>
+                      </Form.Item>
+                    </Form>
+                  </Modal>
     </DashboardLayout>
   );
 }
