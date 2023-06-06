@@ -35,11 +35,12 @@ import Table from "examples/Tables/Table";
 
 import axios from 'axios';
 import moment from 'moment';
-import { message,  Modal, Button, Form, Input, Select, DatePicker } from 'antd';
+import { message,  Modal, Button, Form, Input, Select, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 
-function Holidays() {
+function Videos() {
   const [companyCode,setCompanyCode] = useState("");
   const [companyName,setCompanyName] = useState("");
   const [companyList,setCompanyList] = useState();
@@ -48,10 +49,36 @@ function Holidays() {
   const [open, setOpen] = useState(false);
   const [keyHoliday, setKeyHoliday] = useState(0);
   const [selectedDate, setSelectedDate] = useState(0);
+  const [fileList, setFileList] = useState([]);
   const   columns= [
-    { name: "Date",  align: "center" },
-    { name: "Description", align: "center" },
+    { name: "Description",  align: "center" },
+    { name: "Path", align: "center" },
   ]
+
+  const props = {
+    onRemove: (file) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList(newFileList);
+    },
+    beforeUpload: (file) => {
+      setFileList([file]);
+      return false;
+    },
+    fileList,
+    onChange(info) {
+      console.log(JSON.stringify(info))
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status === 'done') {
+        message.success(`${info.file.name} file uploaded successfully`);
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+  };
   
   const handleOpen = () => {
     if(companyCode==""){
@@ -59,6 +86,7 @@ function Holidays() {
     }else{
       setOpen(true);
       setKeyHoliday(keyHoliday+1);
+      setFileList([]);
     }
   }
   const handleClose = () => setOpen(false);
@@ -73,25 +101,30 @@ function Holidays() {
 
   //login via input
   const onFinish = async (values) => {
+    if(fileList.length==0){
+      message.error("Please choose video first")
+      return
+    }
     setLoading(true)
-    const article = {
-      CompanyCode: companyCode,
-      Description: values.description,
-      Holidays_date: selectedDate,
-      Active:true
-    };
+    const formData = new FormData();
+    formData.append('companycode',companyCode)
+    formData.append('description',values.description)
+    fileList.forEach((file) => {
+      formData.append('video', file);
+    });
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
-      "Content-Type": "application/json",
+      "Content-Type": "multipart/form-data",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
       'crudtype': 'insert',
     };
     await axios
-      .post(process.env.REACT_APP_MAIN_API + "/holiday", article, {
+      .post(process.env.REACT_APP_MAIN_API + "/videos", formData, {
         headers,
       })
       .then(async (response) => {
+        console.log(response)
         if (
           (await response.data) != null
         ) {
@@ -100,13 +133,14 @@ function Holidays() {
             setSelectedDate("");
             setOpen(false);
             setLoading(false)
-            message.success(response.data.Message)
+            message.success(response.data.message)
            }
         }
       })
       .catch((error) => {
+        console.log(error )
         setLoading(false)
-        message.error(error + " (Accumulation Monthly) Token not valid !");
+        message.error("Error upload file : "+ error.message);
       });
      
  };
@@ -147,7 +181,7 @@ function Holidays() {
   
         try {
               await axios
-                .get(process.env.REACT_APP_MAIN_API + "/allholiday/"+selected, {
+                .get(process.env.REACT_APP_MAIN_API + "/get/video/"+selected, {
                   headers,
                 })
                 .then(async (response) => {
@@ -156,13 +190,13 @@ function Holidays() {
   
                       const resp =response.data.map(function (item) {
                         return {
-                          Date: (
+                          Description: (
                             <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                              {moment(item.holidays_date).format("DD MMM yyyy")}
+                              {item.description}
                             </ArgonTypography>
                           ),
-                          Description: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                          {item.description}
+                          Path: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                          {item.path}
                         </ArgonTypography>
                         }
   
@@ -210,7 +244,7 @@ function Holidays() {
           <Card>
             <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
                <ArgonBox >
-                 <ArgonTypography variant="h6">Holidays</ArgonTypography>
+                 <ArgonTypography variant="h6">Videos</ArgonTypography>
                  { companyList >1 ?
                  (<Select
                   style={{ width: 320 }}
@@ -233,7 +267,7 @@ function Holidays() {
               </ArgonBox>
               <ArgonBox >
                 <ArgonButton color="info" size="small" onClick={handleOpen} disabled={companyCode==""} >
-                  Add Holiday
+                  Add a video
                 </ArgonButton>
               </ArgonBox>
             </ArgonBox>
@@ -266,19 +300,14 @@ function Holidays() {
                       wrapperCol={{ span: 16 }}
                       initialValues={{ remember: true }}
                       onFinish={onFinish}
-                      onFinishFailed={onFinishFailed}
                     >
                       <Form.Item
                         label="Date"
                         name="date"
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please input the date",
-                          },
-                        ]}
                       >
-                        <DatePicker onChange={onChangeDate} />
+                        <Upload {...props} maxCount={1}>
+                          <Button icon={<UploadOutlined />}>Select File</Button>
+                        </Upload>
                       </Form.Item>
 
                       <Form.Item
@@ -296,7 +325,7 @@ function Holidays() {
 
                       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                         <Button type="primary" htmlType="submit">
-                          Add Holiday
+                          Add a video
                         </Button>
                       </Form.Item>
                     </Form>
@@ -305,4 +334,4 @@ function Holidays() {
   );
 }
 
-export default Holidays;
+export default Videos;

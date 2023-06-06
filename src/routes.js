@@ -34,31 +34,27 @@ Coded by www.creative-tim.com
 */
 
 // Argon Dashboard 2 MUI layouts
-import Dashboard from "layouts/dashboard";
 import Holidays from "layouts/holidays";
-import Billing from "layouts/billing";
-import VirtualReality from "layouts/virtual-reality";
-import RTL from "layouts/rtl";
-import Profile from "layouts/profile";
+import Videos from "layouts/videos";
 import SignIn from "layouts/authentication/sign-in";
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
 
 const routes = [
+  // {
+  //   type: "route",
+  //   name: "Dashboard",
+  //   key: "dashboard",
+  //   route: "/dashboard",
+  //   icon: <ArgonBox component="i" color="primary" fontSize="14px" className="ni ni-tv-2" />,
+  //   component: <Dashboard />,
+  // },
   {
     type: "route",
-    name: "Dashboard",
-    key: "dashboard",
-    route: "/dashboard",
-    icon: <ArgonBox component="i" color="primary" fontSize="14px" className="ni ni-tv-2" />,
-    component: <Dashboard />,
-  },
-  {
-    type: "route",
-    name: "Tables",
-    key: "holiday",
-    route: "/holiday",
+    name: "Holidays",
+    key: "holidays",
+    route: "/holidays",
     icon: (
       <ArgonBox component="i" color="warning" fontSize="14px" className="ni ni-calendar-grid-58" />
     ),
@@ -66,42 +62,20 @@ const routes = [
   },
   {
     type: "route",
-    name: "Billing",
-    key: "billing",
-    route: "/billing",
-    icon: <ArgonBox component="i" color="success" fontSize="14px" className="ni ni-credit-card" />,
-    component: <Billing />,
-  },
-  {
-    type: "route",
-    name: "Virtual Reality",
-    key: "virtual-reality",
-    route: "/virtual-reality",
-    icon: <ArgonBox component="i" color="info" fontSize="14px" className="ni ni-app" />,
-    component: <VirtualReality />,
-  },
-  {
-    type: "route",
-    name: "RTL",
-    key: "rtl",
-    route: "/rtl",
-    icon: <ArgonBox component="i" color="error" fontSize="14px" className="ni ni-world-2" />,
-    component: <RTL />,
-  },
-  { type: "title", title: "Account Pages", key: "account-pages" },
-  {
-    type: "route",
-    name: "Profile",
-    key: "profile",
-    route: "/profile",
-    icon: <ArgonBox component="i" color="dark" fontSize="14px" className="ni ni-single-02" />,
-    component: <Profile />,
+    name: "Videos",
+    key: "videos",
+    route: "/videos",
+    icon: (
+      <ArgonBox component="i" color="primary" fontSize="14px" className="ni ni-tv-2" />
+    ),
+    component: <Videos />,
   },
   {
     type: "route",
     name: "Sign In",
     key: "sign-in",
     route: "/authentication/sign-in",
+    display:"none",
     icon: (
       <ArgonBox component="i" color="warning" fontSize="14px" className="ni ni-single-copy-04" />
     ),

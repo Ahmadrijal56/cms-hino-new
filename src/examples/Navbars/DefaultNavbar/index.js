@@ -110,7 +110,7 @@ function DefaultNavbar({ brand, transparent, light, action }) {
             <DefaultNavbarLink
               icon="donut_large"
               name="dashboard"
-              route="/dashboard"
+              route="/holidays"
               light={light}
             />
             <DefaultNavbarLink icon="person" name="profile" route="/profile" light={light} />

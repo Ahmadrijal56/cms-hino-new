@@ -74,23 +74,25 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     let returnValue;
 
     if (type === "route") {
-      if (href) {
-        returnValue = (
-          <Link href={href} key={key} target="_blank" rel="noreferrer">
-            <SidenavItem
-              name={name}
-              icon={icon}
-              active={key === itemName}
-              noCollapse={noCollapse}
-            />
-          </Link>
-        );
-      } else {
-        returnValue = (
-          <NavLink to={route} key={key}>
-            <SidenavItem name={name} icon={icon} active={key === itemName} />
-          </NavLink>
-        );
+      if(key!="sign-in"){
+        if (href) {
+          returnValue = (
+            <Link href={href} key={key} target="_blank" rel="noreferrer">
+              <SidenavItem
+                name={name}
+                icon={icon}
+                active={key === itemName}
+                noCollapse={noCollapse}
+              />
+            </Link>
+          );
+        } else {
+          returnValue = (
+            <NavLink to={route} key={key}>
+              <SidenavItem name={name} icon={icon} active={key === itemName} />
+            </NavLink>
+          );
+        }
       }
     } else if (type === "title") {
       returnValue = (

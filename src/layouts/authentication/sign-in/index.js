@@ -80,7 +80,7 @@ function Illustration() {
                 sessionStorage.setItem("companyList", JSON.stringify(companyList));
 
               
-                navigate('/dashboard');
+                navigate('/holidays');
 
                 setLoading(false);
               } else {
