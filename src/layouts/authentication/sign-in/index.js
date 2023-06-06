@@ -65,9 +65,21 @@ function Illustration() {
           })
           .then(async (response) => {
               if (response.data.status === 200) {
-                localStorage.setItem("username", data.get("email"));
-                localStorage.setItem("token", response.data.token);
+                sessionStorage.setItem("username", data.get("email"));
+                sessionStorage.setItem("token", response.data.token);
 
+
+                let companyList=[]
+                if( await response.data.values.length>1){
+                    await response.data.values.map(function(item) {
+                        companyList.push(item.companycode+"@=="+item.companyname)
+                    })
+                }else{
+                  companyList.push(response.data.values["CompanyCode"]+"@=="+response.data.values["CompanyName"])
+                }
+                sessionStorage.setItem("companyList", JSON.stringify(companyList));
+
+              
                 navigate('/dashboard');
 
                 setLoading(false);

@@ -71,7 +71,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
   useEffect(() => {
 
-    const items = localStorage.getItem('token');
+    const items = sessionStorage.getItem('token');
     if (!items) {
       navigate('/authentication/sign-in');
     }
@@ -147,7 +147,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
   );
 
   const handleLogout=()=>{
-    localStorage.clear();
+    sessionStorage.clear();
     navigate('/authentication/sign-in');
   }
 

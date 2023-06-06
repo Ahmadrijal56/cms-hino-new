@@ -39,7 +39,8 @@ import { message,  Modal, Button, Form, Input, Popconfirm, DatePicker } from 'an
 
 
 function Holidays() {
-  const [companyCode,setComapnyCode] = useState("104040000");
+  const [companyCode,setCompanyCode] = useState("104040000");
+  const [companyList,setCompanyList] = useState();
   const [loading,setLoading] = useState(false);
   const [dataGrid,setDataGrid] = useState([]);
   const [open, setOpen] = useState(false);
@@ -77,7 +78,7 @@ function Holidays() {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
       "Content-Type": "application/json",
-      Authorization: "Bearer " + localStorage.getItem("token"),
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
       'crudtype': 'insert',
     };
     await axios
@@ -106,13 +107,29 @@ function Holidays() {
 
   useEffect(() => {
 
+     async function loadCompany() {
+        var list=await JSON.parse(sessionStorage.getItem("companyList") || "[]");
+        console.log("# of users 1: " + list.length);
+       
+            if (Array.isArray(list)) {
+            var selectCompany = list.map(function(item) {
+              console.log(item);
+              return (
+                <Option value={item.companycode + "@==" + item.companyname}>
+                  {item.companyname}
+                </Option>
+              );
+            });
+          }
+     }
+
     async function loadData() {
       setLoading(true);
       const headers = {
         "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
         "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token"),
+        Authorization: "Bearer " + sessionStorage.getItem("token"),
       };
   
         try {
@@ -151,7 +168,9 @@ function Holidays() {
               }
     }
 
+    loadCompany();
     loadData();
+    
     console.log("componentDidUpdateFunction");
 
   },[open])
