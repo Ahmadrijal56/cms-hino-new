@@ -215,10 +215,12 @@ function Videos() {
               }
     }
 
-    if(companyCode==""){
-      loadCompany()
-    }else{
-      loadData(companyCode)
+    if (!open){
+      if(companyCode==""){
+        loadCompany()
+      }else{
+        loadData(companyCode)
+      }
     }
     
     console.log("componentDidUpdateFunction");

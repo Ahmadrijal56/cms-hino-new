@@ -13,7 +13,7 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
@@ -38,6 +38,15 @@ function Illustration() {
   const [Loading,setLoading] = useState(false);
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
+
+  useEffect(() => {
+
+    const items = sessionStorage.getItem('token');
+    if (items) {
+      navigate('/holidays');
+    }
+
+  },[]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

@@ -42,14 +42,6 @@ import SignIn from "layouts/authentication/sign-in";
 import ArgonBox from "components/ArgonBox";
 
 const routes = [
-  // {
-  //   type: "route",
-  //   name: "Dashboard",
-  //   key: "dashboard",
-  //   route: "/dashboard",
-  //   icon: <ArgonBox component="i" color="primary" fontSize="14px" className="ni ni-tv-2" />,
-  //   component: <Dashboard />,
-  // },
   {
     type: "route",
     name: "Holidays",

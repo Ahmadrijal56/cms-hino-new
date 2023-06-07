@@ -137,56 +137,59 @@ function Holidays() {
      }
 
     async function loadData(selected) {
-      setLoading(true);
-      const headers = {
-        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + sessionStorage.getItem("token"),
-      };
-  
-        try {
-              await axios
-                .get(process.env.REACT_APP_MAIN_API + "/allholiday/"+selected, {
-                  headers,
-                })
-                .then(async (response) => {
-                    if (response.status === 200) {
-                      //setDataGrid(response.data)
-  
-                      const resp =response.data.map(function (item) {
-                        return {
-                          Date: (
-                            <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                              {moment(item.holidays_date).format("DD MMM yyyy")}
-                            </ArgonTypography>
-                          ),
-                          Description: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                          {item.description}
-                        </ArgonTypography>
-                        }
-  
-                      });
-                      setDataGrid(resp);
-  
-                      setLoading(false);
-                    } else {
-                      message.error("Invalid query");
-                      setLoading(false);
-                    }
-                });
-            } catch(error) {
-                message.error(error)
-                setLoading(false)
-              }
-    }
 
-    if(companyCode==""){
-      loadCompany()
-    }else{
-      loadData(companyCode)
-    }
-    
+              setLoading(true);
+              const headers = {
+                "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + sessionStorage.getItem("token"),
+              };
+          
+                try {
+                      await axios
+                        .get(process.env.REACT_APP_MAIN_API + "/allholiday/"+selected, {
+                          headers,
+                        })
+                        .then(async (response) => {
+                            if (response.status === 200) {
+                              //setDataGrid(response.data)
+          
+                              const resp =response.data.map(function (item) {
+                                return {
+                                  Date: (
+                                    <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                                      {moment(item.holidays_date).format("DD MMM yyyy")}
+                                    </ArgonTypography>
+                                  ),
+                                  Description: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                                  {item.description}
+                                </ArgonTypography>
+                                }
+          
+                              });
+                              setDataGrid(resp);
+          
+                              setLoading(false);
+                            } else {
+                              message.error("Invalid query");
+                              setLoading(false);
+                            }
+                        });
+                    } catch(error) {
+                        message.error(error)
+                        setLoading(false)
+                      }
+            }
+        
+      if (!open){
+          if(companyCode==""){
+            loadCompany()
+          }else{
+            loadData(companyCode)
+          }
+      }
+      
     console.log("componentDidUpdateFunction");
 
   },[open])
