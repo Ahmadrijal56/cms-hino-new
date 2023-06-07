@@ -47,10 +47,6 @@ import routes from "routes";
 // Argon Dashboard 2 MUI contexts
 import { useArgonController, setMiniSidenav, setOpenConfigurator } from "context";
 
-// Images
-import brand from "assets/images/hino-logo.png";
-import brandDark from "assets/images/hino-logo.png";
-
 // Icon Fonts
 import "assets/css/nucleo-icons.css";
 import "assets/css/nucleo-svg.css";
@@ -148,7 +144,7 @@ export default function App() {
           <>
             <Sidenav
               color={sidenavColor}
-              brand={darkSidenav || darkMode ? brand : brandDark}
+              brand="/hino-logo.png"
               brandName="CMS - Hino Dashboard"
               routes={routes}
               onMouseEnter={handleOnMouseEnter}
@@ -172,7 +168,7 @@ export default function App() {
         <>
           <Sidenav
             color={sidenavColor}
-            brand={darkSidenav || darkMode ? brand : brandDark}
+            brand="/hino-logo.png"
             brandName="CMS - Hino Dashboard"
             routes={routes}
             onMouseEnter={handleOnMouseEnter}

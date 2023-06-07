@@ -223,7 +223,7 @@ function Videos() {
                     if (response.status === 200) {
                       //setDataGrid(response.data)
   
-                      const resp =response.data.map(function (item) {
+                      const resp =response.data.map(function ({item,onDelete}) {
                         return {
                           Description: (
                             <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
@@ -234,8 +234,8 @@ function Videos() {
                             {item.path}
                           </ArgonTypography>,
                           Action:
-                          <ArgonButton color="info" size="small" onClick={onDelete(item.id)}>
-                            Delete {item.id}
+                          <ArgonButton color="info" size="small" onClick={()=>{onDelete(item.id)}}>
+                            Delete
                           </ArgonButton>
                         }
   
