@@ -47,6 +47,7 @@ function Videos() {
   const [loading,setLoading] = useState(false);
   const [dataGrid,setDataGrid] = useState([]);
   const [open, setOpen] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
   const [keyHoliday, setKeyHoliday] = useState(0);
   const [selectedDate, setSelectedDate] = useState(0);
   const [fileList, setFileList] = useState([]);
@@ -148,6 +149,7 @@ function Videos() {
 
  const onDelete = async (id) => {
   setLoading(true)
+  setIsDelete(true)
   const headers = {
     "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
     "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
@@ -166,8 +168,7 @@ function Videos() {
       ) {
         if (response.status === 200)
          {
-          setSelectedDate("");
-          setOpen(false);
+          setIsDelete(false)
           setLoading(false)
           message.success(response.data.message)
          }
@@ -221,28 +222,32 @@ function Videos() {
                 })
                 .then(async (response) => {
                     if (response.status === 200) {
-                      //setDataGrid(response.data)
-  
-                      const resp =response.data.map(function ({item,onDelete}) {
-                        return {
-                          Description: (
-                            <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                              {item.description}
-                            </ArgonTypography>
-                          ),
-                          Path: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                      if (response.data.message==undefined){
+                        const resp =response.data.map(function (item) {
+                          return {
+                            Description: (
+                              <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                                {item.description}
+                              </ArgonTypography>
+                            ),
+                            Path: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                             {item.path}
                           </ArgonTypography>,
-                          Action:
-                          <ArgonButton color="info" size="small" onClick={()=>{onDelete(item.id)}}>
-                            Delete
+                            Action:<ArgonButton color="info" size="small" onClick={()=>{onDelete(item.id)}}>
+                            Delete 
                           </ArgonButton>
-                        }
+                          }
+    
+                        });
+                        setDataGrid(resp);
+                        setLoading(false);
+    
+                      }else{
+                        setDataGrid([]);
+                        setLoading(false);
+                      }
   
-                      });
-                      setDataGrid(resp);
-  
-                      setLoading(false);
+                      
                     } else {
                       message.error("Invalid query");
                       setLoading(false);
@@ -264,13 +269,10 @@ function Videos() {
     
     console.log("componentDidUpdateFunction");
 
-  },[open])
+  },[open, isDelete])
 
 
   
-
-  
-
   return (
     <DashboardLayout>
         <Backdrop
