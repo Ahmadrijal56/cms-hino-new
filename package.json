@@ -1,9 +1,7 @@
 {
   "name": "cms",
   "version": "3.0.1",
-  "author": "Creative Tim",
-  "license": "SEE LICENSE IN <https://www.creative-tim.com/license>",
-  "description": "React version of Argon Dashboard 2 by Creative Tim",
+  "description": "Hino dashboard - CMS",
   "homepage": ".",
   "bugs": {
     "url": "https://github.com/creativetimofficial/argon-dashboard-material-ui/issues"

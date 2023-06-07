@@ -48,8 +48,8 @@ import routes from "routes";
 import { useArgonController, setMiniSidenav, setOpenConfigurator } from "context";
 
 // Images
-import brand from "assets/images/logo-ct.png";
-import brandDark from "assets/images/logo-ct-dark.png";
+import brand from "assets/images/hino-logo.png";
+import brandDark from "assets/images/hino-logo.png";
 
 // Icon Fonts
 import "assets/css/nucleo-icons.css";

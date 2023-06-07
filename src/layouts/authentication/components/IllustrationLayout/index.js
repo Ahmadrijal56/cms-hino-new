@@ -27,6 +27,10 @@ import ArgonTypography from "components/ArgonTypography";
 import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import PageLayout from "examples/LayoutContainers/PageLayout";
 
+
+import brand from "../../../../assets/images/hino-logo.png"
+import bgImage from "../../../../assets/images/BackgroundDigitalBoard.jpg"
+
 function IllustrationLayout({ color, header, title, description, button, illustration, children }) {
   return (
     <PageLayout background="white">
@@ -37,6 +41,9 @@ function IllustrationLayout({ color, header, title, description, button, illustr
               {!header ? (
                 <>
                   <ArgonBox mb={1}>
+                  <ArgonBox position="relative" justifyContent="center" alignItems="center" textAlign="center">
+                  <img src={brand} color="#000000" height="123"  alt="" />
+                  </ArgonBox>
                     <ArgonTypography variant="h4" fontWeight="bold">
                       {title}
                     </ArgonTypography>
@@ -67,11 +74,14 @@ function IllustrationLayout({ color, header, title, description, button, illustr
             px={13}
             sx={{ overflow: "hidden" }}
           >
+
+        <img src={brand} color="#000000" height="72" alt="" />
             <ArgonBox
               component="img"
-              src={illustration.image}
+              src={bgImage}
               alt="background"
               width="100%"
+              height="100%"
               position="absolute"
               top={0}
               left={0}
@@ -84,7 +94,7 @@ function IllustrationLayout({ color, header, title, description, button, illustr
               position="absolute"
               topl={0}
               left={0}
-              opacity={0.7}
+              opacity={0.3}
             />
             <ArgonBox position="relative">
               {illustration.title && (

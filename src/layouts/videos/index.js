@@ -53,6 +53,7 @@ function Videos() {
   const   columns= [
     { name: "Description",  align: "center" },
     { name: "Path", align: "center" },
+    { name: "Action", align: "center" },
   ]
 
   const props = {
@@ -145,6 +146,40 @@ function Videos() {
      
  };
 
+ const onDelete = async (id) => {
+  setLoading(true)
+  const headers = {
+    "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+    "Content-Type": "multipart/form-data",
+    Authorization: "Bearer " + sessionStorage.getItem("token"),
+    'crudtype': 'insert',
+  };
+  await axios
+    .get(process.env.REACT_APP_MAIN_API + "/delete/video/"+id,{
+      headers,
+    })
+    .then(async (response) => {
+      console.log(response)
+      if (
+        (await response.data) != null
+      ) {
+        if (response.status === 200)
+         {
+          setSelectedDate("");
+          setOpen(false);
+          setLoading(false)
+          message.success(response.data.message)
+         }
+      }
+    })
+    .catch((error) => {
+      console.log(error )
+      setLoading(false)
+      message.error("Error delete file : "+ error.message);
+    });
+};
+
   useEffect(() => {
 
      async function loadCompany() {
@@ -196,8 +231,12 @@ function Videos() {
                             </ArgonTypography>
                           ),
                           Path: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                          {item.path}
-                        </ArgonTypography>
+                            {item.path}
+                          </ArgonTypography>,
+                          Action:
+                          <ArgonButton color="info" size="small" onClick={onDelete(item.id)}>
+                            Delete {item.id}
+                          </ArgonButton>
                         }
   
                       });
@@ -291,7 +330,7 @@ function Videos() {
       <Footer />
                  <Modal
                     open={open}
-                    title="Holiday input"
+                    title="Video"
                     onCancel={handleClose}
                     key={keyHoliday}
                     footer={null}
