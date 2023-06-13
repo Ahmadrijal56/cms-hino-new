@@ -43,7 +43,7 @@ const { Option } = Select;
 function Videos() {
   const [companyCode,setCompanyCode] = useState("");
   const [companyName,setCompanyName] = useState("");
-  const [companyList,setCompanyList] = useState();
+  const [companyList,setCompanyList] = useState([]);
   const [loading,setLoading] = useState(false);
   const [dataGrid,setDataGrid] = useState([]);
   const [open, setOpen] = useState(false);
@@ -269,7 +269,7 @@ function Videos() {
     
     console.log("componentDidUpdateFunction");
 
-  },[open, isDelete])
+  },[open, isDelete, companyCode])
 
 
   
@@ -288,19 +288,25 @@ function Videos() {
             <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
                <ArgonBox >
                  <ArgonTypography variant="h6">Videos</ArgonTypography>
-                 { companyList >1 ?
+                 { companyList.length >1 ?
                  (<Select
                   style={{ width: 320 }}
                   optionFilterProp="children"
                   onChange={async(value) => {
                     if (value != null) {
-                      let select= await value[0].split("@==")
+                      let select= await value.split("@==")
                       setCompanyCode(await select[0])
                       setCompanyName(await select[1])
-                      loadData(select[0]);
                     }
                   }}
+                  defaultValue=""
                 >
+                  <Option value="" selected>
+                    Choose Your Company
+                  </Option>
+                  <Option value="Videoforall@==Videoforall" selected>
+                    Videoforall
+                  </Option>
                   {companyList}
                 </Select>):(
                   <ArgonTypography variant="h5">{companyName}</ArgonTypography>

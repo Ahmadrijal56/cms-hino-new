@@ -107,7 +107,7 @@ function Illustration() {
   return (
     <IllustrationLayout
       title="Sign In"
-      description="Enter your email and password to sign in"
+      description="Enter your user and password to sign in"
       illustration={{
         image: bgImage,
         title: '"Attention is the new currency"',
@@ -123,7 +123,7 @@ function Illustration() {
       </Backdrop>
       <ArgonBox component="form" role="form"  onSubmit={handleSubmit} >
         <ArgonBox mb={2}>
-          <ArgonInput name="email"  placeholder="Email" size="large" />
+          <ArgonInput name="email"  placeholder="User" size="large" />
         </ArgonBox>
         <ArgonBox mb={2}>
           <ArgonInput name="password" type="password" placeholder="Password" size="large" />

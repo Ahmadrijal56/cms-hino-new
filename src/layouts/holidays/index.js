@@ -42,7 +42,7 @@ const { Option } = Select;
 function Holidays() {
   const [companyCode,setCompanyCode] = useState("");
   const [companyName,setCompanyName] = useState("");
-  const [companyList,setCompanyList] = useState();
+  const [companyList,setCompanyList] = useState([]);
   const [loading,setLoading] = useState(false);
   const [dataGrid,setDataGrid] = useState([]);
   const [open, setOpen] = useState(false);
@@ -116,16 +116,18 @@ function Holidays() {
      async function loadCompany() {
         var list=await JSON.parse(sessionStorage.getItem("companyList") || "[]");
             if (Array.isArray(list)) {
+            
             var selectCompany = list.map(function(item) {
               if(item.indexOf("@==")>-1){
                 const company= item.split("@==")
                 return (
-                  <Option value={item} selected>
+                  <Option value={item} key={item}>
                     {company[1]}
                   </Option>
                 );
               }
             });
+            console.log(selectCompany)
             setCompanyList(selectCompany)
             if (await list.length == 1){
               let select= await list[0].split("@==")
@@ -192,9 +194,7 @@ function Holidays() {
       
     console.log("componentDidUpdateFunction");
 
-  },[open])
-
-
+  },[open,companyCode])
   
 
   
@@ -214,19 +214,23 @@ function Holidays() {
             <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
                <ArgonBox >
                  <ArgonTypography variant="h6">Holidays</ArgonTypography>
-                 { companyList >1 ?
+                 { companyList.length >1 ?
                  (<Select
                   style={{ width: 320 }}
                   optionFilterProp="children"
                   onChange={async(value) => {
                     if (value != null) {
-                      let select= await value[0].split("@==")
+                      let select= await value.split("@==")
                       setCompanyCode(await select[0])
                       setCompanyName(await select[1])
-                      loadData(select[0]);
+                      //loadData(select[0]);
                     }
                   }}
-                >
+                  defaultValue=""
+                  >
+                    <Option value="" selected>
+                      Choose Your Company
+                    </Option>
                   {companyList}
                 </Select>):(
                   <ArgonTypography variant="h5">{companyName}</ArgonTypography>
