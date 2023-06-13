@@ -35,7 +35,8 @@ import Table from "examples/Tables/Table";
 
 import axios from 'axios';
 import moment from 'moment';
-import { message,  Modal, Button, Form, Input, Select, DatePicker } from 'antd';
+import { message,  Modal, Button, Form, Input, Select, DatePicker, Checkbox } from 'antd';
+
 
 const { Option } = Select;
 
@@ -47,16 +48,27 @@ function Holidays() {
   const [dataGrid,setDataGrid] = useState([]);
   const [open, setOpen] = useState(false);
   const [keyHoliday, setKeyHoliday] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(0);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [defaultDate, setDefaultDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [isActive, setActive] = useState(false);
   const   columns= [
     { name: "Date",  align: "center" },
     { name: "Description", align: "center" },
+    { name: "Edit", align: "center" },
+    //{ name: "Delete", align: "center" },
   ]
   
   const handleOpen = () => {
     if(companyCode==""){
       message.error("Please choose company code first")
     }else{
+      setDefaultDate("");
+      setSelectedDate("");
+      setDescription("");
+      setActive(true);
+      setIsUpdate(false);
       setOpen(true);
       setKeyHoliday(keyHoliday+1);
     }
@@ -64,7 +76,12 @@ function Holidays() {
   const handleClose = () => setOpen(false);
 
   const onChangeDate=(date, dateString) => {
+    console.log(dateString)
     setSelectedDate(dateString);
+  };
+
+  const onChangeStatus= (e) => {
+    setActive(e.target.checked)
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -78,14 +95,14 @@ function Holidays() {
       CompanyCode: companyCode,
       Description: values.description,
       Holidays_date: selectedDate,
-      Active:true
+      Active:isActive
     };
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
       "Content-Type": "application/json",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
-      'crudtype': 'insert',
+      'crudtype': isUpdate ? 'update':'insert',
     };
     await axios
       .post(process.env.REACT_APP_MAIN_API + "/holiday", article, {
@@ -98,6 +115,7 @@ function Holidays() {
           if (response.status === 200)
            {
             setSelectedDate("");
+            setDescription("");
             setOpen(false);
             setLoading(false)
             message.success(response.data.Message)
@@ -166,7 +184,15 @@ function Holidays() {
                                   ),
                                   Description: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                                   {item.description}
-                                </ArgonTypography>
+                                </ArgonTypography>,
+                                 Edit:
+                                    <ArgonButton color="info" size="small" onClick={()=>{onEdit(item)}}>
+                                          Edit
+                                    </ArgonButton>,
+                                //  Delete: 
+                                //     <ArgonButton color="warning"  size="small" onClick={()=>{onDelete(item.id)}}>
+                                //       Delete 
+                                //     </ArgonButton>
                                 }
           
                               });
@@ -197,6 +223,18 @@ function Holidays() {
   },[open,companyCode])
   
 
+  const onEdit = async (item) => {
+    console.log(companyCode)
+    setKeyHoliday(keyHoliday+1);
+    setIsUpdate(true);
+    setDescription(item.description)
+    let date=moment(item.holidays_date)
+    setDefaultDate(date)
+    setActive(item.active)
+    setSelectedDate(date.format("YYYY-MM-DD"))
+    setOpen(true)
+
+  }
   
 
   return (
@@ -262,7 +300,7 @@ function Holidays() {
       <Footer />
                  <Modal
                     open={open}
-                    title="Holiday input"
+                    title="Holiday"
                     onCancel={handleClose}
                     key={keyHoliday}
                     footer={null}
@@ -284,8 +322,9 @@ function Holidays() {
                             message: "Please input the date",
                           },
                         ]}
+                        initialValue={defaultDate}
                       >
-                        <DatePicker onChange={onChangeDate} />
+                        <DatePicker onChange={onChangeDate}  format="YYYY-MM-DD" />
                       </Form.Item>
 
                       <Form.Item
@@ -297,13 +336,24 @@ function Holidays() {
                             message: "Please input the description",
                           },
                         ]}
+                        initialValue={description}
                       >
-                        <Input />
+                        <Input/>
+                      </Form.Item>
+
+
+                      <Form.Item
+                        label="isActive"
+                        name="isactive"
+                        //initialValue={isactive  }
+                        initialValue={isActive}
+                      >
+                        <Checkbox onChange={onChangeStatus} checked={isActive}></Checkbox>
                       </Form.Item>
 
                       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                         <Button type="primary" htmlType="submit">
-                          Add Holiday
+                          {isUpdate ? 'Update': 'Add'} Holiday
                         </Button>
                       </Form.Item>
                     </Form>
