@@ -53,11 +53,12 @@ function Holidays() {
   const [description, setDescription] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
   const [isActive, setActive] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
   const   columns= [
     { name: "Date",  align: "center" },
     { name: "Description", align: "center" },
     { name: "Edit", align: "center" },
-    //{ name: "Delete", align: "center" },
+    { name: "Delete", align: "center" },
   ]
   
   const handleOpen = () => {
@@ -189,10 +190,10 @@ function Holidays() {
                                     <ArgonButton color="info" size="small" onClick={()=>{onEdit(item)}}>
                                           Edit
                                     </ArgonButton>,
-                                //  Delete: 
-                                //     <ArgonButton color="warning"  size="small" onClick={()=>{onDelete(item.id)}}>
-                                //       Delete 
-                                //     </ArgonButton>
+                                 Delete: 
+                                    <ArgonButton color="warning"  size="small" onClick={()=>{onDelete(item)}}>
+                                      Delete 
+                                    </ArgonButton>
                                 }
           
                               });
@@ -220,7 +221,7 @@ function Holidays() {
       
     console.log("componentDidUpdateFunction");
 
-  },[open,companyCode])
+  },[open,companyCode, isDelete])
   
 
   const onEdit = async (item) => {
@@ -233,6 +234,47 @@ function Holidays() {
     setActive(item.active)
     setSelectedDate(date.format("YYYY-MM-DD"))
     setOpen(true)
+
+  }
+
+  const onDelete = async (item) => {
+    setLoading(true)
+    setIsDelete(true)
+    const article = {
+      CompanyCode: companyCode,
+      Description: item.description,
+      Holidays_date: item.holidays_date,
+      Active:isActive
+    };
+    const headers = {
+      "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
+      'crudtype': 'delete',
+    };
+    await axios
+      .post(process.env.REACT_APP_MAIN_API + "/holiday", article, {
+        headers,
+      })
+      .then(async (response) => {
+        console.log(response)
+        if (
+          (await response.data) != null
+        ) {
+          if (response.status === 200)
+           {
+            setIsDelete(false)
+            setLoading(false)
+            message.success("done")
+           }
+        }
+      })
+      .catch((error) => {
+        console.log(error )
+        setLoading(false)
+        message.error("Error delete file : "+ error.message);
+      });
 
   }
   
@@ -266,8 +308,11 @@ function Holidays() {
                   }}
                   defaultValue=""
                   >
-                    <Option value="" selected>
-                      Choose Your Company
+                     <Option value="" selected>
+                      Choose a Company
+                    </Option>
+                    <Option value="Allcompany@==Admin" selected>
+                      All Company
                     </Option>
                   {companyList}
                 </Select>):(

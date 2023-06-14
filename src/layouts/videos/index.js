@@ -302,10 +302,10 @@ function Videos() {
                   defaultValue=""
                 >
                   <Option value="" selected>
-                    Choose Your Company
+                    Choose a Company
                   </Option>
-                  <Option value="Videoforall@==Videoforall" selected>
-                    Videoforall
+                  <Option value="Allcompany@==Admin" selected>
+                    All Company
                   </Option>
                   {companyList}
                 </Select>):(
