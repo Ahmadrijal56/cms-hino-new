@@ -187,11 +187,11 @@ function Holidays() {
                                   {item.description}
                                 </ArgonTypography>,
                                  Edit:
-                                    <ArgonButton color="info" size="small" onClick={()=>{onEdit(item)}}>
+                                    <ArgonButton color="info" size="small" onClick={()=>{onEdit(item)}} disabled={item.companycode!=companyCode}>
                                           Edit
                                     </ArgonButton>,
                                  Delete: 
-                                    <ArgonButton color="warning"  size="small" onClick={()=>{onDelete(item)}}>
+                                    <ArgonButton color="warning"  size="small" onClick={()=>{onDelete(item)}} disabled={item.companycode!=companyCode}>
                                       Delete 
                                     </ArgonButton>
                                 }

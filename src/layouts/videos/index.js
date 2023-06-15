@@ -233,7 +233,7 @@ function Videos() {
                             Path: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                             {item.path}
                           </ArgonTypography>,
-                            Action:<ArgonButton color="info" size="small" onClick={()=>{onDelete(item.id)}}>
+                            Action:<ArgonButton color="info" size="small" onClick={()=>{onDelete(item.id)}} disabled={item.companycode!=companyCode}>
                             Delete 
                           </ArgonButton>
                           }
@@ -351,8 +351,8 @@ function Videos() {
                       onFinish={onFinish}
                     >
                       <Form.Item
-                        label="Date"
-                        name="date"
+                        label="Video"
+                        name="video"
                       >
                         <Upload {...props} maxCount={1}>
                           <Button icon={<UploadOutlined />}>Select File</Button>
