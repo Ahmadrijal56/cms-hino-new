@@ -233,7 +233,7 @@ function Videos() {
                             Path: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                             {item.path}
                           </ArgonTypography>,
-                            Action:<ArgonButton color="info" size="small" onClick={()=>{onDelete(item.id)}} disabled={item.companycode!=companyCode}>
+                            Action:<ArgonButton color="info" size="small" onClick={()=>{onDelete(item.id)}} disabled={item.companycode!=selected }>
                             Delete 
                           </ArgonButton>
                           }
