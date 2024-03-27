@@ -290,6 +290,7 @@ function Videos() {
                  <ArgonTypography variant="h6">Videos</ArgonTypography>
                  { companyList.length >1 ?
                  (<Select
+                  howSearch={true}
                   style={{ width: 320 }}
                   optionFilterProp="children"
                   onChange={async(value) => {

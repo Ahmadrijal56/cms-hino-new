@@ -37,6 +37,7 @@ Coded by www.creative-tim.com
 import Holidays from "layouts/holidays";
 import Videos from "layouts/videos";
 import SignIn from "layouts/authentication/sign-in";
+import Config from "layouts/config";
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
@@ -61,6 +62,16 @@ const routes = [
       <ArgonBox component="i" color="primary" fontSize="14px" className="ni ni-tv-2" />
     ),
     component: <Videos />,
+  },
+  {
+    type: "route",
+    name: "Configs",
+    key: "config",
+    route: "/configs",
+    icon: (
+      <ArgonBox component="i" color="info" fontSize="14px" className="ni ni-settings" />
+    ),
+    component: <Config />,
   },
   {
     type: "route",

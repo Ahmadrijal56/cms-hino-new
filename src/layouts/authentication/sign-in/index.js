@@ -77,11 +77,11 @@ function Illustration() {
                 sessionStorage.setItem("username", data.get("email"));
                 sessionStorage.setItem("token", response.data.token);
 
-
+                console.log(response)
                 let companyList=[]
                 if( await response.data.values.length>1){
                     await response.data.values.map(function(item) {
-                        companyList.push(item.companycode+"@=="+item.companyname)
+                        companyList.push(item.CompanyCode+"@=="+item.CompanyName)
                     })
                 }else{
                   companyList.push(response.data.values["CompanyCode"]+"@=="+response.data.values["CompanyName"])

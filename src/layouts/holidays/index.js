@@ -296,6 +296,7 @@ function Holidays() {
                  <ArgonTypography variant="h6">Holidays</ArgonTypography>
                  { companyList.length >1 ?
                  (<Select
+                  howSearch={true}
                   style={{ width: 320 }}
                   optionFilterProp="children"
                   onChange={async(value) => {
