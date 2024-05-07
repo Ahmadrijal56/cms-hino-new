@@ -55,11 +55,12 @@ import {
   setOpenConfigurator,
 } from "context";
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 // Images
 import team2 from "assets/images/team-2.jpg";
 import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
+import { colors } from "@mui/material";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
@@ -70,13 +71,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-
-    const items = sessionStorage.getItem('token');
+    const items = sessionStorage.getItem("token");
     if (!items) {
-      navigate('/authentication/sign-in');
+      navigate("/authentication/sign-in");
     }
 
-    
     // Setting the navbar type
     if (fixedNavbar) {
       setNavbarType("sticky");
@@ -146,10 +145,10 @@ function DashboardNavbar({ absolute, light, isMini }) {
     </Menu>
   );
 
-  const handleLogout=()=>{
+  const handleLogout = () => {
     sessionStorage.clear();
-    navigate('/authentication/sign-in');
-  }
+    navigate("/authentication/sign-in");
+  };
 
   return (
     <AppBar
@@ -157,75 +156,58 @@ function DashboardNavbar({ absolute, light, isMini }) {
       color="inherit"
       sx={(theme) => navbar(theme, { transparentNavbar, absolute, light })}
     >
-      <Toolbar sx={(theme) => navbarContainer(theme, { navbarType })}>
-        <ArgonBox
-          color={light && transparentNavbar ? "white" : "dark"}
-          mb={{ xs: 1, md: 0 }}
-          sx={(theme) => navbarRow(theme, { isMini })}
-        >
+      <Toolbar sx={(theme) => navbarContainer(theme, { navbarType })} style={{padding:0}}>
+        <div className="headerPanel">
+          <div className="headerBreadcumn">
           <Breadcrumbs
-            icon="home"
-            title={route[route.length - 1]}
-            route={route}
-            light={transparentNavbar ? light : false}
-          />
-          <Icon fontSize="medium" sx={navbarDesktopMenu} onClick={handleMiniSidenav}>
-            {miniSidenav ? "menu_open" : "menu"}
-          </Icon>
-        </ArgonBox>
-        {isMini ? null : (
-          <ArgonBox sx={(theme) => navbarRow(theme, { isMini })}>
-           
-            <ArgonBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in" onClick={handleLogout} >
-                <IconButton sx={navbarIconButton} size="small">
-                  <Icon
-                    sx={({ palette: { dark, white } }) => ({
-                      color: light && transparentNavbar ? white.main : dark.main,
-                    })}
-                  >
-                    account_circle
-                  </Icon>
-                  <ArgonTypography
-                    variant="button"
-                    fontWeight="medium"
-                    color={light && transparentNavbar ? "white" : "dark"}
-                  >
-                    Sign Out
-                  </ArgonTypography>
-                </IconButton>
-              </Link>
-              {/* <IconButton
-                size="small"
-                color={light && transparentNavbar ? "white" : "dark"}
-                sx={navbarMobileMenu}
-                onClick={handleMiniSidenav}
-              >
-                <Icon>{miniSidenav ? "menu_open" : "menu"}</Icon>
+              icon="home"
+              title={route[route.length - 1]}
+              route={route}
+              light={transparentNavbar ? light : false}
+            />
+          </div>
+
+          <div style={{float:"left" }}>
+              <Icon fontSize="medium" onClick={handleMiniSidenav}>
+                {miniSidenav ? "menu_open" : "menu"}
+              </Icon>
+            </div>
+          <div className="headerBreadcumn">
+            TEST ya 3
+          </div> 
+          <div style={{ float: "left" }}>
+            <Breadcrumbs
+              icon="home"
+              title={route[route.length - 1]}
+              route={route}
+              light={transparentNavbar ? light : false}
+            />
+            <Icon fontSize="medium" sx={navbarDesktopMenu} onClick={handleMiniSidenav}>
+              {miniSidenav ? "menu_open" : "menu"}
+            </Icon>
+          </div>
+          <div style={{ float: "right" }}>
+            <Link to="/authentication/sign-in" onClick={handleLogout}>
+              <IconButton sx={navbarIconButton} size="small">
+                <Icon
+                  sx={({ palette: { dark, white } }) => ({
+                    color: light && transparentNavbar ? white.main : dark.main,
+                  })}
+                >
+                  account_circle
+                </Icon>
+                <ArgonTypography
+                  variant="button"
+                  fontWeight="medium"
+                  color={light && transparentNavbar ? "red" : "dark"}
+                >
+                  Sign Out
+                </ArgonTypography>
               </IconButton>
-              <IconButton
-                size="small"
-                color={light && transparentNavbar ? "white" : "dark"}
-                sx={navbarIconButton}
-                onClick={handleConfiguratorOpen}
-              >
-                <Icon>settings</Icon>
-              </IconButton>
-              <IconButton
-                size="small"
-                color={light && transparentNavbar ? "white" : "dark"}
-                sx={navbarIconButton}
-                aria-controls="notification-menu"
-                aria-haspopup="true"
-                variant="contained"
-                onClick={handleOpenMenu}
-              >
-                <Icon>notifications</Icon>
-              </IconButton> */}
-              {renderMenu()}
-            </ArgonBox>
-          </ArgonBox>
-        )}
+            </Link>
+          </div>
+        </div>
+        
       </Toolbar>
     </AppBar>
   );

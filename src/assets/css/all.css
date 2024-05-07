@@ -1,0 +1,19 @@
+
+
+.headerPanel{
+    background-color: white;
+    color:red;
+    width: 100%;
+    display: block;
+    border-radius: 10px;
+    height: 80px;
+}
+
+
+.headerBreadcumn{
+    margin-top: 30px;
+    margin-left: 20px;
+    width: 200px;
+    float: left;
+    color: red;
+}
