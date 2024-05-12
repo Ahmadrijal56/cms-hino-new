@@ -41,6 +41,7 @@ import { message,  Modal, Button, Form, Input, Select, DatePicker, Checkbox } fr
 const { Option } = Select;
 
 function Holidays() {
+  const [companyDefault,setCompanyDefault] = useState("");
   const [companyCode,setCompanyCode] = useState("");
   const [companyName,setCompanyName] = useState("");
   const [companyList,setCompanyList] = useState([]);
@@ -133,6 +134,7 @@ function Holidays() {
   useEffect(() => {
 
      async function loadCompany() {
+        setCompanyDefault(sessionStorage.getItem("companyDefault"))
         var list=await JSON.parse(sessionStorage.getItem("companyList") || "[]");
             if (Array.isArray(list)) {
             
@@ -288,10 +290,10 @@ function Holidays() {
         <CircularProgress color="inherit" />
       </Backdrop>
       <DashboardNavbar />
-      <ArgonBox py={3}>
+      <ArgonBox py={3} >
         <ArgonBox mb={3}>
           <Card>
-            <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
+            <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3} >
                <ArgonBox >
                  <ArgonTypography variant="h6">Holidays</ArgonTypography>
                  { companyList.length >1 ?
@@ -307,7 +309,7 @@ function Holidays() {
                       //loadData(select[0]);
                     }
                   }}
-                  defaultValue=""
+                  defaultValue={companyDefault}
                   >
                      <Option value="" selected>
                       Choose a Company
@@ -322,7 +324,7 @@ function Holidays() {
                  }
                  
               </ArgonBox>
-              <ArgonBox >
+              <ArgonBox>
                 <ArgonButton color="info" size="small" onClick={handleOpen} disabled={companyCode==""} >
                   Add Holiday
                 </ArgonButton>
@@ -337,6 +339,7 @@ function Holidays() {
                   },
                 },
               }}
+              height="35vw"
             >
               <Table columns={columns} rows={dataGrid} />
             </ArgonBox>

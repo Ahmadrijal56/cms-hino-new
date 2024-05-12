@@ -36,6 +36,10 @@ import ArgonInput from "components/ArgonInput";
 // Argon Dashboard 2 MUI example components
 import Breadcrumbs from "examples/Breadcrumbs";
 import NotificationItem from "examples/Items/NotificationItem";
+import { message,  Modal, Button, Form, Input, Select, DatePicker, Checkbox } from 'antd';
+
+
+import moment from "moment";
 
 // Custom styles for DashboardNavbar
 import {
@@ -69,6 +73,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
   const navigate = useNavigate();
+  const [companyList,setCompanyList] = useState([]);
+  const [companyCode,setCompanyCode] = useState("");
+  const [companyName,setCompanyName] = useState("");
+  const [companyDefault,setCompanyDefault] = useState("");
+  const [showSetting, setShowSetting] = useState(false);
 
   useEffect(() => {
     const items = sessionStorage.getItem("token");
@@ -97,8 +106,40 @@ function DashboardNavbar({ absolute, light, isMini }) {
     // Call the handleTransparentNavbar function to set the state with the initial value.
     handleTransparentNavbar();
 
+
+    async function loadCompany() {
+      setCompanyDefault(sessionStorage.getItem("companyDefault"))
+      var list=await JSON.parse(sessionStorage.getItem("companyList") || "[]");
+          if (Array.isArray(list)) {
+          
+          var selectCompany = list.map(function(item) {
+            if(item.indexOf("@==")>-1){
+              const company= item.split("@==")
+              return (
+                <Option value={item} key={item}>
+                  {company[1]}
+                </Option>
+              );
+            }
+          });
+          console.log(selectCompany)
+          setCompanyList(selectCompany)
+          if (await list.length == 1){
+            let select= await list[0].split("@==")
+            setCompanyCode(await select[0])
+            setCompanyName(await select[1])
+            loadData(select[0]);
+          }
+        }
+
+    }
+
+   loadCompany();
+
     // Remove event listener on cleanup
     return () => window.removeEventListener("scroll", handleTransparentNavbar);
+
+    
   }, [dispatch, fixedNavbar]);
 
   const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
@@ -166,28 +207,43 @@ function DashboardNavbar({ absolute, light, isMini }) {
               light={transparentNavbar ? light : false}
             />
           </div>
-
-          <div style={{float:"left" }}>
+          <div style={{float:"left", display:"none" }}>
               <Icon fontSize="medium" onClick={handleMiniSidenav}>
                 {miniSidenav ? "menu_open" : "menu"}
               </Icon>
             </div>
-          <div className="headerBreadcumn">
-            TEST ya 3
+          <div className="headerCompanyList">
+          { companyList.length >1 ?
+                 (<Select
+                  howSearch={true}
+                  style={{ width: 320 }}
+                  optionFilterProp="children"
+                  onChange={async(value) => {
+                    if (value != null) {
+                      let select= await value.split("@==")
+                      setCompanyCode(await select[0])
+                      setCompanyName(await select[1])
+                      sessionStorage.setItem("companyDefault",value)
+                      window.location.reload();
+                      //loadData(select[0]);
+                    }
+                  }}
+                  defaultValue={sessionStorage.getItem("companyDefault")??""}
+                  >
+                     <Option value="" selected>
+                      Choose a Company
+                    </Option>
+                  {companyList}
+                </Select>):(
+                  <ArgonTypography variant="h5">{companyName}</ArgonTypography>
+                )
+                 }
           </div> 
-          <div style={{ float: "left" }}>
-            <Breadcrumbs
-              icon="home"
-              title={route[route.length - 1]}
-              route={route}
-              light={transparentNavbar ? light : false}
-            />
-            <Icon fontSize="medium" sx={navbarDesktopMenu} onClick={handleMiniSidenav}>
-              {miniSidenav ? "menu_open" : "menu"}
-            </Icon>
-          </div>
           <div style={{ float: "right" }}>
-            <Link to="/authentication/sign-in" onClick={handleLogout}>
+          <Icon className="headerIcon" fontSize="large" onClick={()=>{
+            !showSetting ? setShowSetting(true) : setShowSetting(false)
+          }}>settings</Icon>
+            {/* <Link to="/authentication/sign-in" onClick={handleLogout}>
               <IconButton sx={navbarIconButton} size="small">
                 <Icon
                   sx={({ palette: { dark, white } }) => ({
@@ -204,11 +260,37 @@ function DashboardNavbar({ absolute, light, isMini }) {
                   Sign Out
                 </ArgonTypography>
               </IconButton>
-            </Link>
+            </Link> */}
+          </div>
+          <div className="headerDate">
+          {moment().format('DD MMMM YYYY, HH:mm')}
           </div>
         </div>
         
       </Toolbar>
+
+      {showSetting ?(<div className="blockMenu">
+        <div className="settingsBlock" onClick={()=>{
+            setShowSetting(false)
+          }}>
+          <Icon className="settingsIcon" >settings</Icon>
+          <div className="title">BACK</div>
+        </div>
+        <div className="settingsBlock">
+          <Icon className="settingsIcon" >settings</Icon>
+          <div className="title">BACK</div>
+        </div>
+        <div className="settingsBlock">
+          <Icon className="settingsIcon" >settings</Icon>
+          <div className="title">BACK</div>
+        </div>
+        <div className="settingsBlock">
+          <Icon className="settingsIcon" >settings</Icon>
+          <div className="title">BACK</div>
+        </div>
+      </div>)
+      :null}
+      
     </AppBar>
   );
 }

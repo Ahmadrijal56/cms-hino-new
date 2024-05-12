@@ -40,6 +40,7 @@ function DashboardLayout({ bgColor, children, ...rest }) {
 
   return (
     <ArgonBox
+    height="900px"
       sx={({ breakpoints, transitions, functions: { pxToRem } }) => ({
         p: 3,
 

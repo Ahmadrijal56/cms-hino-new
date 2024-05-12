@@ -41,6 +41,7 @@ import { UploadOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
 function Videos() {
+  const [companyDefault,setCompanyDefault] = useState("");
   const [companyCode,setCompanyCode] = useState("");
   const [companyName,setCompanyName] = useState("");
   const [companyList,setCompanyList] = useState([]);
@@ -182,7 +183,6 @@ function Videos() {
 };
 
   useEffect(() => {
-
      async function loadCompany() {
         var list=await JSON.parse(sessionStorage.getItem("companyList") || "[]");
             if (Array.isArray(list)) {
@@ -266,6 +266,9 @@ function Videos() {
         loadData(companyCode)
       }
     }
+
+
+setCompanyDefault(sessionStorage.getItem("companyDefault"))
     
     console.log("componentDidUpdateFunction");
 
@@ -298,16 +301,15 @@ function Videos() {
                       let select= await value.split("@==")
                       setCompanyCode(await select[0])
                       setCompanyName(await select[1])
+                      sessionStorage.setItem("companyDefault",value)
+                      window.location.reload();
                     }
                   }}
-                  defaultValue=""
+                  defaultValue={sessionStorage.getItem("companyDefault")}
                 >
-                  <Option value="" selected>
-                    Choose a Company
-                  </Option>
-                  <Option value="Allcompany@==Admin" selected>
-                    All Company
-                  </Option>
+                   <Option value="" selected>
+                      Choose a Company
+                    </Option>
                   {companyList}
                 </Select>):(
                   <ArgonTypography variant="h5">{companyName}</ArgonTypography>
@@ -330,6 +332,7 @@ function Videos() {
                   },
                 },
               }}
+              height="35vw"
             >
               <Table columns={columns} rows={dataGrid} />
             </ArgonBox>
