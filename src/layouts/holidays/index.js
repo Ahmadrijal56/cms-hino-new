@@ -134,7 +134,6 @@ function Holidays() {
   useEffect(() => {
 
      async function loadCompany() {
-        setCompanyDefault(sessionStorage.getItem("companyDefault"))
         var list=await JSON.parse(sessionStorage.getItem("companyList") || "[]");
             if (Array.isArray(list)) {
             
@@ -221,6 +220,7 @@ function Holidays() {
           }
       }
       
+    setCompanyDefault(sessionStorage.getItem("companyDefault"))
     console.log("componentDidUpdateFunction");
 
   },[open,companyCode, isDelete])
@@ -309,7 +309,7 @@ function Holidays() {
                       //loadData(select[0]);
                     }
                   }}
-                  defaultValue={companyDefault}
+                  defaultValue={sessionStorage.getItem("companyDefault")}
                   >
                      <Option value="" selected>
                       Choose a Company

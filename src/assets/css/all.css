@@ -86,3 +86,29 @@
     font-size: 14px;
     float: left;
 }
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: #ff0000 !important; 
+    font-weight: 500;
+ }
+
+ .ant-tabs-ink-bar {
+    position: absolute;
+    background: #ff0000 !important;
+    pointer-events: none;
+ }
+
+
+ .pageNumber {
+    margin-top: 20px;
+    float:right;
+    margin-right: 30px;
+ }
+
+
+
+ .pageNumberEmpty {
+    margin-top: 350px;
+    float:right;
+    margin-right: 30px;
+ }
