@@ -31,14 +31,74 @@ import ArgonButton from "components/ArgonButton";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import Table from "examples/Tables/Table";
 
 import axios from "axios";
 import moment from "moment";
-import { message, Modal, Button, Form, Input, Select, Upload, Tabs,Pagination } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { message, Modal, Button, Form, Input, Select, Upload, Tabs, Pagination, DatePicker,Table } from "antd";
+import { UploadOutlined,SearchOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
+
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+  },
+  {
+    title: 'Chinese Score',
+    dataIndex: 'chinese',
+    sorter: {
+      compare: (a, b) => a.chinese - b.chinese,
+      multiple: 3,
+    },
+  },
+  {
+    title: 'Math Score',
+    dataIndex: 'math',
+    sorter: {
+      compare: (a, b) => a.math - b.math,
+      multiple: 2,
+    },
+  },
+  {
+    title: 'English Score',
+    dataIndex: 'english',
+    sorter: {
+      compare: (a, b) => a.english - b.english,
+      multiple: 1,
+    },
+  },
+];
+const data = [
+  {
+    key: '1',
+    name: 'John Brown',
+    chinese: 98,
+    math: 60,
+    english: 70,
+  },
+  {
+    key: '2',
+    name: 'Jim Green',
+    chinese: 98,
+    math: 66,
+    english: 89,
+  },
+  {
+    key: '3',
+    name: 'Joe Black',
+    chinese: 98,
+    math: 90,
+    english: 70,
+  },
+  {
+    key: '4',
+    name: 'Jim Red',
+    chinese: 88,
+    math: 99,
+    english: 89,
+  },
+];
 
 function Videos() {
   const [companyDefault, setCompanyDefault] = useState("");
@@ -52,11 +112,12 @@ function Videos() {
   const [keyHoliday, setKeyHoliday] = useState(0);
   const [selectedDate, setSelectedDate] = useState(0);
   const [fileList, setFileList] = useState([]);
-  const columns = [
-    { name: "Description", align: "center" },
-    { name: "Path", align: "center" },
-    { name: "Action", align: "center" },
-  ];
+  // const columns = [
+  //   { name: "Description", align: "center" },
+  //   { name: "Path", align: "center" },
+  //   { name: "Action", align: "center" },
+  // ];
+  const dateFormat = 'DD-MM-YYYY';
 
   const onChange = (key) => {
     console.log(key);
@@ -64,6 +125,10 @@ function Videos() {
 
   const onChangePage = (pageNumber) => {
     console.log('Page: ', pageNumber);
+  };
+
+  const onChangeTable = (pagination, filters, sorter, extra) => {
+    console.log('params', pagination, filters, sorter, extra);
   };
 
   const items = [
@@ -226,7 +291,6 @@ function Videos() {
         "Content-Type": "application/json",
         Authorization: "Bearer " + sessionStorage.getItem("token"),
       };
-
       try {
         await axios
           .get(process.env.REACT_APP_MAIN_API + "/get/video/" + selected, {
@@ -235,7 +299,7 @@ function Videos() {
           .then(async (response) => {
             if (response.status === 200) {
               if (response.data.message == undefined) {
-                const resp = response.data.map(function (item) {
+                const resp = await response.data.map(function (item) {
                   return {
                     Description: (
                       <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
@@ -278,18 +342,110 @@ function Videos() {
       }
     }
 
+
     if (!open) {
-      if (companyCode == "") {
+      if (companyDefault == "") {
+        alert("test 2")
+        var compSession=sessionStorage.getItem("companyDefault")
+        setCompanyDefault(compSession);
         loadCompany();
       } else {
-        loadData(companyCode);
+        // alert(companyDefault)
+        let select = companyDefault.split("@==");
+        loadData(select);
       }
     }
 
-    setCompanyDefault(sessionStorage.getItem("companyDefault"));
 
     console.log("componentDidUpdateFunction");
-  }, [open, isDelete, companyCode]);
+  }, [open, isDelete, companyCode,companyDefault]);
+
+
+  useEffect(() => {
+
+    async function loadData(selected) {
+      setLoading(true);
+      const headers = {
+        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + sessionStorage.getItem("token"),
+      };
+      try {
+        await axios
+          .get(process.env.REACT_APP_MAIN_API + "/get/video/" + selected, {
+            headers,
+          })
+          .then(async (response) => {
+            if (response.status === 200) {
+              if (response.data.message == undefined) {
+                const resp = await response.data.map(function (item) {
+                  return {
+                    Description: (
+                      <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                        {item.description}
+                      </ArgonTypography>
+                    ),
+                    Path: (
+                      <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                        {item.path}
+                      </ArgonTypography>
+                    ),
+                    Action: (
+                      <ArgonButton
+                        color="info"
+                        size="small"
+                        onClick={() => {
+                          onDelete(item.id);
+                        }}
+                        disabled={item.companycode != selected}
+                      >
+                        Delete
+                      </ArgonButton>
+                    ),
+                  };
+                });
+                setDataGrid(resp);
+                setLoading(false);
+              } else {
+                setDataGrid([]);
+                setLoading(false);
+              }
+            } else {
+              message.error("Invalid query");
+              setLoading(false);
+            }
+          });
+      } catch (error) {
+        message.error(error);
+        setLoading(false);
+      }
+    }
+
+
+    if (companyDefault != "") {
+        alert(companyDefault)
+        let select = companyDefault.split("@==");
+        loadData(select);
+        setLoading(false);
+    }
+
+
+    console.log("componentDidUpdateFunction");
+  }, [companyDefault]);
+
+
+  const onChangeDateStart = (date, dateString) => {
+    console.log(date, dateString);
+  };
+
+  const onChangeDateTo = (date, dateString) => {
+    console.log(date, dateString);
+  };
+
+  const clickSearch = (e) => {
+    alert(e.target.value)
+  };
 
   return (
     <DashboardLayout>
@@ -333,57 +489,14 @@ function Videos() {
               p={3}
               pt={0}
             >
-              <ArgonBox p={3} pt={0}>
-                {companyList.length > 1 ? (
-                  <Select
-                    howSearch={true}
-                    style={{ width: 320 }}
-                    optionFilterProp="children"
-                    onChange={async (value) => {
-                      if (value != null) {
-                        let select = await value.split("@==");
-                        setCompanyCode(await select[0]);
-                        setCompanyName(await select[1]);
-                        sessionStorage.setItem("companyDefault", value);
-                        window.location.reload();
-                      }
-                    }}
-                    defaultValue={sessionStorage.getItem("companyDefault")}
-                  >
-                    <Option value="" selected>
-                      Choose a Company
-                    </Option>
-                    {companyList}
-                  </Select>
-                ) : (
-                  <ArgonTypography variant="h5">{companyName}</ArgonTypography>
-                )}
+              <ArgonBox p={3} pt={0} pl={0}>
+                <span className="titleDate">From </span>
+                <DatePicker onChange={onChangeDateStart} format={dateFormat} size="large" />
+                <span className="titleDate">  To </span>
+                <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large" />
               </ArgonBox>
               <ArgonBox p={3} pt={0}>
-                {companyList.length > 1 ? (
-                  <Select
-                    howSearch={true}
-                    style={{ width: 320 }}
-                    optionFilterProp="children"
-                    onChange={async (value) => {
-                      if (value != null) {
-                        let select = await value.split("@==");
-                        setCompanyCode(await select[0]);
-                        setCompanyName(await select[1]);
-                        sessionStorage.setItem("companyDefault", value);
-                        window.location.reload();
-                      }
-                    }}
-                    defaultValue={sessionStorage.getItem("companyDefault")}
-                  >
-                    <Option value="" selected>
-                      Choose a Company
-                    </Option>
-                    {companyList}
-                  </Select>
-                ) : (
-                  <ArgonTypography variant="h5">{companyName}</ArgonTypography>
-                )}
+                  <Input size="large" placeholder="Cari Media" prefix={<SearchOutlined />} onPressEnter={clickSearch} />
               </ArgonBox>
             </ArgonBox>
             <ArgonBox
@@ -397,7 +510,8 @@ function Videos() {
               }}
               height="35vw"
             >
-              <Table columns={columns} rows={dataGrid} />
+              {/* <Table columns={columns} rows={dataGrid} /> */}
+              <Table columns={columns} dataSource={data} onChange={onChangeTable} pagination={false} display={false} />
               <Pagination showQuickJumper defaultCurrent={2} total={500} onChange={onChangePage} className={dataGrid.length==0?"pageNumberEmpty":"pageNumber"}  disabled={dataGrid.length==0? true:false}/>
             </ArgonBox>
           </Card>
