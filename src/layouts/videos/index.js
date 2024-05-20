@@ -34,76 +34,88 @@ import Footer from "examples/Footer";
 
 import axios from "axios";
 import moment from "moment";
-import { message, Modal, Button, Form, Input, Select, Upload, Tabs, Pagination, DatePicker,Table } from "antd";
-import { UploadOutlined,SearchOutlined } from "@ant-design/icons";
+import {
+  message,
+  Modal,
+  Button,
+  Form,
+  Input,
+  Select,
+  Upload,
+  Tabs,
+  Pagination,
+  DatePicker,
+  Table,
+} from "antd";
+import { UploadOutlined, SearchOutlined } from "@ant-design/icons";
 
-import qs from 'qs';
+import qs from "qs";
 
 const { Option } = Select;
 
-
-
 const columns = [
   {
-    title: 'Name',
-    dataIndex: 'name',
+    title: "Name",
+    dataIndex: "name",
   },
   {
-    title: 'Content',
-    dataIndex: 'description',
+    title: "Content",
+    dataIndex: "description",
     sorter: {
       compare: (a, b) => a.description - b.description,
     },
   },
   {
-    title: 'Publish Date',
-    dataIndex: 'publishdate',
+    title: "Publish Date",
+    dataIndex: "publishdate",
     sorter: {
       compare: (a, b) => a.publishdate - b.publishdate,
       multiple: 2,
     },
   },
   {
-    title: 'Last Modify',
-    dataIndex: 'updated_at',
+    title: "Last Modify",
+    dataIndex: "updated_at",
     sorter: {
       compare: (a, b) => a.updated_at - b.updated_at,
       multiple: 1,
     },
   },
   {
-    title: 'Expiry Date',
-    dataIndex: 'expireddate',
+    title: "Expiry Date",
+    dataIndex: "expireddate",
     sorter: {
       compare: (a, b) => a.expireddate - b.expireddate,
       multiple: 1,
     },
   },
   {
-    title: 'Expiry Date',
-    dataIndex: 'expireddate',
+    title: "Expiry Date",
+    dataIndex: "expireddate",
     sorter: {
       compare: (a, b) => a.expireddate - b.expireddate,
       multiple: 1,
     },
   },
   {
-    title: 'Status',
-    dataIndex: 'status',
+    title: "Status",
+    dataIndex: "status",
     sorter: {
       compare: (a, b) => a.status - b.status,
       multiple: 1,
     },
   },
   {
-    title: 'Action',
-    dataIndex: 'action',
+    title: "Action",
+    dataIndex: "action",
     sorter: {
       compare: (a, b) => a.action - b.action,
       multiple: 1,
     },
-  }
+  },
 ];
+
+const { TextArea } = Input;
 
 function Videos() {
   const [companyDefault, setCompanyDefault] = useState("");
@@ -121,6 +133,9 @@ function Videos() {
   const [orderBy, setOrderBy] = useState();
   const [orderField, setOrderField] = useState();
   const [currentPage, setCurrentPage] = useState(1);
+  const [publishDate, setPublishDate] = useState("");
+  const [expiredDate, setExpiredDate] = useState("");
+  const [typeMedia, setTypeMedia] = useState("");
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
@@ -132,7 +147,7 @@ function Videos() {
   //   { name: "Path", align: "center" },
   //   { name: "Action", align: "center" },
   // ];
-  const dateFormat = 'DD-MM-YYYY';
+  const dateFormat = "YYYY-MM-DD";
 
   const getRandomuserParams = (params) => ({
     limit: params.pagination?.pageSize,
@@ -147,18 +162,18 @@ function Videos() {
   };
 
   const onChangePage = (pageNumber) => {
-    console.log('Page: ', pageNumber);
+    console.log("Page: ", pageNumber);
   };
 
   const onChangeTable = (pagination, filters, sorter, extra) => {
-    setOrderField(sorter.field)
-    setOrderBy((sorter.order??"").toString().replace("ascend","asc").replace("descend","desc"))
+    setOrderField(sorter.field);
+    setOrderBy((sorter.order ?? "").toString().replace("ascend", "asc").replace("descend", "desc"));
     setTableParams({
       pagination,
       filters,
       ...sorter,
     });
-    console.log('params', pagination, filters, sorter, extra);
+    console.log("params", pagination, filters, sorter, extra);
   };
 
   const items = [
@@ -210,25 +225,27 @@ function Videos() {
 
   //login via input
   const onFinish = async (values) => {
-    if (fileList.length == 0) {
-      message.error("Please choose video first");
+    if (fileList.length == 0 && values.type != "text") {
+      message.error("Please choose dfdfdsvideo first");
       return;
     }
     setLoading(true);
     const formData = new FormData();
-    formData.append("type", 'video');
+    formData.append("type", values.type);
     formData.append("companycode", "Allcompany");
-    formData.append("name", values.description);
-    //formData.append("description", values.description);
+    formData.append("name", values.name);
     formData.append("text", values.description);
-    formData.append("publishdate", "2024-03-01");
-    formData.append("expireddate", "2025-03-30");
+    formData.append("publishdate", publishDate);
+    formData.append("expireddate", expiredDate);
     formData.append("appplytoall", true);
     formData.append("status", true);
     formData.append("trash", false);
-    fileList.forEach((file) => {
-      formData.append("file", file);
-    });
+    if (values.type != "text") {
+      fileList.forEach((file) => {
+        formData.append("file", file);
+      });
+    }
+
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
@@ -297,11 +314,19 @@ function Videos() {
       "Content-Type": "application/json",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
     };
-    axios.get(process.env.REACT_APP_MAIN_API + `/get/allmedia/all?${qs.stringify(getRandomuserParams(tableParams))}`, {
-      headers,
-    })
-      .then((response ) => {
-        console.log(process.env.REACT_APP_MAIN_API + `/get/allmedia/all?${qs.stringify(getRandomuserParams(tableParams))}`);
+    axios
+      .get(
+        process.env.REACT_APP_MAIN_API +
+          `/get/allmedia/all?${qs.stringify(getRandomuserParams(tableParams))}`,
+        {
+          headers,
+        }
+      )
+      .then((response) => {
+        console.log(
+          process.env.REACT_APP_MAIN_API +
+            `/get/allmedia/all?${qs.stringify(getRandomuserParams(tableParams))}`
+        );
         setData(response.data.data);
         setLoading(false);
         setTableParams({
@@ -315,7 +340,6 @@ function Videos() {
   };
 
   useEffect(() => {
-   fetchData()
     async function loadCompany() {
       var list = await JSON.parse(sessionStorage.getItem("companyList") || "[]");
       if (Array.isArray(list)) {
@@ -398,10 +422,9 @@ function Videos() {
       }
     }
 
-
     if (!open) {
       if (companyDefault == "") {
-        var compSession=sessionStorage.getItem("companyDefault")
+        var compSession = sessionStorage.getItem("companyDefault");
         setCompanyDefault(compSession);
         loadCompany();
       } else {
@@ -411,15 +434,21 @@ function Videos() {
         setCompanyName(select[1]);
         //loadData(select[0]);xs
       }
+      fetchData();
     }
 
-
-    console.log("componentDidUpdateFunction");
-  }, [open, isDelete, companyCode,companyDefault,tableParams.pagination?.current, tableParams.pagination?.pageSize,orderBy]);
-
+    setLoading(false);
+  }, [
+    open,
+    isDelete,
+    companyCode,
+    companyDefault,
+    tableParams.pagination?.current,
+    tableParams.pagination?.pageSize,
+    orderBy,
+  ]);
 
   useEffect(() => {
-
     async function loadData(selected) {
       setLoading(true);
       const headers = {
@@ -479,17 +508,14 @@ function Videos() {
       }
     }
 
-
     if (companyDefault != "") {
-        let select = companyDefault.split("@==");
-        //loadData(select);
-        setLoading(false);
+      let select = companyDefault.split("@==");
+      //loadData(select);
+      setLoading(false);
     }
-
 
     console.log("componentDidUpdateFunction");
   }, [companyDefault]);
-
 
   const onChangeDateStart = (date, dateString) => {
     console.log(date, dateString);
@@ -500,7 +526,19 @@ function Videos() {
   };
 
   const clickSearch = (e) => {
-    alert(e.target.value)
+    alert(e.target.value);
+  };
+
+  const onChangeType = (value) => {
+    setTypeMedia(value);
+  };
+
+  const onChangePublishDate = (_, dateString) => {
+    setPublishDate(dateString);
+  };
+
+  const onChangeExpiredDate = (_, dateString) => {
+    setExpiredDate(dateString);
   };
 
   return (
@@ -531,12 +569,7 @@ function Videos() {
               </ArgonBox>
             </ArgonBox>
             <ArgonBox p={3} pt={0} pb={0}>
-                <Tabs
-                  defaultActiveKey="1"
-                  items={items}
-                  onChange={onChange}
-                  itemActiveColor="$ccc"
-                />
+              <Tabs defaultActiveKey="1" items={items} onChange={onChange} itemActiveColor="$ccc" />
             </ArgonBox>
             <ArgonBox
               display="flex"
@@ -548,11 +581,16 @@ function Videos() {
               <ArgonBox p={3} pt={0} pl={0}>
                 <span className="titleDate">From </span>
                 <DatePicker onChange={onChangeDateStart} format={dateFormat} size="large" />
-                <span className="titleDate">  To </span>
+                <span className="titleDate"> To </span>
                 <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large" />
               </ArgonBox>
               <ArgonBox p={3} pt={0}>
-                  <Input size="large" placeholder="Cari Media" prefix={<SearchOutlined />} onPressEnter={clickSearch} />
+                <Input
+                  size="large"
+                  placeholder="Cari Media"
+                  prefix={<SearchOutlined />}
+                  onPressEnter={clickSearch}
+                />
               </ArgonBox>
             </ArgonBox>
             <ArgonBox
@@ -567,14 +605,20 @@ function Videos() {
               height="35vw"
             >
               {/* <Table columns={columns} rows={dataGrid} /> */}
-              <Table columns={columns} dataSource={data} onChange={onChangeTable} display={false}  pagination={tableParams.pagination}/>
+              <Table
+                columns={columns}
+                dataSource={data}
+                onChange={onChangeTable}
+                display={false}
+                pagination={tableParams.pagination}
+              />
               {/* <Pagination showQuickJumper defaultCurrent={2} total={500} onChange={onChangePage} className={dataGrid.length==0?"pageNumberEmpty":"pageNumber"}  disabled={dataGrid.length==0? true:false}/> */}
             </ArgonBox>
           </Card>
         </ArgonBox>
       </ArgonBox>
       <Footer />
-      <Modal open={open} title="Content" onCancel={handleClose} key={keyHoliday} footer={null}>
+      <Modal open={open} title="Media" onCancel={handleClose} key={keyHoliday} footer={null}>
         <Form
           name="basic"
           labelCol={{ span: 8 }}
@@ -595,28 +639,54 @@ function Videos() {
             <Input />
           </Form.Item>
 
-          <Form.Item label="Video" name="video">
-            <Upload {...props} maxCount={1}>
-              <Button icon={<UploadOutlined />}>Select File</Button>
-            </Upload>
-          </Form.Item>
-
           <Form.Item
-            label="Description"
-            name="description"
+            label="Type"
+            name="type"
             rules={[
               {
                 required: true,
-                message: "Please input the description",
+                message: "type",
               },
             ]}
           >
-            <Input />
+            <Select onChange={onChangeType}>
+              <Select.Option value="text">Text</Select.Option>
+              <Select.Option value="image">Image</Select.Option>
+              <Select.Option value="video">Video</Select.Option>
+            </Select>
+          </Form.Item>
+
+          {typeMedia == "text" ? (
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input the description",
+                },
+              ]}
+            >
+              <TextArea rows={4} />
+            </Form.Item>
+          ) : (
+            <Form.Item label="File" name="video">
+              <Upload {...props} maxCount={1}>
+                <Button icon={<UploadOutlined />}>Select File</Button>
+              </Upload>
+            </Form.Item>)}
+
+          <Form.Item label="Publish Date" name="publish_date">
+            <DatePicker format={dateFormat} onChange={onChangePublishDate} />
+          </Form.Item>
+
+          <Form.Item label="Expired Date" name="expired_date">
+            <DatePicker format={dateFormat} onChange={onChangeExpiredDate} />
           </Form.Item>
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Button type="primary" htmlType="submit">
-              Add a video
+              Save
             </Button>
           </Form.Item>
         </Form>
