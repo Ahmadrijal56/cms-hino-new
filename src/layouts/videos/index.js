@@ -37,7 +37,11 @@ import moment from "moment";
 import { message, Modal, Button, Form, Input, Select, Upload, Tabs, Pagination, DatePicker,Table } from "antd";
 import { UploadOutlined,SearchOutlined } from "@ant-design/icons";
 
+import qs from 'qs';
+
 const { Option } = Select;
+
+
 
 const columns = [
   {
@@ -45,59 +49,60 @@ const columns = [
     dataIndex: 'name',
   },
   {
-    title: 'Chinese Score',
-    dataIndex: 'chinese',
+    title: 'Content',
+    dataIndex: 'description',
     sorter: {
-      compare: (a, b) => a.chinese - b.chinese,
-      multiple: 3,
+      compare: (a, b) => a.description - b.description,
     },
   },
   {
-    title: 'Math Score',
-    dataIndex: 'math',
+    title: 'Publish Date',
+    dataIndex: 'publishdate',
     sorter: {
-      compare: (a, b) => a.math - b.math,
+      compare: (a, b) => a.publishdate - b.publishdate,
       multiple: 2,
     },
   },
   {
-    title: 'English Score',
-    dataIndex: 'english',
+    title: 'Last Modify',
+    dataIndex: 'updated_at',
     sorter: {
-      compare: (a, b) => a.english - b.english,
+      compare: (a, b) => a.updated_at - b.updated_at,
       multiple: 1,
     },
   },
-];
-const data = [
   {
-    key: '1',
-    name: 'John Brown',
-    chinese: 98,
-    math: 60,
-    english: 70,
+    title: 'Expiry Date',
+    dataIndex: 'expireddate',
+    sorter: {
+      compare: (a, b) => a.expireddate - b.expireddate,
+      multiple: 1,
+    },
   },
   {
-    key: '2',
-    name: 'Jim Green',
-    chinese: 98,
-    math: 66,
-    english: 89,
+    title: 'Expiry Date',
+    dataIndex: 'expireddate',
+    sorter: {
+      compare: (a, b) => a.expireddate - b.expireddate,
+      multiple: 1,
+    },
   },
   {
-    key: '3',
-    name: 'Joe Black',
-    chinese: 98,
-    math: 90,
-    english: 70,
+    title: 'Status',
+    dataIndex: 'status',
+    sorter: {
+      compare: (a, b) => a.status - b.status,
+      multiple: 1,
+    },
   },
   {
-    key: '4',
-    name: 'Jim Red',
-    chinese: 88,
-    math: 99,
-    english: 89,
-  },
+    title: 'Action',
+    dataIndex: 'action',
+    sorter: {
+      compare: (a, b) => a.action - b.action,
+      multiple: 1,
+    },
+  }
 ];
 
 function Videos() {
@@ -112,12 +117,30 @@ function Videos() {
   const [keyHoliday, setKeyHoliday] = useState(0);
   const [selectedDate, setSelectedDate] = useState(0);
   const [fileList, setFileList] = useState([]);
+  const [data, setData] = useState();
+  const [orderBy, setOrderBy] = useState();
+  const [orderField, setOrderField] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: currentPage,
+      pageSize: 5,
+    },
+  });
   // const columns = [
   //   { name: "Description", align: "center" },
   //   { name: "Path", align: "center" },
   //   { name: "Action", align: "center" },
   // ];
   const dateFormat = 'DD-MM-YYYY';
+
+  const getRandomuserParams = (params) => ({
+    limit: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    sortBy: orderField,
+    sortOrder: orderBy,
+    //...params,
+  });
 
   const onChange = (key) => {
     console.log(key);
@@ -128,6 +151,13 @@ function Videos() {
   };
 
   const onChangeTable = (pagination, filters, sorter, extra) => {
+    setOrderField(sorter.field)
+    setOrderBy((sorter.order??"").toString().replace("ascend","asc").replace("descend","desc"))
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
     console.log('params', pagination, filters, sorter, extra);
   };
 
@@ -168,7 +198,7 @@ function Videos() {
   };
 
   const handleOpen = () => {
-    if (companyCode == "") {
+    if (sessionStorage.getItem("companyDefault") == "") {
       message.error("Please choose company code first");
     } else {
       setOpen(true);
@@ -178,14 +208,6 @@ function Videos() {
   };
   const handleClose = () => setOpen(false);
 
-  const onChangeDate = (date, dateString) => {
-    setSelectedDate(dateString);
-  };
-
-  const onFinishFailed = (errorInfo) => {
-    message.error("Failed: " + errorInfo);
-  };
-
   //login via input
   const onFinish = async (values) => {
     if (fileList.length == 0) {
@@ -194,10 +216,18 @@ function Videos() {
     }
     setLoading(true);
     const formData = new FormData();
-    formData.append("companycode", companyCode);
-    formData.append("description", values.description);
+    formData.append("type", 'video');
+    formData.append("companycode", "Allcompany");
+    formData.append("name", values.description);
+    //formData.append("description", values.description);
+    formData.append("text", values.description);
+    formData.append("publishdate", "2024-03-01");
+    formData.append("expireddate", "2025-03-30");
+    formData.append("appplytoall", true);
+    formData.append("status", true);
+    formData.append("trash", false);
     fileList.forEach((file) => {
-      formData.append("video", file);
+      formData.append("file", file);
     });
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
@@ -207,7 +237,7 @@ function Videos() {
       crudtype: "insert",
     };
     await axios
-      .post(process.env.REACT_APP_MAIN_API + "/videos", formData, {
+      .post(process.env.REACT_APP_MAIN_API + "/upload/media", formData, {
         headers,
       })
       .then(async (response) => {
@@ -259,7 +289,33 @@ function Videos() {
       });
   };
 
+  const fetchData = () => {
+    setLoading(true);
+    const headers = {
+      "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
+    };
+    axios.get(process.env.REACT_APP_MAIN_API + `/get/allmedia/all?${qs.stringify(getRandomuserParams(tableParams))}`, {
+      headers,
+    })
+      .then((response ) => {
+        console.log(process.env.REACT_APP_MAIN_API + `/get/allmedia/all?${qs.stringify(getRandomuserParams(tableParams))}`);
+        setData(response.data.data);
+        setLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: response.data.rowCount,
+          },
+        });
+      });
+  };
+
   useEffect(() => {
+   fetchData()
     async function loadCompany() {
       var list = await JSON.parse(sessionStorage.getItem("companyList") || "[]");
       if (Array.isArray(list)) {
@@ -278,7 +334,7 @@ function Videos() {
           let select = await list[0].split("@==");
           setCompanyCode(await select[0]);
           setCompanyName(await select[1]);
-          loadData(select[0]);
+          //loadData(select[0]);
         }
       }
     }
@@ -345,20 +401,21 @@ function Videos() {
 
     if (!open) {
       if (companyDefault == "") {
-        alert("test 2")
         var compSession=sessionStorage.getItem("companyDefault")
         setCompanyDefault(compSession);
         loadCompany();
       } else {
         // alert(companyDefault)
         let select = companyDefault.split("@==");
-        loadData(select);
+        setCompanyCode(select[0]);
+        setCompanyName(select[1]);
+        //loadData(select[0]);xs
       }
     }
 
 
     console.log("componentDidUpdateFunction");
-  }, [open, isDelete, companyCode,companyDefault]);
+  }, [open, isDelete, companyCode,companyDefault,tableParams.pagination?.current, tableParams.pagination?.pageSize,orderBy]);
 
 
   useEffect(() => {
@@ -424,9 +481,8 @@ function Videos() {
 
 
     if (companyDefault != "") {
-        alert(companyDefault)
         let select = companyDefault.split("@==");
-        loadData(select);
+        //loadData(select);
         setLoading(false);
     }
 
@@ -468,9 +524,9 @@ function Videos() {
                   color="info"
                   size="small"
                   onClick={handleOpen}
-                  disabled={companyCode == ""}
+                  disabled={sessionStorage.getItem("companyDefault") == ""}
                 >
-                  Add a video
+                  Add Media
                 </ArgonButton>
               </ArgonBox>
             </ArgonBox>
@@ -511,14 +567,14 @@ function Videos() {
               height="35vw"
             >
               {/* <Table columns={columns} rows={dataGrid} /> */}
-              <Table columns={columns} dataSource={data} onChange={onChangeTable} pagination={false} display={false} />
-              <Pagination showQuickJumper defaultCurrent={2} total={500} onChange={onChangePage} className={dataGrid.length==0?"pageNumberEmpty":"pageNumber"}  disabled={dataGrid.length==0? true:false}/>
+              <Table columns={columns} dataSource={data} onChange={onChangeTable} display={false}  pagination={tableParams.pagination}/>
+              {/* <Pagination showQuickJumper defaultCurrent={2} total={500} onChange={onChangePage} className={dataGrid.length==0?"pageNumberEmpty":"pageNumber"}  disabled={dataGrid.length==0? true:false}/> */}
             </ArgonBox>
           </Card>
         </ArgonBox>
       </ArgonBox>
       <Footer />
-      <Modal open={open} title="Video" onCancel={handleClose} key={keyHoliday} footer={null}>
+      <Modal open={open} title="Content" onCancel={handleClose} key={keyHoliday} footer={null}>
         <Form
           name="basic"
           labelCol={{ span: 8 }}
@@ -526,6 +582,19 @@ function Videos() {
           initialValues={{ remember: true }}
           onFinish={onFinish}
         >
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[
+              {
+                required: true,
+                message: "name",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
           <Form.Item label="Video" name="video">
             <Upload {...props} maxCount={1}>
               <Button icon={<UploadOutlined />}>Select File</Button>
