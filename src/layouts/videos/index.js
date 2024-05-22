@@ -46,6 +46,7 @@ import {
   Pagination,
   DatePicker,
   Table,
+  Checkbox
 } from "antd";
 import { UploadOutlined, SearchOutlined } from "@ant-design/icons";
 
@@ -57,6 +58,9 @@ const columns = [
   {
     title: "Name",
     dataIndex: "name",
+    sorter: {
+      compare: (a, b) => a.name - b.name,
+    },
   },
   {
     title: "Content",
@@ -82,10 +86,10 @@ const columns = [
     },
   },
   {
-    title: "Expiry Date",
-    dataIndex: "expireddate",
+    title: "Publish Date",
+    dataIndex: "publishdate",
     sorter: {
-      compare: (a, b) => a.expireddate - b.expireddate,
+      compare: (a, b) => a.publishdate - b.publishdate,
       multiple: 1,
     },
   },
@@ -116,6 +120,7 @@ const columns = [
 ];
 
 const { TextArea } = Input;
+const optionsComp = [];
 
 function Videos() {
   const [companyDefault, setCompanyDefault] = useState("");
@@ -136,17 +141,14 @@ function Videos() {
   const [publishDate, setPublishDate] = useState("");
   const [expiredDate, setExpiredDate] = useState("");
   const [typeMedia, setTypeMedia] = useState("");
+  const [isApplyAll, setIsApplyAll] = useState(false);
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
       pageSize: 5,
     },
   });
-  // const columns = [
-  //   { name: "Description", align: "center" },
-  //   { name: "Path", align: "center" },
-  //   { name: "Action", align: "center" },
-  // ];
+
   const dateFormat = "YYYY-MM-DD";
 
   const getRandomuserParams = (params) => ({
@@ -161,7 +163,11 @@ function Videos() {
     console.log(key);
   };
 
-  const onChangePage = (pageNumber) => {
+  const onChangeApply = (e) => {
+    setIsApplyAll(e.target.checked)
+  };
+
+  const onChangeTags = (pageNumber) => {
     console.log("Page: ", pageNumber);
   };
 
@@ -232,18 +238,28 @@ function Videos() {
     setLoading(true);
     const formData = new FormData();
     formData.append("type", values.type);
-    formData.append("companycode", "Allcompany");
     formData.append("name", values.name);
     formData.append("text", values.description);
     formData.append("publishdate", publishDate);
     formData.append("expireddate", expiredDate);
-    formData.append("appplytoall", true);
+    formData.append("appplytoall", isApplyAll);
     formData.append("status", true);
     formData.append("trash", false);
     if (values.type != "text") {
       fileList.forEach((file) => {
         formData.append("file", file);
       });
+    }
+    if (isApplyAll) {
+      formData.append("companycode", "Allcompany");}
+    else{
+      var compActive=[]
+     
+      values.company.forEach((item) => {
+        const company = item.split("@==");
+        compActive.push(company[0])
+      });
+      formData.append("companycode", compActive);
     }
 
     const headers = {
@@ -346,6 +362,11 @@ function Videos() {
         var selectCompany = list.map(function (item) {
           if (item.indexOf("@==") > -1) {
             const company = item.split("@==");
+
+            optionsComp.push({
+              value: company[1]+"@=="+company[0],
+              label: company[1],
+            });
             return (
               <Option value={item} selected>
                 {company[1]}
@@ -674,7 +695,8 @@ function Videos() {
               <Upload {...props} maxCount={1}>
                 <Button icon={<UploadOutlined />}>Select File</Button>
               </Upload>
-            </Form.Item>)}
+            </Form.Item>
+          )}
 
           <Form.Item label="Publish Date" name="publish_date">
             <DatePicker format={dateFormat} onChange={onChangePublishDate} />
@@ -683,6 +705,24 @@ function Videos() {
           <Form.Item label="Expired Date" name="expired_date">
             <DatePicker format={dateFormat} onChange={onChangeExpiredDate} />
           </Form.Item>
+
+          <Form.Item label="Apply to All" name="applytoall">
+              <Checkbox onChange={onChangeApply}></Checkbox>
+          </Form.Item>
+
+          {!isApplyAll?( <Form.Item label="Company" name="company">
+            <Select
+              mode="tags"
+              style={{
+                width: "100%",
+              }}
+              placeholder="Tags Mode"
+              onChange={onChangeTags}
+              options={optionsComp}
+            />
+          </Form.Item>):(<></>)}
+
+         
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Button type="primary" htmlType="submit">
