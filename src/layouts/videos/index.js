@@ -46,7 +46,8 @@ import {
   Pagination,
   DatePicker,
   Table,
-  Checkbox
+  Checkbox,
+  Switch
 } from "antd";
 import { UploadOutlined, SearchOutlined } from "@ant-design/icons";
 
@@ -103,7 +104,7 @@ const columns = [
   },
   {
     title: "Status",
-    dataIndex: "status",
+    dataIndex: "statusUpdate",
     sorter: {
       compare: (a, b) => a.status - b.status,
       multiple: 1,
@@ -112,10 +113,6 @@ const columns = [
   {
     title: "Action",
     dataIndex: "action",
-    sorter: {
-      compare: (a, b) => a.action - b.action,
-      multiple: 1,
-    },
   },
 ];
 
@@ -164,6 +161,7 @@ function Videos() {
   };
 
   const onChangeApply = (e) => {
+    alert(e.target.checked)
     setIsApplyAll(e.target.checked)
   };
 
@@ -242,25 +240,29 @@ function Videos() {
     formData.append("text", values.description);
     formData.append("publishdate", publishDate);
     formData.append("expireddate", expiredDate);
-    formData.append("appplytoall", isApplyAll);
     formData.append("status", true);
     formData.append("trash", false);
+    formData.append("companycode", "Allcompany");
     if (values.type != "text") {
       fileList.forEach((file) => {
         formData.append("file", file);
       });
     }
     if (isApplyAll) {
-      formData.append("companycode", "Allcompany");}
+      formData.append("appplytoall", true);
+    }
     else{
       var compActive=[]
-     
       values.company.forEach((item) => {
         const company = item.split("@==");
-        compActive.push(company[0])
+        compActive.push(company[1].toString())
       });
-      formData.append("companycode", compActive);
+      var text= JSON.stringify(compActive)
+      alert(text)
+      formData.append("appplytoall", false);
+      formData.append("forcompanycode", text);
     }
+    
 
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
@@ -338,12 +340,38 @@ function Videos() {
           headers,
         }
       )
-      .then((response) => {
+      .then(async (response) => {
         console.log(
           process.env.REACT_APP_MAIN_API +
             `/get/allmedia/all?${qs.stringify(getRandomuserParams(tableParams))}`
         );
-        setData(response.data.data);
+        const resp = await response.data.data.map(function (item) {
+          return {
+            ...item,
+            Description: (
+              <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                {item.description}
+              </ArgonTypography>
+            ),
+            statusUpdate: (
+              <ArgonTypography variant="caption" color="secondary" fontWeight="small">
+                <Switch checkedChildren="Active" unCheckedChildren="Inactive"  size="small" checked={item.status}/>
+              </ArgonTypography>
+            ),
+            action: (
+              <ArgonButton
+                color="info"
+                size="small"
+                onClick={() => {
+                  onDelete(item.id);
+                }}
+              >
+                Delete
+              </ArgonButton>
+            ),
+          };
+        });
+        setData(resp);
         setLoading(false);
         setTableParams({
           ...tableParams,
