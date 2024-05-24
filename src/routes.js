@@ -35,12 +35,13 @@ Coded by www.creative-tim.com
 
 // Argon Dashboard 2 MUI layouts
 import Holidays from "layouts/holidays";
-import Videos from "layouts/videos";
+import Media from "layouts/media";
 import SignIn from "layouts/authentication/sign-in";
 import Config from "layouts/config";
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
+import { Content } from "antd/es/layout/layout";
 
 const routes = [
   {
@@ -55,13 +56,13 @@ const routes = [
   },
   {
     type: "route",
-    name: "Videos",
-    key: "videos",
-    route: "/videos",
+    name: "Media",
+    key: "media",
+    route: "/media",
     icon: (
       <ArgonBox component="i" color="primary" fontSize="14px" className="ni ni-tv-2" />
     ),
-    component: <Videos />,
+    component: <Media />,
   },
   {
     type: "route",
