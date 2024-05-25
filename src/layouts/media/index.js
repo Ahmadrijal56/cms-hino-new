@@ -31,6 +31,7 @@ import ArgonButton from "components/ArgonButton";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
+import Icon from "@mui/material/Icon";
 
 import axios from "axios";
 import moment from "moment";
@@ -47,7 +48,7 @@ import {
   DatePicker,
   Table,
   Checkbox,
-  Switch
+  Switch,
 } from "antd";
 import { UploadOutlined, SearchOutlined } from "@ant-design/icons";
 
@@ -139,6 +140,11 @@ function Videos() {
   const [expiredDate, setExpiredDate] = useState("");
   const [typeMedia, setTypeMedia] = useState("");
   const [isApplyAll, setIsApplyAll] = useState(false);
+  const [mediaName, setMediaName] = useState("");
+  const [mediaDesc, setMediaDesc] = useState("");
+  const [isUpdate, setUpdate] = useState(false);
+  const [defaultComp, setDefaultComp] = useState([]);
+  const [id, setId] = useState([]);
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
@@ -161,8 +167,7 @@ function Videos() {
   };
 
   const onChangeApply = (e) => {
-    alert(e.target.checked)
-    setIsApplyAll(e.target.checked)
+    setIsApplyAll(e.target.checked);
   };
 
   const onChangeTags = (pageNumber) => {
@@ -220,17 +225,62 @@ function Videos() {
     if (sessionStorage.getItem("companyDefault") == "") {
       message.error("Please choose company code first");
     } else {
-      setOpen(true);
       setKeyHoliday(keyHoliday + 1);
+      setOpen(true);
+      setUpdate(false);
+      setIsApplyAll(false);
       setFileList([]);
+      setMediaName("");
+      setMediaDesc("");
+      setTypeMedia("");
+      // setDescription(item.description)
+      // let date=moment(item.holidays_date)
+      // setDefaultDate(date)
+      setIsApplyAll(false);
+      setPublishDate(null);
+      setExpiredDate(null);
+      setDefaultComp([]);
     }
   };
   const handleClose = () => setOpen(false);
 
+  const onEdit = async (item) => {
+    setId(item.id)
+    setUpdate(true);
+    setKeyHoliday(keyHoliday + 1);
+    setMediaName(item.name);
+    setMediaDesc(item.description);
+    setTypeMedia(item.type);
+    // setDescription(item.description)
+    // let date=moment(item.holidays_date)
+    // setDefaultDate(date)
+    setIsApplyAll(item.applytoall);
+    let datePublish = moment(item.publishdate);
+    setPublishDate(datePublish);
+    let dateExpired = moment(item.expireddate);
+    setExpiredDate(dateExpired);
+    // setExpiredDate(item.expireddate.toString())
+
+    let defaultCompValue = [];
+    if (item.forcompanycode != null) {
+      await item.forcompanycode.map(function (comp) {
+
+        if (comp != null) {
+
+          defaultCompValue.push(
+            comp["companyname"] + "@==" + comp["companycode"],
+          );
+        }
+      });
+    }
+    setDefaultComp(defaultCompValue);
+    setOpen(true);
+  };
+
   //login via input
   const onFinish = async (values) => {
     if (fileList.length == 0 && values.type != "text") {
-      message.error("Please choose dfdfdsvideo first");
+      message.error("Please choose first");
       return;
     }
     setLoading(true);
@@ -238,8 +288,8 @@ function Videos() {
     formData.append("type", values.type);
     formData.append("name", values.name);
     formData.append("text", values.description);
-    formData.append("publishdate", publishDate);
-    formData.append("expireddate", expiredDate);
+    formData.append("publishdate", moment(publishDate).format('YYYY-MM-DD'));
+    formData.append("expireddate", moment(expiredDate).format('YYYY-MM-DD'));
     formData.append("status", true);
     formData.append("trash", false);
     formData.append("companycode", "Allcompany");
@@ -250,29 +300,30 @@ function Videos() {
     }
     if (isApplyAll) {
       formData.append("appplytoall", true);
-    }
-    else{
-      var compActive=[]
+    } else {
+      var compActive = [];
       values.company.forEach((item) => {
         const company = item.split("@==");
-        compActive.push(company[1].toString())
+        compActive.push(company[1].toString());
       });
-      var text= JSON.stringify(compActive)
-      alert(text)
+      var text = JSON.stringify(compActive);
       formData.append("appplytoall", false);
       formData.append("forcompanycode", text);
     }
-    
+    if(isUpdate){
+      formData.append("id_media", id);
+    }
 
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
       "Content-Type": "multipart/form-data",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
-      crudtype: "insert",
     };
+    var flag=isUpdate ? "update" : "upload"
+
     await axios
-      .post(process.env.REACT_APP_MAIN_API + "/upload/media", formData, {
+      .post(process.env.REACT_APP_MAIN_API + "/"+flag+"/media", formData, {
         headers,
       })
       .then(async (response) => {
@@ -355,19 +406,41 @@ function Videos() {
             ),
             statusUpdate: (
               <ArgonTypography variant="caption" color="secondary" fontWeight="small">
-                <Switch checkedChildren="Active" unCheckedChildren="Inactive"  size="small" checked={item.status}/>
+                <Switch
+                  checkedChildren="Active"
+                  unCheckedChildren="Inactive"
+                  size="small"
+                  checked={item.status}
+                />
               </ArgonTypography>
             ),
             action: (
-              <ArgonButton
-                color="info"
-                size="small"
-                onClick={() => {
-                  onDelete(item.id);
-                }}
-              >
-                Delete
-              </ArgonButton>
+              <>
+                <Icon
+                  fontSize="small"
+                  onClick={() => {
+                    onEdit(item);
+                  }}
+                >
+                  edit
+                </Icon>
+                <Icon
+                  fontSize="small"
+                  onClick={() => {
+                    onDelete(item.id);
+                  }}
+                >
+                  delete
+                </Icon>
+                <Icon
+                  fontSize="small"
+                  onClick={() => {
+                    onDelete(item.id);
+                  }}
+                >
+                  visibility
+                </Icon>
+              </>
             ),
           };
         });
@@ -392,7 +465,7 @@ function Videos() {
             const company = item.split("@==");
 
             optionsComp.push({
-              value: company[1]+"@=="+company[0],
+              value: company[1] + "@==" + company[0],
               label: company[1],
             });
             return (
@@ -412,70 +485,10 @@ function Videos() {
       }
     }
 
-    async function loadData(selected) {
-      setLoading(true);
-      const headers = {
-        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + sessionStorage.getItem("token"),
-      };
-      try {
-        await axios
-          .get(process.env.REACT_APP_MAIN_API + "/get/video/" + selected, {
-            headers,
-          })
-          .then(async (response) => {
-            if (response.status === 200) {
-              if (response.data.message == undefined) {
-                const resp = await response.data.map(function (item) {
-                  return {
-                    Description: (
-                      <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                        {item.description}
-                      </ArgonTypography>
-                    ),
-                    Path: (
-                      <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                        {item.path}
-                      </ArgonTypography>
-                    ),
-                    Action: (
-                      <ArgonButton
-                        color="info"
-                        size="small"
-                        onClick={() => {
-                          onDelete(item.id);
-                        }}
-                        disabled={item.companycode != selected}
-                      >
-                        Delete
-                      </ArgonButton>
-                    ),
-                  };
-                });
-                setDataGrid(resp);
-                setLoading(false);
-              } else {
-                setDataGrid([]);
-                setLoading(false);
-              }
-            } else {
-              message.error("Invalid query");
-              setLoading(false);
-            }
-          });
-      } catch (error) {
-        message.error(error);
-        setLoading(false);
-      }
-    }
-
     if (!open) {
       if (companyDefault == "") {
         var compSession = sessionStorage.getItem("companyDefault");
         setCompanyDefault(compSession);
-        loadCompany();
       } else {
         // alert(companyDefault)
         let select = companyDefault.split("@==");
@@ -484,6 +497,7 @@ function Videos() {
         //loadData(select[0]);xs
       }
       fetchData();
+      loadCompany();
     }
 
     setLoading(false);
@@ -684,6 +698,7 @@ function Videos() {
                 message: "name",
               },
             ]}
+            initialValue={mediaName}
           >
             <Input />
           </Form.Item>
@@ -697,6 +712,7 @@ function Videos() {
                 message: "type",
               },
             ]}
+            initialValue={typeMedia}
           >
             <Select onChange={onChangeType}>
               <Select.Option value="text">Text</Select.Option>
@@ -715,6 +731,7 @@ function Videos() {
                   message: "Please input the description",
                 },
               ]}
+              initialValue={mediaDesc}
             >
               <TextArea rows={4} />
             </Form.Item>
@@ -726,35 +743,38 @@ function Videos() {
             </Form.Item>
           )}
 
-          <Form.Item label="Publish Date" name="publish_date">
+          <Form.Item label="Publish Date" name="publish_date" initialValue={publishDate}>
             <DatePicker format={dateFormat} onChange={onChangePublishDate} />
           </Form.Item>
 
-          <Form.Item label="Expired Date" name="expired_date">
+          <Form.Item label="Expired Date" name="expired_date" initialValue={expiredDate}>
             <DatePicker format={dateFormat} onChange={onChangeExpiredDate} />
           </Form.Item>
 
           <Form.Item label="Apply to All" name="applytoall">
-              <Checkbox onChange={onChangeApply}></Checkbox>
+            <Checkbox onChange={onChangeApply} checked={isApplyAll}></Checkbox>
           </Form.Item>
 
-          {!isApplyAll?( <Form.Item label="Company" name="company">
-            <Select
-              mode="tags"
-              style={{
-                width: "100%",
-              }}
-              placeholder="Tags Mode"
-              onChange={onChangeTags}
-              options={optionsComp}
-            />
-          </Form.Item>):(<></>)}
-
-         
+          {!isApplyAll ? (
+            <Form.Item label="Company" name="company" 
+            initialValue={defaultComp}>
+              <Select
+                mode="tags"
+                style={{
+                  width: "100%",
+                }}
+                placeholder="Company"
+                onChange={onChangeTags}
+                options={optionsComp}
+              />
+            </Form.Item>
+          ) : (
+            <></>
+          )}
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Button type="primary" htmlType="submit">
-              Save
+              {isUpdate ? "Edit" : "Save"}
             </Button>
           </Form.Item>
         </Form>
