@@ -53,6 +53,7 @@ import {
 import { UploadOutlined, SearchOutlined } from "@ant-design/icons";
 
 import qs from "qs";
+import { Visibility } from "@mui/icons-material";
 
 const { Option } = Select;
 
@@ -117,6 +118,59 @@ const columns = [
   },
 ];
 
+const columnsDelete = [
+  {
+    title: "Name",
+    dataIndex: "name",
+    sorter: {
+      compare: (a, b) => a.name - b.name,
+    },
+  },
+  {
+    title: "Content",
+    dataIndex: "description",
+    sorter: {
+      compare: (a, b) => a.description - b.description,
+    },
+  },
+  {
+    title: "Publish Date",
+    dataIndex: "publishdate",
+    sorter: {
+      compare: (a, b) => a.publishdate - b.publishdate,
+      multiple: 2,
+    },
+  },
+  {
+    title: "Last Modify",
+    dataIndex: "updated_at",
+    sorter: {
+      compare: (a, b) => a.updated_at - b.updated_at,
+      multiple: 1,
+    },
+  },
+  {
+    title: "Publish Date",
+    dataIndex: "publishdate",
+    sorter: {
+      compare: (a, b) => a.publishdate - b.publishdate,
+      multiple: 1,
+    },
+  },
+  {
+    title: "Expiry Date",
+    dataIndex: "expireddate",
+    sorter: {
+      compare: (a, b) => a.expireddate - b.expireddate,
+      multiple: 1,
+    },
+  },
+  {
+    title: "Action",
+    dataIndex: "action",
+  },
+];
+
 const { TextArea } = Input;
 const optionsComp = [];
 
@@ -145,6 +199,9 @@ function Videos() {
   const [isUpdate, setUpdate] = useState(false);
   const [defaultComp, setDefaultComp] = useState([]);
   const [id, setId] = useState([]);
+  const [isTrash, setIsTrash] = useState(false);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
@@ -163,7 +220,18 @@ function Videos() {
   });
 
   const onChange = (key) => {
-    console.log(key);
+    if (key == 2) {
+      setIsTrash(true);
+    } else {
+      setIsTrash(false);
+    }
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        current: 1,
+      },
+    });
   };
 
   const onChangeApply = (e) => {
@@ -245,7 +313,7 @@ function Videos() {
   const handleClose = () => setOpen(false);
 
   const onEdit = async (item) => {
-    setId(item.id)
+    setId(item.id);
     setUpdate(true);
     setKeyHoliday(keyHoliday + 1);
     setMediaName(item.name);
@@ -264,12 +332,8 @@ function Videos() {
     let defaultCompValue = [];
     if (item.forcompanycode != null) {
       await item.forcompanycode.map(function (comp) {
-
         if (comp != null) {
-
-          defaultCompValue.push(
-            comp["companyname"] + "@==" + comp["companycode"],
-          );
+          defaultCompValue.push(comp["companyname"] + "@==" + comp["companycode"]);
         }
       });
     }
@@ -288,8 +352,8 @@ function Videos() {
     formData.append("type", values.type);
     formData.append("name", values.name);
     formData.append("text", values.description);
-    formData.append("publishdate", moment(publishDate).format('YYYY-MM-DD'));
-    formData.append("expireddate", moment(expiredDate).format('YYYY-MM-DD'));
+    formData.append("publishdate", moment(publishDate).format("YYYY-MM-DD"));
+    formData.append("expireddate", moment(expiredDate).format("YYYY-MM-DD"));
     formData.append("status", true);
     formData.append("trash", false);
     formData.append("companycode", "Allcompany");
@@ -310,7 +374,7 @@ function Videos() {
       formData.append("appplytoall", false);
       formData.append("forcompanycode", text);
     }
-    if(isUpdate){
+    if (isUpdate) {
       formData.append("id_media", id);
     }
 
@@ -320,10 +384,10 @@ function Videos() {
       "Content-Type": "multipart/form-data",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
     };
-    var flag=isUpdate ? "update" : "upload"
+    var flag = isUpdate ? "update" : "upload";
 
     await axios
-      .post(process.env.REACT_APP_MAIN_API + "/"+flag+"/media", formData, {
+      .post(process.env.REACT_APP_MAIN_API + "/" + flag + "/media", formData, {
         headers,
       })
       .then(async (response) => {
@@ -375,85 +439,152 @@ function Videos() {
       });
   };
 
-  const fetchData = () => {
+
+  const onTrash = async (id) => {
     setLoading(true);
+    setIsDelete(true);
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
-      "Content-Type": "application/json",
+      "Content-Type": "multipart/form-data",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
     };
-    axios
-      .get(
-        process.env.REACT_APP_MAIN_API +
-          `/get/allmedia/all?${qs.stringify(getRandomuserParams(tableParams))}`,
-        {
-          headers,
-        }
-      )
+    await axios
+      .get(process.env.REACT_APP_MAIN_API + "/delete/media/" + id, {
+        headers,
+      })
       .then(async (response) => {
-        console.log(
-          process.env.REACT_APP_MAIN_API +
-            `/get/allmedia/all?${qs.stringify(getRandomuserParams(tableParams))}`
-        );
-        const resp = await response.data.data.map(function (item) {
-          return {
-            ...item,
-            Description: (
-              <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                {item.description}
-              </ArgonTypography>
-            ),
-            statusUpdate: (
-              <ArgonTypography variant="caption" color="secondary" fontWeight="small">
-                <Switch
-                  checkedChildren="Active"
-                  unCheckedChildren="Inactive"
-                  size="small"
-                  checked={item.status}
-                />
-              </ArgonTypography>
-            ),
-            action: (
-              <>
-                <Icon
-                  fontSize="small"
-                  onClick={() => {
-                    onEdit(item);
-                  }}
-                >
-                  edit
-                </Icon>
-                <Icon
-                  fontSize="small"
-                  onClick={() => {
-                    onDelete(item.id);
-                  }}
-                >
-                  delete
-                </Icon>
-                <Icon
-                  fontSize="small"
-                  onClick={() => {
-                    onDelete(item.id);
-                  }}
-                >
-                  visibility
-                </Icon>
-              </>
-            ),
-          };
-        });
-        setData(resp);
+        console.log(response);
+        if ((await response.data) != null) {
+          if (response.status === 200) {
+            setIsDelete(false);
+            setLoading(false);
+            message.success(response.data.message);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(error);
         setLoading(false);
-        setTableParams({
-          ...tableParams,
-          pagination: {
-            ...tableParams.pagination,
-            total: response.data.rowCount,
-          },
-        });
+        message.error("Error delete file : " + error.message);
       });
+  };
+
+  const fetchData = () => {
+    if (companyCode != "") {
+      var urlTrash= isTrash ?"/trash" :"";
+      var query="";
+      if(dateFrom!=""){
+        query+="&dateFrom="+dateFrom
+      }
+      if(dateTo!=""){
+        query+="&dateTo="+dateTo
+      }
+      setLoading(true);
+      const headers = {
+        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + sessionStorage.getItem("token"),
+      };
+      axios
+        .get(
+          process.env.REACT_APP_MAIN_API +
+            `/get/allmedia${urlTrash}/${companyCode}?${qs.stringify(getRandomuserParams(tableParams))}`+query,
+          {
+            headers,
+          }
+        )
+        .then(async (response) => {
+          console.log(
+            process.env.REACT_APP_MAIN_API +
+            `/get/allmedia${urlTrash}/${companyCode}?${qs.stringify(getRandomuserParams(tableParams))}`+query
+          );
+          const resp = await response.data.data.map(function (item) {
+            return {
+              ...item,
+              Description: (
+                <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                  {item.description}
+                </ArgonTypography>
+              ),
+              statusUpdate: isTrash ? (
+                <></>
+              ) : (
+                <ArgonTypography variant="caption" color="secondary" fontWeight="small">
+                  <Switch
+                    checkedChildren="Active"
+                    unCheckedChildren="Inactive"
+                    size="small"
+                    checked={item.status}
+                  />
+                </ArgonTypography>
+              ),
+              action: isTrash ? (
+                <>
+                  <Icon
+                    fontSize="small"
+                    className="iconAction"
+                    onClick={() => {
+                      onEdit(item);
+                    }}
+                  >
+                    edit
+                  </Icon>
+                  <Icon
+                    fontSize="small"
+                    className="iconAction"
+                    onClick={() => {
+                      onTrash(item.id);
+                    }}
+                  >
+                    delete
+                  </Icon>
+                </>
+              ) : (
+                <>
+                  <Icon
+                    fontSize="small"
+                    className="iconAction"
+                    onClick={() => {
+                      onEdit(item);
+                    }}
+                  >
+                    edit
+                  </Icon>
+                  <Icon
+                    fontSize="small"
+                    className="iconAction"
+                    onClick={() => {
+                      onDelete(item.id);
+                    }}
+                  >
+                    delete
+                  </Icon>
+                  <Icon
+                    fontSize="small"
+                    className="iconAction"
+                    onClick={() => {
+                      onDelete(item.id);
+                    }}
+                  >
+                    visibility
+                  </Icon>
+                </>
+              ),
+            };
+          });
+          setData(resp);
+          setLoading(false);
+          setTableParams({
+            ...tableParams,
+            pagination: {
+              ...tableParams.pagination,
+              total: response.data.rowCount,
+            },
+          });
+        });
+    }
   };
 
   useEffect(() => {
@@ -509,67 +640,12 @@ function Videos() {
     tableParams.pagination?.current,
     tableParams.pagination?.pageSize,
     orderBy,
+    isTrash,
+    dateFrom,
+    dateTo
   ]);
 
   useEffect(() => {
-    async function loadData(selected) {
-      setLoading(true);
-      const headers = {
-        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + sessionStorage.getItem("token"),
-      };
-      try {
-        await axios
-          .get(process.env.REACT_APP_MAIN_API + "/get/video/" + selected, {
-            headers,
-          })
-          .then(async (response) => {
-            if (response.status === 200) {
-              if (response.data.message == undefined) {
-                const resp = await response.data.map(function (item) {
-                  return {
-                    Description: (
-                      <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                        {item.description}
-                      </ArgonTypography>
-                    ),
-                    Path: (
-                      <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                        {item.path}
-                      </ArgonTypography>
-                    ),
-                    Action: (
-                      <ArgonButton
-                        color="info"
-                        size="small"
-                        onClick={() => {
-                          onDelete(item.id);
-                        }}
-                        disabled={item.companycode != selected}
-                      >
-                        Delete
-                      </ArgonButton>
-                    ),
-                  };
-                });
-                setDataGrid(resp);
-                setLoading(false);
-              } else {
-                setDataGrid([]);
-                setLoading(false);
-              }
-            } else {
-              message.error("Invalid query");
-              setLoading(false);
-            }
-          });
-      } catch (error) {
-        message.error(error);
-        setLoading(false);
-      }
-    }
 
     if (companyDefault != "") {
       let select = companyDefault.split("@==");
@@ -581,11 +657,11 @@ function Videos() {
   }, [companyDefault]);
 
   const onChangeDateStart = (date, dateString) => {
-    console.log(date, dateString);
+    setDateFrom(dateString);
   };
 
   const onChangeDateTo = (date, dateString) => {
-    console.log(date, dateString);
+    setDateTo(dateString);
   };
 
   const clickSearch = (e) => {
@@ -669,7 +745,7 @@ function Videos() {
             >
               {/* <Table columns={columns} rows={dataGrid} /> */}
               <Table
-                columns={columns}
+                columns={isTrash ? columnsDelete : columns}
                 dataSource={data}
                 onChange={onChangeTable}
                 display={false}
@@ -756,8 +832,7 @@ function Videos() {
           </Form.Item>
 
           {!isApplyAll ? (
-            <Form.Item label="Company" name="company" 
-            initialValue={defaultComp}>
+            <Form.Item label="Company" name="company" initialValue={defaultComp}>
               <Select
                 mode="tags"
                 style={{
