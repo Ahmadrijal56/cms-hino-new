@@ -263,7 +263,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
             </Link> */}
           </div>
           <div className="headerDate">
-          {moment().format('DD MMMM YYYY, HH:mm')}
+          {moment().format('DD MMMM YYYY')}
           </div>
         </div>
         

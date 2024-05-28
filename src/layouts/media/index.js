@@ -203,6 +203,7 @@ function Videos() {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [searchText, setSearchText] = useState("");
+  const [updateStatusId, setUpdateStatusId] = useState("");
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
@@ -411,23 +412,27 @@ function Videos() {
 
   const onDelete = async (id) => {
     setLoading(true);
-    setIsDelete(true);
+    const formData = new FormData();
+    formData.append("trash", true);
+    formData.append("id_media", id);
+
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
       "Content-Type": "multipart/form-data",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
-      crudtype: "insert",
     };
+
     await axios
-      .get(process.env.REACT_APP_MAIN_API + "/delete/video/" + id, {
+      .post(process.env.REACT_APP_MAIN_API + "/update/media", formData, {
         headers,
       })
       .then(async (response) => {
         console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
-            setIsDelete(false);
+            setUpdateStatusId(id+"-delete")
+            setSelectedDate("");
             setLoading(false);
             message.success(response.data.message);
           }
@@ -436,7 +441,44 @@ function Videos() {
       .catch((error) => {
         console.log(error);
         setLoading(false);
-        message.error("Error delete file : " + error.message);
+        message.error("Error update : " + error.message);
+      });
+  };
+
+  const onChangeStatus = async(item) => {
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("status", !item.status);
+    formData.append("id_media", item.id);
+
+    console.log(!item.status)
+    const headers = {
+      "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+      "Content-Type": "multipart/form-data",
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
+    };
+
+    await axios
+      .post(process.env.REACT_APP_MAIN_API + "/update/media", formData, {
+        headers,
+      })
+      .then(async (response) => {
+        console.log(response);
+        if ((await response.data) != null) {
+          if (response.status === 200) {
+            setUpdateStatusId(item.id)
+            setSelectedDate("");
+            setLoading(false);
+            message.success(response.data.message);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+        message.error("Error update : " + error.message);
       });
   };
 
@@ -521,6 +563,9 @@ function Videos() {
                     unCheckedChildren="Inactive"
                     size="small"
                     checked={item.status}
+                    onChange={() => {
+                      onChangeStatus(item);
+                    }}
                   />
                 </ArgonTypography>
               ),
@@ -647,7 +692,8 @@ function Videos() {
     isTrash,
     dateFrom,
     dateTo,
-    searchText
+    searchText,
+    updateStatusId,
   ]);
 
   useEffect(() => {
