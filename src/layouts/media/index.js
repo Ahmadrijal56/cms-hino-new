@@ -202,6 +202,7 @@ function Videos() {
   const [isTrash, setIsTrash] = useState(false);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [searchText, setSearchText] = useState("");
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
@@ -480,6 +481,9 @@ function Videos() {
       if(dateTo!=""){
         query+="&dateTo="+dateTo
       }
+      if(searchText!=""){
+        query+="&search="+searchText
+      }
       setLoading(true);
       const headers = {
         "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
@@ -642,7 +646,8 @@ function Videos() {
     orderBy,
     isTrash,
     dateFrom,
-    dateTo
+    dateTo,
+    searchText
   ]);
 
   useEffect(() => {
@@ -658,14 +663,35 @@ function Videos() {
 
   const onChangeDateStart = (date, dateString) => {
     setDateFrom(dateString);
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        current: 1,
+      },
+    });
   };
 
   const onChangeDateTo = (date, dateString) => {
     setDateTo(dateString);
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        current: 1,
+      },
+    });
   };
 
   const clickSearch = (e) => {
-    alert(e.target.value);
+    setSearchText(e.target.value);
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        current: 1,
+      },
+    });
   };
 
   const onChangeType = (value) => {
