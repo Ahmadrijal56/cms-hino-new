@@ -299,7 +299,7 @@ function Holidays() {
                  { companyList.length >1 ?
                  (<Select
                   howSearch={true}
-                  style={{ width: 320 }}
+                  style={{ width: 320, display:'none' }}
                   optionFilterProp="children"
                   onChange={async(value) => {
                     if (value != null) {

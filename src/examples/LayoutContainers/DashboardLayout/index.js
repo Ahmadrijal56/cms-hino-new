@@ -40,7 +40,6 @@ function DashboardLayout({ bgColor, children, ...rest }) {
 
   return (
     <ArgonBox
-    height="900px"
       sx={({ breakpoints, transitions, functions: { pxToRem } }) => ({
         p: 3,
 
@@ -55,13 +54,13 @@ function DashboardLayout({ bgColor, children, ...rest }) {
     >
       <ArgonBox
         bgColor={background || "red"}
-        height="300px"
         width="100vw"
         position="absolute"
         top={0}
         left={0}
         sx={darkMode && { bgColor: ({ palette: { background } }) => background.default }}
         {...rest}
+        
       />
       {children}
     </ArgonBox>

@@ -53,7 +53,7 @@ import {
 import { UploadOutlined, SearchOutlined } from "@ant-design/icons";
 
 import qs from "qs";
-import { Visibility } from "@mui/icons-material";
+import { ConstructionOutlined, Visibility } from "@mui/icons-material";
 
 const { Option } = Select;
 
@@ -482,6 +482,42 @@ function Videos() {
       });
   };
 
+  const onRestore = async(id) => {
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("trash", false);
+    formData.append("id_media", id);
+
+    const headers = {
+      "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+      "Content-Type": "multipart/form-data",
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
+    };
+
+    await axios
+      .post(process.env.REACT_APP_MAIN_API + "/update/media", formData, {
+        headers,
+      })
+      .then(async (response) => {
+        console.log(response);
+        if ((await response.data) != null) {
+          if (response.status === 200) {
+            setUpdateStatusId(id+"restore")
+            setSelectedDate("");
+            setLoading(false);
+            message.success(response.data.message);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+        message.error("Error update : " + error.message);
+      });
+  };
+
 
   const onTrash = async (id) => {
     setLoading(true);
@@ -562,7 +598,7 @@ function Videos() {
                     checkedChildren="Active"
                     unCheckedChildren="Inactive"
                     size="small"
-                    checked={item.status}
+                    defaultChecked={item.status.toString()=="true"?true:false}
                     onChange={() => {
                       onChangeStatus(item);
                     }}
@@ -575,10 +611,10 @@ function Videos() {
                     fontSize="small"
                     className="iconAction"
                     onClick={() => {
-                      onEdit(item);
+                      onRestore(item.id);
                     }}
                   >
-                    edit
+                    recycling
                   </Icon>
                   <Icon
                     fontSize="small"
@@ -614,7 +650,6 @@ function Videos() {
                     fontSize="small"
                     className="iconAction"
                     onClick={() => {
-                      onDelete(item.id);
                     }}
                   >
                     visibility
@@ -637,6 +672,7 @@ function Videos() {
   };
 
   useEffect(() => {
+    console.log(sessionStorage.getItem("companyDefault"));
     async function loadCompany() {
       var list = await JSON.parse(sessionStorage.getItem("companyList") || "[]");
       if (Array.isArray(list)) {
@@ -760,7 +796,7 @@ function Videos() {
       <DashboardNavbar />
       <ArgonBox py={3}>
         <ArgonBox mb={3}>
-          <Card>
+          <Card class="scroll">
             <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
               <ArgonBox>
                 <ArgonTypography variant="h5" fontWeight="bold">
