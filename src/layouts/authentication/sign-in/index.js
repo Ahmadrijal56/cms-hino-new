@@ -89,7 +89,8 @@ function Illustration() {
                 sessionStorage.setItem("companyList", JSON.stringify(companyList));
 
                 //TEMP
-                sessionStorage.setItem("companyDefault","3155098@==Hino Motors Sales Indonesia")
+                sessionStorage.setItem("companyDefault",response.data.default_values["CompanyCode"]+"@=="+response.data.default_values["CompanyName"])
+                sessionStorage.setItem("companyUser",response.data.default_values["CompanyCode"])
               
                 navigate('/holidays');
 

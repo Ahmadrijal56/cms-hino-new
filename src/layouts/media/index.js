@@ -19,8 +19,7 @@ import { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import dayjs from "dayjs";
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
@@ -307,8 +306,8 @@ function Videos() {
       // let date=moment(item.holidays_date)
       // setDefaultDate(date)
       setIsApplyAll(false);
-      setPublishDate(null);
-      setExpiredDate(null);
+      setPublishDate("");
+      setExpiredDate("");
       setDefaultComp([]);
     }
   };
@@ -325,10 +324,10 @@ function Videos() {
     // let date=moment(item.holidays_date)
     // setDefaultDate(date)
     setIsApplyAll(item.applytoall);
-    let datePublish = moment(item.publishdate);
-    setPublishDate(datePublish);
-    let dateExpired = moment(item.expireddate);
-    setExpiredDate(dateExpired);
+    //let datePublish = moment(item.publishdate);
+    setPublishDate(item.publishdate);
+    //let dateExpired = moment(item.expireddate);
+    setExpiredDate(item.expireddate);
     // setExpiredDate(item.expireddate.toString())
 
     let defaultCompValue = [];
@@ -345,8 +344,8 @@ function Videos() {
 
   //login via input
   const onFinish = async (values) => {
-    if (fileList.length == 0 && values.type != "text") {
-      message.error("Please choose first");
+    if (fileList.length == 0 && values.type != "text" && !isUpdate) {
+      message.error("Please select file first");
       return;
     }
     setLoading(true);
@@ -365,7 +364,7 @@ function Videos() {
       });
     }
     if (isApplyAll) {
-      formData.append("appplytoall", true);
+      formData.append("applytoall", true);
     } else {
       var compActive = [];
       values.company.forEach((item) => {
@@ -373,7 +372,7 @@ function Videos() {
         compActive.push(company[1].toString());
       });
       var text = JSON.stringify(compActive);
-      formData.append("appplytoall", false);
+      formData.append("applytoall", false);
       formData.append("forcompanycode", text);
     }
     if (isUpdate) {
@@ -431,7 +430,7 @@ function Videos() {
         console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
-            setUpdateStatusId(id+"-delete")
+            setUpdateStatusId(id + "-delete");
             setSelectedDate("");
             setLoading(false);
             message.success(response.data.message);
@@ -445,14 +444,13 @@ function Videos() {
       });
   };
 
-  const onChangeStatus = async(item) => {
-
+  const onChangeStatus = async (item) => {
     setLoading(true);
     const formData = new FormData();
     formData.append("status", !item.status);
     formData.append("id_media", item.id);
 
-    console.log(!item.status)
+    console.log(!item.status);
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
@@ -468,7 +466,7 @@ function Videos() {
         console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
-            setUpdateStatusId(item.id)
+            setUpdateStatusId(item.id);
             setSelectedDate("");
             setLoading(false);
             message.success(response.data.message);
@@ -482,8 +480,7 @@ function Videos() {
       });
   };
 
-  const onRestore = async(id) => {
-
+  const onRestore = async (id) => {
     setLoading(true);
     const formData = new FormData();
     formData.append("trash", false);
@@ -504,7 +501,7 @@ function Videos() {
         console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
-            setUpdateStatusId(id+"restore")
+            setUpdateStatusId(id + "restore");
             setSelectedDate("");
             setLoading(false);
             message.success(response.data.message);
@@ -517,7 +514,6 @@ function Videos() {
         message.error("Error update : " + error.message);
       });
   };
-
 
   const onTrash = async (id) => {
     setLoading(true);
@@ -551,16 +547,16 @@ function Videos() {
 
   const fetchData = () => {
     if (companyCode != "") {
-      var urlTrash= isTrash ?"/trash" :"";
-      var query="";
-      if(dateFrom!=""){
-        query+="&dateFrom="+dateFrom
+      var urlTrash = isTrash ? "/trash" : "";
+      var query = "";
+      if (dateFrom != "") {
+        query += "&dateFrom=" + dateFrom;
       }
-      if(dateTo!=""){
-        query+="&dateTo="+dateTo
+      if (dateTo != "") {
+        query += "&dateTo=" + dateTo;
       }
-      if(searchText!=""){
-        query+="&search="+searchText
+      if (searchText != "") {
+        query += "&search=" + searchText;
       }
       setLoading(true);
       const headers = {
@@ -572,7 +568,10 @@ function Videos() {
       axios
         .get(
           process.env.REACT_APP_MAIN_API +
-            `/get/allmedia${urlTrash}/${companyCode}?${qs.stringify(getRandomuserParams(tableParams))}`+query,
+            `/get/allmedia${urlTrash}/${companyCode}?${qs.stringify(
+              getRandomuserParams(tableParams)
+            )}` +
+            query,
           {
             headers,
           }
@@ -580,7 +579,10 @@ function Videos() {
         .then(async (response) => {
           console.log(
             process.env.REACT_APP_MAIN_API +
-            `/get/allmedia${urlTrash}/${companyCode}?${qs.stringify(getRandomuserParams(tableParams))}`+query
+              `/get/allmedia${urlTrash}/${companyCode}?${qs.stringify(
+                getRandomuserParams(tableParams)
+              )}` +
+              query
           );
           const resp = await response.data.data.map(function (item) {
             return {
@@ -598,7 +600,7 @@ function Videos() {
                     checkedChildren="Active"
                     unCheckedChildren="Inactive"
                     size="small"
-                    defaultChecked={item.status.toString()=="true"?true:false}
+                    defaultChecked={item.status.toString() == "true" ? true : false}
                     onChange={() => {
                       onChangeStatus(item);
                     }}
@@ -646,12 +648,7 @@ function Videos() {
                   >
                     delete
                   </Icon>
-                  <Icon
-                    fontSize="small"
-                    className="iconAction"
-                    onClick={() => {
-                    }}
-                  >
+                  <Icon fontSize="small" className="iconAction" onClick={() => {}}>
                     visibility
                   </Icon>
                 </>
@@ -733,7 +730,6 @@ function Videos() {
   ]);
 
   useEffect(() => {
-
     if (companyDefault != "") {
       let select = companyDefault.split("@==");
       //loadData(select);
@@ -879,7 +875,7 @@ function Videos() {
             rules={[
               {
                 required: true,
-                message: "name",
+                message: "Please input the name",
               },
             ]}
             initialValue={mediaName}
@@ -893,7 +889,7 @@ function Videos() {
             rules={[
               {
                 required: true,
-                message: "type",
+                message: "Please input the type",
               },
             ]}
             initialValue={typeMedia}
@@ -927,12 +923,38 @@ function Videos() {
             </Form.Item>
           )}
 
-          <Form.Item label="Publish Date" name="publish_date" initialValue={publishDate}>
-            <DatePicker format={dateFormat} onChange={onChangePublishDate} />
+          <Form.Item
+            label="Publish Date"
+            name="publish_date"
+            rules={[
+              {
+                required: true,
+                message: "Please input the publish date",
+              },
+            ]}
+          >
+            <DatePicker
+              format={dateFormat}
+              onChange={onChangePublishDate}
+              defaultValue={publishDate==""?"":dayjs(publishDate, dateFormat)}
+            />
           </Form.Item>
 
-          <Form.Item label="Expired Date" name="expired_date" initialValue={expiredDate}>
-            <DatePicker format={dateFormat} onChange={onChangeExpiredDate} />
+          <Form.Item
+            label="Expired Date"
+            name="expired_date"
+            rules={[
+              {
+                required: true,
+                message: "Please input the expired date",
+              },
+            ]}
+          >
+            <DatePicker
+              format={dateFormat}
+              onChange={onChangeExpiredDate}
+              defaultValue={expiredDate==""?"":dayjs(expiredDate, dateFormat)}
+            />
           </Form.Item>
 
           <Form.Item label="Apply to All" name="applytoall">
