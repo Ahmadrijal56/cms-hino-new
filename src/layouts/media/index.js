@@ -51,8 +51,10 @@ import {
 } from "antd";
 import { UploadOutlined, SearchOutlined } from "@ant-design/icons";
 
+
 import qs from "qs";
-import { ConstructionOutlined, Visibility } from "@mui/icons-material";
+import SortableList, { SortableItem } from 'react-easy-sort'
+import { arrayMoveImmutable } from 'array-move'
 
 const { Option } = Select;
 
@@ -173,6 +175,7 @@ function Videos() {
   const [loading, setLoading] = useState(false);
   const [dataGrid, setDataGrid] = useState([]);
   const [open, setOpen] = useState(false);
+  const [openSort, setOpenSort] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [keyHoliday, setKeyHoliday] = useState(0);
   const [selectedDate, setSelectedDate] = useState(0);
@@ -195,6 +198,7 @@ function Videos() {
   const [dateTo, setDateTo] = useState("");
   const [searchText, setSearchText] = useState("");
   const [updateStatusId, setUpdateStatusId] = useState("");
+  const [itemsOrder, setItemsOrder] = useState(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'])
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
@@ -211,6 +215,11 @@ function Videos() {
     sortOrder: orderBy,
     //...params,
   });
+
+  const onSortEnd = (oldIndex, newIndex) => {
+    setItemsOrder((array) => arrayMoveImmutable(array, oldIndex, newIndex))
+  }
+
 
   const onChange = (key) => {
     if (key == 2) {
@@ -793,11 +802,21 @@ function Videos() {
                 <ArgonTypography variant="h6">List of Media</ArgonTypography>
               </ArgonBox>
               <ArgonBox>
+              <ArgonButton
+                  color="info"
+                  size="small"
+                  onClick={()=>{
+                    setOpenSort(true);
+                  }}
+                >
+                  Sorting
+                </ArgonButton>
                 <ArgonButton
                   color="info"
                   size="small"
                   onClick={handleOpen}
                   disabled={sessionStorage.getItem("companyDefault") == ""}
+                  className="iconAction"
                 >
                   Add Media
                 </ArgonButton>
@@ -853,6 +872,16 @@ function Videos() {
         </ArgonBox>
       </ArgonBox>
       <Footer />
+      <Modal open={openSort} title="Sorting" onCancel={handleClose}  footer={null}>
+            <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
+            {itemsOrder.map((item) => (
+              <SortableItem key={item} >
+                <div className="item">{item}</div>
+              </SortableItem>
+            ))}
+          </SortableList>
+        
+      </Modal>
       <Modal open={open} title="Media" onCancel={handleClose} key={keyHoliday} footer={null}>
         <Form
           name="basic"
@@ -924,6 +953,7 @@ function Videos() {
                 message: "Please input the publish date",
               },
             ]}
+            initialValue={publishDate==""?"":dayjs(publishDate, dateFormat)}
           >
             <DatePicker
               format={dateFormat}
@@ -941,6 +971,7 @@ function Videos() {
                 message: "Please input the expired date",
               },
             ]}
+            initialValue={expiredDate==""?"":dayjs(expiredDate, dateFormat)}
           >
             <DatePicker
               format={dateFormat}

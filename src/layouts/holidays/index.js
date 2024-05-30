@@ -19,8 +19,6 @@ import { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";

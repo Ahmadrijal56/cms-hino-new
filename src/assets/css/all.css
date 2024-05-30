@@ -123,7 +123,7 @@
 
 
  .iconAction{
-    margin-left: 10px;
+    margin-left: 10px !important;
     cursor: pointer;
  }
 
