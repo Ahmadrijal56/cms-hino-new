@@ -445,10 +445,10 @@ function Videos() {
       });
   };
 
-  const onChangeStatus = async (item) => {
+  const onChangeStatus = async (item,status) => {
     setLoading(true);
     const formData = new FormData();
-    formData.append("status", !item.status);
+    formData.append("status", status);
     formData.append("id_media", item.id);
 
     console.log(!item.status);
@@ -596,16 +596,27 @@ function Videos() {
               statusUpdate: isTrash ? (
                 <></>
               ) : (
-                <ArgonTypography variant="caption" color="secondary" fontWeight="small">
-                  <Switch
+                <ArgonTypography variant="caption" color="secondary" fontWeight="small" >
+
+                  {item.status.toString() == "true"  ? ( <Switch
                     checkedChildren="Active"
                     unCheckedChildren="Inactive"
                     size="small"
-                    defaultChecked={item.status.toString() == "true" ? true : false}
+                    checked
+                    key={item.id_media}
                     onChange={() => {
-                      onChangeStatus(item);
+                      onChangeStatus(item, false);
                     }}
-                  />
+                  />):(<Switch
+                    checkedChildren="Active"
+                    unCheckedChildren="Inactive"
+                    size="small"
+                    value={item.status.toString() == "true" || item.status  ? true : false}
+                    key={item.id_media}
+                    onChange={() => {
+                      onChangeStatus(item, true);
+                    }}
+                  />)}
                 </ArgonTypography>
               ),
               action: isTrash ? (
@@ -773,6 +784,35 @@ function Videos() {
     });
   };
 
+  const onChangeFileSort = async (value) => {
+    //setTypeMedia(value);
+    const headers = {
+      "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+      "Content-Type": "multipart/form-data",
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
+    };
+    await axios
+      .get(process.env.REACT_APP_MAIN_API + "/delete/media/board/api/get/media/104040000?type=" + value.toLowerCase(), {
+        headers,
+      })
+      .then(async (response) => {
+        console.log(response);
+        if ((await response.data) != null) {
+          if (response.status === 200) {
+            setIsDelete(false);
+            setLoading(false);
+            message.success(response.data.message);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+        message.error("Error delete file : " + error.message);
+      });
+  };
+
   const onChangeType = (value) => {
     setTypeMedia(value);
   };
@@ -809,7 +849,7 @@ function Videos() {
                     setOpenSort(true);
                   }}
                 >
-                  Sorting
+                 Reorder Content
                 </ArgonButton>
                 <ArgonButton
                   color="info"
@@ -872,14 +912,24 @@ function Videos() {
         </ArgonBox>
       </ArgonBox>
       <Footer />
-      <Modal open={openSort} title="Sorting" onCancel={handleClose}  footer={null}>
+      <Modal open={openSort} title="Change order of Contents" onCancel={handleClose}  footer={null} >
+        <div class="sortModal">
+        <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
+              <Select.Option value="" >Choose type</Select.Option>
+              <Select.Option value="text">Text</Select.Option>
+              <Select.Option value="image">Image</Select.Option>
+              <Select.Option value="video">Video</Select.Option>
+            </Select>
+            
             <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
             {itemsOrder.map((item) => (
               <SortableItem key={item} >
-                <div className="item">{item}</div>
+                <div className="itemSort" key={item}>{item}</div>
               </SortableItem>
             ))}
           </SortableList>
+
+        </div>
         
       </Modal>
       <Modal open={open} title="Media" onCancel={handleClose} key={keyHoliday} footer={null}>
