@@ -128,7 +128,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
             let select= await list[0].split("@==")
             setCompanyCode(await select[0])
             setCompanyName(await select[1])
-            loadData(select[0]);
+            //loadData(select[0]);
           }
         }
 
@@ -190,6 +190,10 @@ function DashboardNavbar({ absolute, light, isMini }) {
     sessionStorage.clear();
     navigate("/authentication/sign-in");
   };
+
+  const linkCMS = async () => {
+    window.location.href = process.env.REACT_APP_URL_DASH+"/login?token="+localStorage.getItem("token");
+  }
 
   return (
     <AppBar
@@ -280,13 +284,13 @@ function DashboardNavbar({ absolute, light, isMini }) {
           <Icon className="settingsIcon" >settings</Icon>
           <div className="title">BACK</div>
         </div>
-        <div className="settingsBlock">
+        <div className="settingsBlock"  onClick={linkCMS}>
           <Icon className="settingsIcon" >settings</Icon>
-          <div className="title">BACK</div>
+          <div className="title">To Dashboard</div>
         </div>
-        <div className="settingsBlock">
+        <div className="settingsBlock" onClick={handleLogout}>
           <Icon className="settingsIcon" >settings</Icon>
-          <div className="title">BACK</div>
+          <div className="title">Log Out</div>
         </div>
       </div>)
       :null}

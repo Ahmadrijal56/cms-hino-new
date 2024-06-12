@@ -198,7 +198,7 @@ function Videos() {
   const [dateTo, setDateTo] = useState("");
   const [searchText, setSearchText] = useState("");
   const [updateStatusId, setUpdateStatusId] = useState("");
-  const [itemsOrder, setItemsOrder] = useState(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'])
+  const [itemsOrder, setItemsOrder] = useState([])
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
@@ -786,31 +786,38 @@ function Videos() {
 
   const onChangeFileSort = async (value) => {
     //setTypeMedia(value);
-    const headers = {
-      "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
-      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
-      "Content-Type": "multipart/form-data",
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-    };
-    await axios
-      .get(process.env.REACT_APP_MAIN_API + "/delete/media/board/api/get/media/104040000?type=" + value.toLowerCase(), {
-        headers,
-      })
-      .then(async (response) => {
-        console.log(response);
-        if ((await response.data) != null) {
-          if (response.status === 200) {
-            setIsDelete(false);
-            setLoading(false);
-            message.success(response.data.message);
+    if(value!=""){
+      const headers = {
+        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+        "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + sessionStorage.getItem("token"),
+      };
+      await axios
+        .get(process.env.REACT_APP_MAIN_API + "/get/media/104040000?type=" + value.toLowerCase(), {
+          headers,
+        })
+        .then(async (response) => {
+          console.log(response);
+          if ((await response.data) != null) {
+            if (response.status === 200) {
+              setLoading(false);
+              var mediaValue=[]
+              response.data.forEach((item) => {
+                mediaValue.push(item);
+              });
+              setItemsOrder(mediaValue)
+            }
           }
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        message.error("Error delete file : " + error.message);
-      });
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+          message.error("Error delete file : " + error.message);
+        });
+    }else{
+      setItemsOrder([])
+    }
   };
 
   const onChangeType = (value) => {
@@ -923,8 +930,8 @@ function Videos() {
             
             <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
             {itemsOrder.map((item) => (
-              <SortableItem key={item} >
-                <div className="itemSort" key={item}>{item}</div>
+              <SortableItem key={item.id} >
+                <div className="itemSort" key={item.id} value={item.id}>{item.name}</div>
               </SortableItem>
             ))}
           </SortableList>

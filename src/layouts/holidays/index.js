@@ -151,7 +151,7 @@ function Holidays() {
               let select= await list[0].split("@==")
               setCompanyCode(await select[0])
               setCompanyName(await select[1])
-              loadData(select[0]);
+              //loadData(select[0]);
             }
           }
      }
