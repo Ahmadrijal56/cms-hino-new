@@ -84,6 +84,17 @@ const routes = [
       <ArgonBox component="i" color="warning" fontSize="14px" className="ni ni-single-copy-04" />
     ),
     component: <SignIn />,
+  },
+  {
+    type: "route",
+    name: "Sign In",
+    key: "sign-in",
+    route: "/",
+    display:"none",
+    icon: (
+      <ArgonBox component="i" color="warning" fontSize="14px" className="ni ni-single-copy-04" />
+    ),
+    component: <SignIn />,
   }
 ];
 
