@@ -46,6 +46,7 @@ function Illustration() {
     const checkToken = async (token) => {
 
       if(token){
+        setLoading(true);
         try{
           const headers = { 
             "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
