@@ -199,6 +199,7 @@ function Videos() {
   const [searchText, setSearchText] = useState("");
   const [updateStatusId, setUpdateStatusId] = useState("");
   const [itemsOrder, setItemsOrder] = useState([])
+  const [typeOrder, setTypeOrder] = useState("");
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
@@ -219,6 +220,45 @@ function Videos() {
   const onSortEnd = (oldIndex, newIndex) => {
     setItemsOrder((array) => arrayMoveImmutable(array, oldIndex, newIndex))
   }
+
+
+  const saveSort = async() => {
+    var items=""
+    itemsOrder.map((item) => {
+      items+=item.id+","
+    })
+
+    const formData = new FormData();
+    formData.append("companycode", companyCode);
+    formData.append(typeOrder, "["+items.substring(0, items.length - 1)+"]");
+
+    const headers = {
+      "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+      "Content-Type": "multipart/form-data",
+      Authorization: "Bearer " + sessionStorage.getItem("token"),
+    };
+
+    await axios
+      .post(process.env.REACT_APP_MAIN_API + "/update_playing_media", formData, {
+        headers,
+      })
+      .then(async (response) => {
+        console.log(response);
+        if ((await response.data) != null) {
+          if (response.status === 200) {
+            setLoading(false);
+            message.success(response.data.message);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+        message.error("Error upload file : " + error.message);
+      });
+  }
+
 
 
   const onChange = (key) => {
@@ -313,6 +353,7 @@ function Videos() {
     }
   };
   const handleClose = () => setOpen(false);
+  const handleCloseSort = () => setOpenSort(false);
 
   const onEdit = async (item) => {
     setId(item.id);
@@ -807,6 +848,7 @@ function Videos() {
                 mediaValue.push(item);
               });
               setItemsOrder(mediaValue)
+              setTypeOrder(value.toLowerCase())
             }
           }
         })
@@ -919,7 +961,7 @@ function Videos() {
         </ArgonBox>
       </ArgonBox>
       <Footer />
-      <Modal open={openSort} title="Change order of Contents" onCancel={handleClose}  footer={null} >
+      <Modal open={openSort} title="Change order of Contents" onCancel={handleCloseSort}  footer={null} >
         <div class="sortModal">
         <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
               <Select.Option value="" >Choose type</Select.Option>
@@ -935,6 +977,10 @@ function Videos() {
               </SortableItem>
             ))}
           </SortableList>
+
+          <Button type="primary" style={{marginTop:"20px"}} onClick={saveSort} disabled={itemsOrder.length ==0}>
+              Save
+            </Button>
 
         </div>
         
