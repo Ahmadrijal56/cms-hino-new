@@ -38,6 +38,13 @@ import Breadcrumbs from "examples/Breadcrumbs";
 import NotificationItem from "examples/Items/NotificationItem";
 import { message,  Modal, Button, Form, Input, Select, DatePicker, Checkbox } from 'antd';
 
+import { 
+ArrowLeftOutlined,
+FullscreenOutlined,
+UserSwitchOutlined,
+LogoutOutlined,
+} from "@ant-design/icons";
+
 
 import moment from "moment";
 
@@ -277,19 +284,16 @@ function DashboardNavbar({ absolute, light, isMini }) {
         <div className="settingsBlock" onClick={()=>{
             setShowSetting(false)
           }}>
-          <Icon className="settingsIcon" >settings</Icon>
-          <div className="title">BACK</div>
-        </div>
-        <div className="settingsBlock">
-          <Icon className="settingsIcon" >settings</Icon>
+          
+          <ArrowLeftOutlined className="settingsIcon" />  
           <div className="title">BACK</div>
         </div>
         <div className="settingsBlock"  onClick={linkCMS}>
-          <Icon className="settingsIcon" >settings</Icon>
+          <UserSwitchOutlined className="settingsIcon" />
           <div className="title">To Dashboard</div>
         </div>
         <div className="settingsBlock" onClick={handleLogout}>
-          <Icon className="settingsIcon" >settings</Icon>
+        <LogoutOutlined className="settingsIcon" />
           <div className="title">Log Out</div>
         </div>
       </div>)

@@ -145,14 +145,28 @@ function Holidays() {
                 );
               }
             });
-            console.log(selectCompany)
             setCompanyList(selectCompany)
-            if (await list.length == 1){
-              let select= await list[0].split("@==")
-              setCompanyCode(await select[0])
-              setCompanyName(await select[1])
-              //loadData(select[0]);
+
+            if (companyDefault == "") {
+              var compSession = sessionStorage.getItem("companyDefault");
+              setCompanyDefault(compSession);
+              let select = compSession.split("@==");
+              setCompanyCode(select[0]);
+              setCompanyName(select[1]);
+              loadData(select[0]);
+            } else {
+              // alert(companyDefault)
+              let select = companyDefault.split("@==");
+              setCompanyCode(select[0]);
+              setCompanyName(select[1]);
+              loadData(select[0]);
             }
+            // if (await list.length == 1){
+            //   let select= await list[0].split("@==")
+            //   setCompanyCode(await select[0])
+            //   setCompanyName(await select[1])
+            //   loadData(select[0]);
+            // }
           }
      }
 

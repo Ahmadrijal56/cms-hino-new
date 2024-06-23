@@ -1,17 +1,4 @@
-/**
-=========================================================
-* Argon Dashboard 2 MUI - v3.0.0
-=========================================================
 
-* Product Page: cms
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 
 import { useState, useEffect } from "react";
 
@@ -19,7 +6,7 @@ import { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
@@ -48,6 +35,7 @@ import {
   Table,
   Checkbox,
   Switch,
+  Popover,
 } from "antd";
 import { UploadOutlined, SearchOutlined } from "@ant-design/icons";
 
@@ -82,18 +70,18 @@ const columns = [
     },
   },
   {
-    title: "Last Modify",
-    dataIndex: "updated_at",
-    sorter: {
-      compare: (a, b) => a.updated_at - b.updated_at,
-      multiple: 1,
-    },
-  },
-  {
     title: "Expiry Date",
     dataIndex: "expireddate",
     sorter: {
       compare: (a, b) => a.expireddate - b.expireddate,
+      multiple: 1,
+    },
+  },
+  {
+    title: "Last Modify",
+    dataIndex: "updated_at",
+    sorter: {
+      compare: (a, b) => a.updated_at - b.updated_at,
       multiple: 1,
     },
   },
@@ -347,8 +335,8 @@ function Videos() {
       // let date=moment(item.holidays_date)
       // setDefaultDate(date)
       setIsApplyAll(false);
-      setPublishDate("");
-      setExpiredDate("");
+      setPublishDate(moment().add(-1,'days').format("YYYY-MM-DD"));
+      setExpiredDate(moment().format("YYYY-MM-DD"));
       setDefaultComp([]);
     }
   };
@@ -388,6 +376,11 @@ function Videos() {
   const onFinish = async (values) => {
     if (fileList.length == 0 && values.type != "text" && !isUpdate) {
       message.error("Please select file first");
+      return;
+    }
+
+    if(dayjs(expiredDate, dateFormat)<dayjs(publishDate, dateFormat)){
+      message.error("Please input expiry date greather than publish date");
       return;
     }
     setLoading(true);
@@ -721,6 +714,19 @@ function Videos() {
     }
   };
 
+  const contentFile = (
+    <div>
+      <p>Max 100 Mb</p>
+      <p>Image(jpeg,png) and video (mp4)</p>
+    </div>
+  );
+
+  const contentAll = (
+    <div>
+      <p>Apply to All Vendors/ Branchs</p>
+    </div>
+  );
+
   useEffect(() => {
     console.log(sessionStorage.getItem("companyDefault"));
     async function loadCompany() {
@@ -872,6 +878,16 @@ function Videos() {
 
   const onChangeExpiredDate = (_, dateString) => {
     setExpiredDate(dateString);
+  };
+
+  const disabledDatePub = (current) => {
+    // Can not select days before today and today
+    return current && current < dayjs().add(-2,'days').endOf('day');
+  };
+
+  const disabledDateExp= (current) => {
+    // Can not select days before today and today
+    return current && current < dayjs(publishDate, dateFormat).endOf('day');
   };
 
   return (
@@ -1041,9 +1057,11 @@ function Videos() {
             </Form.Item>
           ) : (
             <Form.Item label="File" name="video">
-              <Upload {...props} maxCount={1}>
-                <Button icon={<UploadOutlined />}>Select File</Button>
-              </Upload>
+              <Popover content={contentFile} title="File" trigger="hover">
+                <Upload {...props} maxCount={1}>
+                  <Button icon={<UploadOutlined />}>Select File</Button>
+                </Upload>
+              </Popover>
             </Form.Item>
           )}
 
@@ -1058,11 +1076,12 @@ function Videos() {
             ]}
             initialValue={publishDate==""?"":dayjs(publishDate, dateFormat)}
           >
-            <DatePicker
-              format={dateFormat}
-              onChange={onChangePublishDate}
-              defaultValue={publishDate==""?"":dayjs(publishDate, dateFormat)}
-            />
+                    <DatePicker
+                      format={dateFormat}
+                      onChange={onChangePublishDate}
+                      disabledDate={disabledDatePub}
+                      defaultValue={publishDate==""?"":dayjs(publishDate, dateFormat)}
+                    />
           </Form.Item>
 
           <Form.Item
@@ -1079,12 +1098,16 @@ function Videos() {
             <DatePicker
               format={dateFormat}
               onChange={onChangeExpiredDate}
+              disabledDate={disabledDateExp}
+              value={dayjs(expiredDate, dateFormat)}
               defaultValue={expiredDate==""?"":dayjs(expiredDate, dateFormat)}
             />
           </Form.Item>
 
           <Form.Item label="Apply to All" name="applytoall">
-            <Checkbox onChange={onChangeApply} checked={isApplyAll}></Checkbox>
+           <Popover content={contentAll} title="Branch" trigger="hover">
+              <Checkbox onChange={onChangeApply} checked={isApplyAll}></Checkbox>
+            </Popover>
           </Form.Item>
 
           {!isApplyAll ? (
