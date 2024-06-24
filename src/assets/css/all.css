@@ -118,6 +118,8 @@
   background: #fff;
   border-radius: 20px;
   overflow: scroll;
+  z-index: 200;
+  position: relative;
 }
 
 .itemSort {
