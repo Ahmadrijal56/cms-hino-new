@@ -36,6 +36,7 @@ Coded by www.creative-tim.com
 // Argon Dashboard 2 MUI layouts
 import Holidays from "layouts/holidays";
 import Media from "layouts/media";
+import Holidays2 from "layouts/holidays2";
 import SignIn from "layouts/authentication/sign-in";
 import Config from "layouts/config";
 
@@ -52,7 +53,7 @@ const routes = [
     icon: (
       <ArgonBox component="i" color="warning" fontSize="14px" className="ni ni-calendar-grid-58" />
     ),
-    component: <Holidays />,
+    component: <Holidays2 />,
   },
   {
     type: "route",

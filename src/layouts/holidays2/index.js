@@ -48,51 +48,51 @@ const { Option } = Select;
 
 const columns = [
   {
-    title: "Name",
-    dataIndex: "name",
+    title: "Date",
+    dataIndex: "Date",
     sorter: {
-      compare: (a, b) => a.name - b.name,
+      compare: (a, b) => a.Date - b.Date,
     },
   },
   {
-    title: "Content",
+    title: "Description",
     dataIndex: "description",
     sorter: {
       compare: (a, b) => a.description - b.description,
     },
   },
-  {
-    title: "Publish Date",
-    dataIndex: "publishdate",
-    sorter: {
-      compare: (a, b) => a.publishdate - b.publishdate,
-      multiple: 1,
-    },
-  },
-  {
-    title: "Expiry Date",
-    dataIndex: "expireddate",
-    sorter: {
-      compare: (a, b) => a.expireddate - b.expireddate,
-      multiple: 1,
-    },
-  },
-  {
-    title: "Last Modify",
-    dataIndex: "updated_at",
-    sorter: {
-      compare: (a, b) => a.updated_at - b.updated_at,
-      multiple: 1,
-    },
-  },
-  {
-    title: "Status",
-    dataIndex: "statusUpdate",
-    sorter: {
-      compare: (a, b) => a.status - b.status,
-      multiple: 1,
-    },
-  },
+  // {
+  //   title: "Publish Date",
+  //   dataIndex: "publishdate",
+  //   sorter: {
+  //     compare: (a, b) => a.publishdate - b.publishdate,
+  //     multiple: 1,
+  //   },
+  // },
+  // {
+  //   title: "Expiry Date",
+  //   dataIndex: "expireddate",
+  //   sorter: {
+  //     compare: (a, b) => a.expireddate - b.expireddate,
+  //     multiple: 1,
+  //   },
+  // },
+  // {
+  //   title: "Last Modify",
+  //   dataIndex: "updated_at",
+  //   sorter: {
+  //     compare: (a, b) => a.updated_at - b.updated_at,
+  //     multiple: 1,
+  //   },
+  // },
+  // {
+  //   title: "Status",
+  //   dataIndex: "statusUpdate",
+  //   sorter: {
+  //     compare: (a, b) => a.status - b.status,
+  //     multiple: 1,
+  //   },
+  // },
   {
     title: "Action",
     dataIndex: "action",
@@ -163,7 +163,6 @@ function Videos() {
   const [loading, setLoading] = useState(false);
   const [dataGrid, setDataGrid] = useState([]);
   const [open, setOpen] = useState(false);
-  const [openSort, setOpenSort] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [keyHoliday, setKeyHoliday] = useState(0);
   const [selectedDate, setSelectedDate] = useState(0);
@@ -173,21 +172,19 @@ function Videos() {
   const [orderField, setOrderField] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [publishDate, setPublishDate] = useState("");
-  const [expiredDate, setExpiredDate] = useState("");
-  const [typeMedia, setTypeMedia] = useState("");
-  const [isApplyAll, setIsApplyAll] = useState(false);
-  const [mediaName, setMediaName] = useState("");
-  const [mediaDesc, setMediaDesc] = useState("");
-  const [isUpdate, setUpdate] = useState(false);
+  const [defaultDate, setDefaultDate] = useState("");
+  const [description, setDescription] = useState("");
   const [defaultComp, setDefaultComp] = useState([]);
   const [id, setId] = useState([]);
   const [isTrash, setIsTrash] = useState(false);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [searchText, setSearchText] = useState("");
-  const [updateStatusId, setUpdateStatusId] = useState("");
+  const [updateStatusId, setIsUpdateStatusId] = useState("");
   const [itemsOrder, setItemsOrder] = useState([])
   const [typeOrder, setTypeOrder] = useState("");
+  const [isActive, setActive] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
@@ -205,50 +202,6 @@ function Videos() {
     //...params,
   });
 
-  const onSortEnd = (oldIndex, newIndex) => {
-    setItemsOrder((array) => arrayMoveImmutable(array, oldIndex, newIndex))
-  }
-
-
-  const saveSort = async() => {
-    var items=""
-    itemsOrder.map((item) => {
-      items+=item.id+","
-    })
-
-    const formData = new FormData();
-    formData.append("companycode", companyCode);
-    formData.append(typeOrder, "["+items.substring(0, items.length - 1)+"]");
-
-    const headers = {
-      "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
-      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
-      "Content-Type": "multipart/form-data",
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-    };
-
-    await axios
-      .post(process.env.REACT_APP_MAIN_API + "/update_playing_media", formData, {
-        headers,
-      })
-      .then(async (response) => {
-        console.log(response);
-        if ((await response.data) != null) {
-          if (response.status === 200) {
-            setLoading(false);
-            message.success(response.data.message);
-          }
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        message.error("Error upload file : " + error.message);
-      });
-  }
-
-
-
   const onChange = (key) => {
     if (key == 2) {
       setIsTrash(true);
@@ -262,10 +215,6 @@ function Videos() {
         current: 1,
       },
     });
-  };
-
-  const onChangeApply = (e) => {
-    setIsApplyAll(e.target.checked);
   };
 
   const onChangeTags = (pageNumber) => {
@@ -284,14 +233,14 @@ function Videos() {
   };
 
   const items = [
-    {
-      key: "1",
-      label: "MAIN",
-    },
-    {
-      key: "2",
-      label: "TRASH",
-    },
+    // {
+    //   key: "1",
+    //   label: "MAIN",
+    // },
+    // {
+    //   key: "2",
+    //   label: "TRASH",
+    // },
   ];
 
   const props = {
@@ -323,161 +272,114 @@ function Videos() {
     if (sessionStorage.getItem("companyDefault") == "") {
       message.error("Please choose company code first");
     } else {
-      setKeyHoliday(keyHoliday + 1);
-      setOpen(true);
-      setUpdate(false);
-      setIsApplyAll(false);
-      setFileList([]);
-      setMediaName("");
-      setMediaDesc("");
-      setTypeMedia("");
-      // setDescription(item.description)
-      // let date=moment(item.holidays_date)
-      // setDefaultDate(date)
-      setIsApplyAll(false);
-      setPublishDate(moment().add(-1,'days').format("YYYY-MM-DD"));
-      setExpiredDate(moment().format("YYYY-MM-DD"));
-      setDefaultComp([]);
+        setDefaultDate("");
+        setSelectedDate("");
+        setDescription("");
+        setActive(true);
+        setIsUpdate(false);
+        setOpen(true);
+        setKeyHoliday(keyHoliday+1);
     }
   };
   const handleClose = () => setOpen(false);
-  const handleCloseSort = () => setOpenSort(false);
 
   const onEdit = async (item) => {
-    setId(item.id);
-    setUpdate(true);
-    setKeyHoliday(keyHoliday + 1);
-    setMediaName(item.name);
-    setMediaDesc(item.description);
-    setTypeMedia(item.type);
-    // setDescription(item.description)
-    // let date=moment(item.holidays_date)
-    // setDefaultDate(date)
-    setIsApplyAll(item.applytoall);
-    //let datePublish = moment(item.publishdate);
-    setPublishDate(item.publishdate);
-    //let dateExpired = moment(item.expireddate);
-    setExpiredDate(item.expireddate);
-    // setExpiredDate(item.expireddate.toString())
+    console.log(companyCode)
+    setKeyHoliday(keyHoliday+1);
+    setIsUpdate(true);
+    setDescription(item.description)
+    let date=moment(item.holidays_date)
+    setDefaultDate(date)
+    setActive(item.active)
+    setSelectedDate(date.format("YYYY-MM-DD"))
+    setOpen(true)
 
-    let defaultCompValue = [];
-    if (item.forcompanycode != null) {
-      await item.forcompanycode.map(function (comp) {
-        if (comp != null) {
-          defaultCompValue.push(comp["companyname"] + "@==" + comp["companycode"]);
-        }
-      });
-    }
-    setDefaultComp(defaultCompValue);
-    setOpen(true);
-  };
+  }
 
   //login via input
   const onFinish = async (values) => {
-    if (fileList.length == 0 && values.type != "text" && !isUpdate) {
-      message.error("Please select file first");
-      return;
-    }
-
-    if(dayjs(expiredDate, dateFormat)<dayjs(publishDate, dateFormat)){
-      message.error("Please input expiry date greather than publish date");
-      return;
-    }
-    setLoading(true);
-    const formData = new FormData();
-    formData.append("type", values.type);
-    formData.append("name", values.name);
-    formData.append("text", values.description);
-    formData.append("publishdate", moment(publishDate).format("YYYY-MM-DD"));
-    formData.append("expireddate", moment(expiredDate).format("YYYY-MM-DD"));
-    formData.append("status", true);
-    formData.append("trash", false);
-    formData.append("companycode", "Allcompany");
-    if (values.type != "text") {
-      fileList.forEach((file) => {
-        formData.append("file", file);
-      });
-    }
-    if (isApplyAll) {
-      formData.append("applytoall", true);
-    } else {
-      var compActive = [];
-      values.company.forEach((item) => {
-        const company = item.split("@==");
-        compActive.push(company[1].toString());
-      });
-      var text = JSON.stringify(compActive);
-      formData.append("applytoall", false);
-      formData.append("forcompanycode", text);
-    }
-    if (isUpdate) {
-      formData.append("id_media", id);
-    }
-
+    setLoading(true)
+    const article = {
+      CompanyCode: companyCode,
+      Description: values.description,
+      Holidays_date: selectedDate,
+      Active:isActive
+    };
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
+      'crudtype': isUpdate ? 'update':'insert',
     };
-    var flag = isUpdate ? "update" : "upload";
-
     await axios
-      .post(process.env.REACT_APP_MAIN_API + "/" + flag + "/media", formData, {
+      .post(process.env.REACT_APP_MAIN_API + "/holiday", article, {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
-        if ((await response.data) != null) {
-          if (response.status === 200) {
+        if (
+          (await response.data) != null
+        ) {
+          if (response.status === 200)
+           {
             setSelectedDate("");
+            setDescription("");
             setOpen(false);
-            setLoading(false);
-            message.success(response.data.message);
-          }
+            setLoading(false)
+            message.success(response.data.Message)
+           }
         }
       })
       .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        message.error("Error upload file : " + error.message);
+        setLoading(false)
+        message.error(error + " (Accumulation Monthly) Token not valid !");
       });
   };
 
-  const onDelete = async (id) => {
-    setLoading(true);
-    const formData = new FormData();
-    formData.append("trash", true);
-    formData.append("id_media", id);
+  const onFinishFailed = (errorInfo) => {
+    message.error('Failed: '+ errorInfo);
+  };
 
+  const onDelete = async (item) => {
+    setLoading(true)
+    setIsDelete(true)
+    const article = {
+      CompanyCode: companyCode,
+      Description: item.description,
+      Holidays_date: item.holidays_date,
+      Active:isActive
+    };
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
+      'crudtype': 'delete',
     };
-
     await axios
-      .post(process.env.REACT_APP_MAIN_API + "/update/media", formData, {
+      .post(process.env.REACT_APP_MAIN_API + "/holiday", article, {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
-        if ((await response.data) != null) {
-          if (response.status === 200) {
-            setUpdateStatusId(id + "-delete");
-            setSelectedDate("");
-            setLoading(false);
-            message.success(response.data.message);
-          }
+        console.log(response)
+        if (
+          (await response.data) != null
+        ) {
+          if (response.status === 200)
+           {
+            setIsDelete(false)
+            setLoading(false)
+            message.success("done")
+           }
         }
       })
       .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        message.error("Error update : " + error.message);
+        console.log(error )
+        setLoading(false)
+        message.error("Error delete file : "+ error.message);
       });
-  };
+
+  }
 
   const onChangeStatus = async (item,status) => {
     setLoading(true);
@@ -501,7 +403,7 @@ function Videos() {
         console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
-            setUpdateStatusId(item.id);
+            setIsUpdateStatusId(item.id);
             setSelectedDate("");
             setLoading(false);
             message.success(response.data.message);
@@ -536,7 +438,7 @@ function Videos() {
         console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
-            setUpdateStatusId(id + "restore");
+            setIsUpdateStatusId(id + "restore");
             setSelectedDate("");
             setLoading(false);
             message.success(response.data.message);
@@ -585,13 +487,13 @@ function Videos() {
       var urlTrash = isTrash ? "/trash" : "";
       var query = "";
       if (dateFrom != "") {
-        query += "&dateFrom=" + dateFrom;
+        query += "&from_date=" + dateFrom;
       }
       if (dateTo != "") {
-        query += "&dateTo=" + dateTo;
+        query += "&to_date=" + dateTo;
       }
       if (searchText != "") {
-        query += "&search=" + searchText;
+        query += "&description=" + searchText;
       }
       setLoading(true);
       const headers = {
@@ -603,7 +505,7 @@ function Videos() {
       axios
         .get(
           process.env.REACT_APP_MAIN_API +
-            `/get/allmedia${urlTrash}/${companyCode}?${qs.stringify(
+            `/allholiday${urlTrash}/${companyCode}?${qs.stringify(
               getRandomuserParams(tableParams)
             )}` +
             query,
@@ -612,62 +514,48 @@ function Videos() {
           }
         )
         .then(async (response) => {
-          console.log(
-            process.env.REACT_APP_MAIN_API +
-              `/get/allmedia${urlTrash}/${companyCode}?${qs.stringify(
-                getRandomuserParams(tableParams)
-              )}` +
-              query
-          );
-          const resp = await response.data.data.map(function (item) {
+          const resp = await response.data.map(function (item) {
             return {
               ...item,
+              Date: (
+                <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                  {moment(item.holidays_date).format("DD MMM yyyy")}
+                </ArgonTypography>
+              ),
+              Description: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+              {item.description}
+            </ArgonTypography>,
               Description: (
                 <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                   {item.description}
                 </ArgonTypography>
               ),
-              publishdate: (
-                <ArgonTypography variant="caption" fontWeight="medium">
-                  {moment(item.publishdate).format("DD MMM yyyy")}
-                </ArgonTypography>
-              ),
-              expireddate: (
-                <ArgonTypography variant="caption" fontWeight="medium">
-                  {moment(item.expireddate).format("DD MMM yyyy")}
-                </ArgonTypography>
-              ),
-              updated_at: (
-                <ArgonTypography variant="caption" fontWeight="medium">
-                  {moment(item.updated_at).format("DD MMM yyyy")}
-                </ArgonTypography>
-              ),
-              statusUpdate: isTrash ? (
-                <></>
-              ) : (
-                <ArgonTypography variant="caption" color="secondary" fontWeight="small" >
+              // statusUpdate: isTrash ? (
+              //   <></>
+              // ) : (
+              //   <ArgonTypography variant="caption" color="secondary" fontWeight="small" >
 
-                  {item.status.toString() == "true"  ? ( <Switch
-                    checkedChildren="Active"
-                    unCheckedChildren="Inactive"
-                    size="small"
-                    checked
-                    key={item.id_media}
-                    onChange={() => {
-                      onChangeStatus(item, false);
-                    }}
-                  />):(<Switch
-                    checkedChildren="Active"
-                    unCheckedChildren="Inactive"
-                    size="small"
-                    value={item.status.toString() == "true" || item.status  ? true : false}
-                    key={item.id_media}
-                    onChange={() => {
-                      onChangeStatus(item, true);
-                    }}
-                  />)}
-                </ArgonTypography>
-              ),
+              //     {item.status.toString() == "true"  ? ( <Switch
+              //       checkedChildren="Active"
+              //       unCheckedChildren="Inactive"
+              //       size="small"
+              //       checked
+              //       key={item.id_media}
+              //       onChange={() => {
+              //         onChangeStatus(item, false);
+              //       }}
+              //     />):(<Switch
+              //       checkedChildren="Active"
+              //       unCheckedChildren="Inactive"
+              //       size="small"
+              //       value={item.status.toString() == "true" || item.status  ? true : false}
+              //       key={item.id_media}
+              //       onChange={() => {
+              //         onChangeStatus(item, true);
+              //       }}
+              //     />)}
+              //   </ArgonTypography>
+              // ),
               action: isTrash ? (
                 <>
                   <Icon
@@ -704,14 +592,14 @@ function Videos() {
                     fontSize="small"
                     className="iconAction"
                     onClick={() => {
-                      onDelete(item.id);
+                      onDelete(item);
                     }}
                   >
                     delete
                   </Icon>
-                  <Icon fontSize="small" className="iconAction" onClick={() => {}}>
+                  {/* <Icon fontSize="small" className="iconAction" onClick={() => {}}>
                     visibility
-                  </Icon>
+                  </Icon> */}
                 </>
               ),
             };
@@ -883,27 +771,11 @@ function Videos() {
     }
   };
 
-  const onChangeType = (value) => {
-    setTypeMedia(value);
+  const onChangeDate=(date, dateString) => {
+    console.log(dateString)
+    setSelectedDate(dateString);
   };
 
-  const onChangePublishDate = (_, dateString) => {
-    setPublishDate(dateString);
-  };
-
-  const onChangeExpiredDate = (_, dateString) => {
-    setExpiredDate(dateString);
-  };
-
-  const disabledDatePub = (current) => {
-    // Can not select days before today and today
-    return current && current < dayjs().add(-2,'days').endOf('day');
-  };
-
-  const disabledDateExp= (current) => {
-    // Can not select days before today and today
-    return current && current < dayjs(publishDate, dateFormat).endOf('day');
-  };
 
   return (
     <DashboardLayout>
@@ -917,20 +789,11 @@ function Videos() {
             <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
               <ArgonBox>
                 <ArgonTypography variant="h5" fontWeight="bold">
-                  Media
+                  Holidays
                 </ArgonTypography>
-                <ArgonTypography variant="h6">List of Media</ArgonTypography>
+                <ArgonTypography variant="h6">List of Date</ArgonTypography>
               </ArgonBox>
               <ArgonBox>
-              <ArgonButton
-                  color="info"
-                  size="small"
-                  onClick={()=>{
-                    setOpenSort(true);
-                  }}
-                >
-                 Reorder Content
-                </ArgonButton>
                 <ArgonButton
                   color="info"
                   size="small"
@@ -938,7 +801,7 @@ function Videos() {
                   disabled={sessionStorage.getItem("companyDefault") == ""}
                   className="iconAction"
                 >
-                  Add Media
+                  Add Date
                 </ArgonButton>
               </ArgonBox>
             </ArgonBox>
@@ -961,7 +824,7 @@ function Videos() {
               <ArgonBox p={3} pt={0}>
                 <Input
                   size="large"
-                  placeholder="Cari Media"
+                  placeholder="Cari"
                   prefix={<SearchOutlined />}
                   onPressEnter={clickSearch}
                 />
@@ -992,162 +855,66 @@ function Videos() {
         </ArgonBox>
       </ArgonBox>
       <Footer />
-      <Modal open={openSort} title="Change order of Contents" onCancel={handleCloseSort}  footer={null} >
-        <div class="sortModal">
-        <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
-              <Select.Option value="" >Choose type</Select.Option>
-              <Select.Option value="text">Text</Select.Option>
-              <Select.Option value="image">Image</Select.Option>
-              <Select.Option value="video">Video</Select.Option>
-            </Select>
-            
-            <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
-            {itemsOrder.map((item) => (
-              <SortableItem key={item.id} >
-                <div className="itemSort" key={item.id} value={item.id}>{item.name}</div>
-              </SortableItem>
-            ))}
-          </SortableList>
+      <Modal
+                    open={open}
+                    title="Holiday"
+                    onCancel={handleClose}
+                    key={keyHoliday}
+                    footer={null}
+                  >
+                    <Form
+                      name="basic"
+                      labelCol={{ span: 8 }}
+                      wrapperCol={{ span: 16 }}
+                      initialValues={{ remember: true }}
+                      onFinish={onFinish}
+                      onFinishFailed={onFinishFailed}
+                    >
+                      <Form.Item
+                        label="Date"
+                        name="date"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input the date",
+                          },
+                        ]}
+                        initialValue={defaultDate}
+                      >
+                        <DatePicker onChange={onChangeDate}  format="YYYY-MM-DD" />
+                      </Form.Item>
 
-          <Button type="primary" style={{marginTop:"20px"}} onClick={saveSort} disabled={itemsOrder.length ==0}>
-              Save
-            </Button>
+                      <Form.Item
+                        label="Description"
+                        name="description"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input the description",
+                          },
+                        ]}
+                        initialValue={description}
+                      >
+                        <Input/>
+                      </Form.Item>
 
-        </div>
-        
-      </Modal>
-      <Modal open={open} title="Media" onCancel={handleClose} key={keyHoliday} footer={null}>
-        <Form
-          name="basic"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-          initialValues={{ remember: true }}
-          onFinish={onFinish}
-        >
-          <Form.Item
-            label="Name"
-            name="name"
-            rules={[
-              {
-                required: true,
-                message: "Please input the name",
-              },
-            ]}
-            initialValue={mediaName}
-          >
-            <Input />
-          </Form.Item>
 
-          <Form.Item
-            label="Type"
-            name="type"
-            rules={[
-              {
-                required: true,
-                message: "Please input the type",
-              },
-            ]}
-            initialValue={typeMedia}
-          >
-            <Select onChange={onChangeType}>
-              <Select.Option value="text">Text</Select.Option>
-              <Select.Option value="image">Image</Select.Option>
-              <Select.Option value="video">Video</Select.Option>
-            </Select>
-          </Form.Item>
+                      <Form.Item
+                        label="isActive"
+                        name="isactive"
+                        //initialValue={isactive  }
+                        initialValue={isActive}
+                      >
+                        <Checkbox onChange={onChangeStatus} checked={isActive}></Checkbox>
+                      </Form.Item>
 
-          {typeMedia == "text" ? (
-            <Form.Item
-              label="Description"
-              name="description"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input the description",
-                },
-              ]}
-              initialValue={mediaDesc}
-            >
-              <TextArea rows={4} />
-            </Form.Item>
-          ) : (
-            <Form.Item label="File" name="video">
-              <Popover content={contentFile} title="File" trigger="hover">
-                <Upload {...props} maxCount={1}>
-                  <Button icon={<UploadOutlined />}>Select File</Button>
-                </Upload>
-              </Popover>
-            </Form.Item>
-          )}
-
-          <Form.Item
-            label="Publish Date"
-            name="publish_date"
-            rules={[
-              {
-                required: true,
-                message: "Please input the publish date",
-              },
-            ]}
-            initialValue={publishDate==""?"":dayjs(publishDate, dateFormat)}
-          >
-                    <DatePicker
-                      format={dateFormat}
-                      onChange={onChangePublishDate}
-                      disabledDate={disabledDatePub}
-                      defaultValue={publishDate==""?"":dayjs(publishDate, dateFormat)}
-                    />
-          </Form.Item>
-
-          <Form.Item
-            label="Expired Date"
-            name="expired_date"
-            rules={[
-              {
-                required: true,
-                message: "Please input the expired date",
-              },
-            ]}
-            initialValue={expiredDate==""?"":dayjs(expiredDate, dateFormat)}
-          >
-            <DatePicker
-              format={dateFormat}
-              onChange={onChangeExpiredDate}
-              disabledDate={disabledDateExp}
-              value={dayjs(expiredDate, dateFormat)}
-              defaultValue={expiredDate==""?"":dayjs(expiredDate, dateFormat)}
-            />
-          </Form.Item>
-
-          <Form.Item label="Apply to All" name="applytoall">
-           <Popover content={contentAll} title="Branch" trigger="hover">
-              <Checkbox onChange={onChangeApply} checked={isApplyAll}></Checkbox>
-            </Popover>
-          </Form.Item>
-
-          {!isApplyAll ? (
-            <Form.Item label="Company" name="company" initialValue={defaultComp}>
-              <Select
-                mode="tags"
-                style={{
-                  width: "100%",
-                }}
-                placeholder="Company"
-                onChange={onChangeTags}
-                options={optionsComp}
-              />
-            </Form.Item>
-          ) : (
-            <></>
-          )}
-
-          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button type="primary" htmlType="submit">
-              {isUpdate ? "Edit" : "Save"}
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
+                      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                        <Button type="primary" htmlType="submit">
+                          {isUpdate ? 'Update': 'Add'} Holiday
+                        </Button>
+                      </Form.Item>
+                    </Form>
+                  </Modal>
     </DashboardLayout>
   );
 }
