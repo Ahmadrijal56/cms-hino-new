@@ -123,26 +123,18 @@ const columnsDelete = [
     },
   },
   {
-    title: "Last Modify",
-    dataIndex: "updated_at",
-    sorter: {
-      compare: (a, b) => a.updated_at - b.updated_at,
-      multiple: 1,
-    },
-  },
-  {
-    title: "Publish Date",
-    dataIndex: "publishdate",
-    sorter: {
-      compare: (a, b) => a.publishdate - b.publishdate,
-      multiple: 1,
-    },
-  },
-  {
     title: "Expiry Date",
     dataIndex: "expireddate",
     sorter: {
       compare: (a, b) => a.expireddate - b.expireddate,
+      multiple: 1,
+    },
+  },
+  {
+    title: "Last Modify",
+    dataIndex: "updated_at",
+    sorter: {
+      compare: (a, b) => a.updated_at - b.updated_at,
       multiple: 1,
     },
   },
