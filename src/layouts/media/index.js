@@ -43,6 +43,7 @@ import { UploadOutlined, SearchOutlined } from "@ant-design/icons";
 import qs from "qs";
 import SortableList, { SortableItem } from 'react-easy-sort'
 import { arrayMoveImmutable } from 'array-move'
+import ReactPlayer from "react-player";
 
 const { Option } = Select;
 
@@ -153,7 +154,6 @@ function Videos() {
   const [companyName, setCompanyName] = useState("");
   const [companyList, setCompanyList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [dataGrid, setDataGrid] = useState([]);
   const [open, setOpen] = useState(false);
   const [openSort, setOpenSort] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
@@ -180,6 +180,7 @@ function Videos() {
   const [updateStatusId, setUpdateStatusId] = useState("");
   const [itemsOrder, setItemsOrder] = useState([])
   const [typeOrder, setTypeOrder] = useState("");
+  const [openView, setOpenView] = useState(false);
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
@@ -334,6 +335,7 @@ function Videos() {
   };
   const handleClose = () => setOpen(false);
   const handleCloseSort = () => setOpenSort(false);
+  const handleCloseView = () => setOpenView(false);
 
   const onEdit = async (item) => {
     setId(item.id);
@@ -362,6 +364,16 @@ function Videos() {
     }
     setDefaultComp(defaultCompValue);
     setOpen(true);
+  };
+
+
+  const onView = async (item) => {
+    setId(item.id);
+    setKeyHoliday(keyHoliday + 1);
+    setMediaName(item.name);
+    setMediaDesc(item.description);
+    setTypeMedia(item.type);
+    setOpenView(true);
   };
 
   //login via input
@@ -701,7 +713,7 @@ function Videos() {
                   >
                     delete
                   </Icon>
-                  <Icon fontSize="small" className="iconAction" onClick={() => {}}>
+                  <Icon fontSize="small" className="iconAction" onClick={() => { onView(item);}}>
                     visibility
                   </Icon>
                 </>
@@ -1139,6 +1151,34 @@ function Videos() {
             </Button>
           </Form.Item>
         </Form>
+      </Modal>
+
+      <Modal open={openView} title="Media" onCancel={handleCloseView} key={keyHoliday} footer={null}>
+       
+
+          {typeMedia == "video" ? (
+            <>
+            <ReactPlayer
+                                      url={process.env.REACT_APP_MAIN+"/"+mediaDesc}
+                                      playing={true}
+                                      muted={true}
+                                      loop={false}
+                                      controls={true}
+                                      width="100%"
+                                      height="100%"
+                                    />
+            </>
+
+          ) : typeMedia == "image" ? (
+            <>
+            <img src={process.env.REACT_APP_MAIN+"/"+mediaDesc} alt="person"  width="100%"/>
+            </>
+
+          ) : (
+            <marquee>{mediaDesc}</marquee>
+          )}
+
+          
       </Modal>
     </DashboardLayout>
   );
