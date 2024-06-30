@@ -672,7 +672,7 @@ function Videos() {
                       onChangeStatus(item, true);
                     }}
                   />)}
-                  {item.status.toString()}
+                  {item.status.toString()+(item.status.toString() === "true" )}
                 </ArgonTypography>
               ),
               action: isTrash ? (
