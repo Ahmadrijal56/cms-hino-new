@@ -651,7 +651,7 @@ function Videos() {
               ) : (
                 <ArgonTypography variant="caption" color="secondary" fontWeight="small" >
 
-                  {item.status.toString() == "true"  ? ( <Switch
+                  {item.status.toString() === "true"  ? ( <Switch
                     checkedChildren="Active"
                     unCheckedChildren="Inactive"
                     size="small"
