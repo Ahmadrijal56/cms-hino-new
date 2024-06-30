@@ -120,6 +120,7 @@
   overflow: scroll;
   z-index: 200;
   position: relative;
+  height: 1100px;
 }
 
 .itemSort {

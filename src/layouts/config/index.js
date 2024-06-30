@@ -315,7 +315,7 @@ function Holidays() {
             <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
               <ArgonBox>
                 <ArgonTypography variant="h6">Configs</ArgonTypography>
-                {companyList.length > 1 ? (
+                {/* {companyList.length > 1 ? (
                   <Select
                     showSearch={true}
                     style={{ width: 320 }}
@@ -337,7 +337,7 @@ function Holidays() {
                   </Select>
                 ) : (
                   <ArgonTypography variant="h5">{companyName}</ArgonTypography>
-                )}
+                )} */}
               </ArgonBox>
               {/* <ArgonBox >
                 <ArgonButton color="info" size="small" onClick={handleOpen} disabled={companyCode==""} >

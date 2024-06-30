@@ -910,7 +910,7 @@ function Videos() {
 
                       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                         <Button type="primary" htmlType="submit">
-                          {isUpdate ? 'Update': 'Add'} Holiday
+                          {isUpdate ? 'Save Update': 'Add'} Holiday
                         </Button>
                       </Form.Item>
                     </Form>

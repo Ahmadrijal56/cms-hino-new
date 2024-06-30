@@ -927,7 +927,7 @@ function Videos() {
               </ArgonBox>
               <ArgonBox>
               <ArgonButton
-                  color="info"
+                  color="warning"
                   size="small"
                   onClick={()=>{
                     setOpenSort(true);
@@ -1147,7 +1147,7 @@ function Videos() {
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Button type="primary" htmlType="submit">
-              {isUpdate ? "Edit" : "Save"}
+              {isUpdate ? "Save Update" : "Save"}
             </Button>
           </Form.Item>
         </Form>
