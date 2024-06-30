@@ -89,6 +89,7 @@ const columns = [
   {
     title: "Status",
     dataIndex: "statusUpdate",
+    key: (Math.random() + 1).toString(36).substring(7),
     sorter: {
       compare: (a, b) => a.status - b.status,
       multiple: 1,
