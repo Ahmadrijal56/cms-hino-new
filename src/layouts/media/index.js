@@ -657,7 +657,7 @@ function Videos() {
                     unCheckedChildren="Inactive"
                     size="small"
                     checked
-                    key={item.id_media}
+                    key={item.id_media+moment()}
                     onChange={() => {
                       onChangeStatus(item, false);
                     }}
@@ -667,7 +667,7 @@ function Videos() {
                     unCheckedChildren="Inactive"
                     size="small"
                     value={item.status.toString() === "true" || item.status  ? true : false}
-                    key={item.id_media}
+                    key={item.id_media+moment()}
                     onChange={() => {
                       onChangeStatus(item, true);
                     }}
