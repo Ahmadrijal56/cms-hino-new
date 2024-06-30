@@ -652,7 +652,7 @@ function Videos() {
                 <ArgonTypography variant="caption" color="secondary" fontWeight="small" 
                 key={moment()}>
 
-                  {item.status.toString() === "true"  ? ( <Switch
+                  {item.status.toString() === "true"  ? ( <><Switch
                     checkedChildren="Active"
                     unCheckedChildren="Inactive"
                     size="small"
@@ -661,8 +661,9 @@ function Videos() {
                     onChange={() => {
                       onChangeStatus(item, false);
                     }}
-                  />):(
-                  <Switch
+                  />
+                  </>):(
+                    <><Switch
                     checkedChildren="Active"
                     unCheckedChildren="Inactive"
                     size="small"
@@ -671,8 +672,8 @@ function Videos() {
                     onChange={() => {
                       onChangeStatus(item, true);
                     }}
-                  />)}
-                  {item.status.toString()+(item.status.toString() === "true" )}
+                  /></>
+                  )}
                 </ArgonTypography>
               ),
               action: isTrash ? (
