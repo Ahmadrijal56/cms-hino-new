@@ -776,6 +776,11 @@ function Videos() {
     setSelectedDate(dateString);
   };
 
+  const disabledDateTo= (current) => {
+    // Can not select days before today and today
+    return current && current < dayjs(dateFrom, dateFormat).endOf('day');
+  };
+
 
   return (
     <DashboardLayout>
@@ -819,7 +824,7 @@ function Videos() {
                 <span className="titleDate">From </span>
                 <DatePicker onChange={onChangeDateStart} format={dateFormat} size="large" />
                 <span className="titleDate"> To </span>
-                <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large" />
+                <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large"  disabledDate={disabledDateTo}/>
               </ArgonBox>
               <ArgonBox p={3} pt={0}>
                 <Input
