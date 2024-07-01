@@ -624,7 +624,31 @@ function Videos() {
               )}` +
               query
           );
-          const resp = await response.data.data.map(function (item) {
+          const resp = await response.data.data.map(function  (item) {
+
+            const switchChecked=  item.status.toString() =="true"  ? ( <><Switch
+              checkedChildren="Active"
+              unCheckedChildren="Inactive"
+              size="small"
+              checked
+              key={item.id_media+moment()}
+              onChange={() => {
+                onChangeStatus(item, false);
+              }}
+            />
+            </>):(
+              <><Switch
+              checkedChildren="Active"
+              unCheckedChildren="Inactive"
+              size="small"
+              value={item.status.toString() === "true" || item.status  ? true : false}
+              key={item.id_media+moment()}
+              onChange={() => {
+                onChangeStatus(item, true);
+              }}
+            /></>
+            )
+
             return {
               ...item,
               Description: (
@@ -652,17 +676,8 @@ function Videos() {
               ) : (
                 <ArgonTypography variant="caption" color="secondary" fontWeight="small" 
                 key={moment()}>
-<Switch
-                    checkedChildren="Active"
-                    unCheckedChildren="Inactive"
-                    size="small"
-                    checked={item.status}
-                    key={item.id_media+moment()}
-                    onChange={() => {
-                      onChangeStatus(item, !item.status);
-                    }}
-                  />
-                  
+
+                  {switchChecked}
                 </ArgonTypography>
               ),
               action: isTrash ? (
