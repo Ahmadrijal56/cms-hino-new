@@ -46,6 +46,7 @@ import { arrayMoveImmutable } from 'array-move'
 import ReactPlayer from "react-player";
 
 const { Option } = Select;
+var _ = require('lodash');
 
 const columns = [
   {
@@ -998,7 +999,7 @@ function Videos() {
               {/* <Table columns={columns} rows={dataGrid} /> */}
               <Table
                 columns={isTrash ? columnsDelete : columns}
-                dataSource={data}
+                dataSource={_.cloneDeep(data)}
                 onChange={onChangeTable}
                 display={false}
                 pagination={tableParams.pagination}
