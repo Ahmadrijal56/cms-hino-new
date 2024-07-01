@@ -652,29 +652,17 @@ function Videos() {
               ) : (
                 <ArgonTypography variant="caption" color="secondary" fontWeight="small" 
                 key={moment()}>
-
-                  {item.status  ? ( <><Switch
+<Switch
                     checkedChildren="Active"
                     unCheckedChildren="Inactive"
                     size="small"
-                    checked
+                    checked={item.status}
                     key={item.id_media+moment()}
                     onChange={() => {
-                      onChangeStatus(item, false);
+                      onChangeStatus(item, !item.status);
                     }}
                   />
-                  </>):(
-                    <><Switch
-                    checkedChildren="Active"
-                    unCheckedChildren="Inactive"
-                    size="small"
-                    value={item.status.toString() === "true" || item.status  ? true : false}
-                    key={item.id_media+moment()}
-                    onChange={() => {
-                      onChangeStatus(item, true);
-                    }}
-                  /></>
-                  )}
+                  
                 </ArgonTypography>
               ),
               action: isTrash ? (
