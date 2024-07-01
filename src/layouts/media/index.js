@@ -653,7 +653,7 @@ function Videos() {
                 <ArgonTypography variant="caption" color="secondary" fontWeight="small" 
                 key={moment()}>
 
-                  {item.status.toString() === "true"  ? ( <><Switch
+                  {item.status  ? ( <><Switch
                     checkedChildren="Active"
                     unCheckedChildren="Inactive"
                     size="small"
