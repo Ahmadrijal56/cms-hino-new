@@ -72,6 +72,7 @@ import { useNavigate } from "react-router-dom";
 import team2 from "assets/images/team-2.jpg";
 import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
 import { colors } from "@mui/material";
+import { Margin } from "@mui/icons-material";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
@@ -246,7 +247,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                     </Option>
                   {companyList}
                 </Select>):(
-                  <ArgonTypography variant="h5">{companyName}</ArgonTypography>
+                  <ArgonTypography variant="h5" style={{ width: 671, marginTop:5 }}>{companyName}</ArgonTypography>
                 )
                  }
           </div> 
