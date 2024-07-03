@@ -397,7 +397,8 @@ function Videos() {
     formData.append("expireddate", moment(expiredDate).format("YYYY-MM-DD"));
     formData.append("status", true);
     formData.append("trash", false);
-    formData.append("companycode", "Allcompany");
+    formData.append("companycode", companyCode);
+    //formData.append("companycode", "Allcompany");
     if (values.type != "text") {
       fileList.forEach((file) => {
         formData.append("file", file);
@@ -487,6 +488,7 @@ function Videos() {
   const onChangeStatus = async (item,status) => {
     setLoading(true);
     const formData = new FormData();
+    formData.append("companycode", companyCode);
     formData.append("status", status);
     formData.append("id_media", item.id);
 
@@ -510,6 +512,7 @@ function Videos() {
             setSelectedDate("");
             setLoading(false);
             message.success(response.data.message);
+            fetchData()
           }
         }
       })
@@ -523,6 +526,7 @@ function Videos() {
   const onRestore = async (id) => {
     setLoading(true);
     const formData = new FormData();
+    formData.append("companycode", companyCode);
     formData.append("trash", false);
     formData.append("id_media", id);
 
