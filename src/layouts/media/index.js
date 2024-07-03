@@ -34,11 +34,10 @@ import {
   DatePicker,
   Table,
   Checkbox,
-  Switch,
   Popover,
 } from "antd";
 import { UploadOutlined, SearchOutlined } from "@ant-design/icons";
-
+import Switch from "react-switch";
 
 import qs from "qs";
 import SortableList, { SortableItem } from 'react-easy-sort'
@@ -627,10 +626,21 @@ function Videos() {
           );
           const resp = await response.data.data.map(function  (item) {
 
-            const switchChecked=  item.status.toString() =="true"  ? ( <>tfdfdfdf
-            <Backdrop/>
-            </>):(
-              <>bbbbb
+            const switchChecked=  item.status.toString() =="true"  ? ( <Switch
+              checked={true}
+              key={item.id_media+moment()}
+              onChange={() => {
+                onChangeStatus(item, false);
+              }}
+            />
+            ):(
+              <><Switch
+              checked={false}
+              key={item.id_media+moment()}
+              onChange={() => {
+                onChangeStatus(item, true);
+              }}
+            />
             </>
             )
 
@@ -659,11 +669,10 @@ function Videos() {
               statusUpdate: isTrash ? (
                 <></>
               ) : (
-                <ArgonTypography variant="caption" color="secondary" fontWeight="small" 
-                key={moment()}>
+                <>
 
                   {switchChecked}
-                </ArgonTypography>
+                </>
               ),
               action: isTrash ? (
                 <>
