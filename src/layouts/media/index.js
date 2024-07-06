@@ -1164,7 +1164,7 @@ function Videos() {
         </Form>
       </Modal>
 
-      <Modal open={openView} title="Media" onCancel={handleCloseView} key={keyHoliday} footer={null}>
+      <Modal open={openView} title="Media" onCancel={handleCloseView} key={keyHoliday} footer={null} width={800}>
        
 
           {typeMedia == "video" ? (
