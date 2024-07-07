@@ -206,10 +206,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
 
   return (
     <AppBar
+      position={absolute ? "absolute" : navbarType}
       color="inherit"
       sx={(theme) => navbar(theme, { transparentNavbar, absolute, light })}
     >
-      <Toolbar sx={(theme) => navbarContainer(theme, { navbarType })} style={{padding:0, zIndex:1000000, position:"sticky", paddingLeft:300, paddingBottom:20,  paddingTop:20, paddingRight:20, backgroundColor:"red", marginTop:-20}}>
+      <Toolbar sx={(theme) => navbarContainer(theme, { navbarType })} style={{padding:0}}>
         <div className="headerPanel">
           <div className="headerBreadcumn">
           <Breadcrumbs

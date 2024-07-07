@@ -61,16 +61,14 @@ function DashboardLayout({ bgColor, children, ...rest }) {
         height="300px"
         width="100vw"
         position="absolute"
-        top={100}
+        top={0}
         left={0}
         sx={darkMode && { bgColor: ({ palette: { background } }) => background.default }}
         {...rest}
       />
 
-<div style={{marginTop:80}}>
 
-{children}
-</div>
+      {children}
     </ArgonBox>
   );
 }
