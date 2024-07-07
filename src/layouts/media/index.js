@@ -55,13 +55,13 @@ const columns = [
       compare: (a, b) => a.name - b.name,
     },
   },
-  {
-    title: "Content",
-    dataIndex: "description",
-    sorter: {
-      compare: (a, b) => a.description - b.description,
-    },
-  },
+  // {
+  //   title: "Content",
+  //   dataIndex: "description",
+  //   sorter: {
+  //     compare: (a, b) => a.description - b.description,
+  //   },
+  // },
   {
     title: "Publish Date",
     dataIndex: "publishdate",
@@ -280,11 +280,11 @@ function Videos() {
   const items = [
     {
       key: "1",
-      label: "MAIN",
+      label: "UTAMA",
     },
     {
       key: "2",
-      label: "TRASH",
+      label: "SAMPAH",
     },
   ];
 
