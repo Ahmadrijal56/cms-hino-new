@@ -755,24 +755,27 @@ function Videos() {
   useEffect(() => {
     console.log(sessionStorage.getItem("companyDefault"));
     async function loadCompany() {
+      optionsComp.pop([]);
       var list = await JSON.parse(sessionStorage.getItem("companyList") || "[]");
       if (Array.isArray(list)) {
-        var selectCompany = list.map(function (item) {
-          if (item.indexOf("@==") > -1) {
-            const company = item.split("@==");
+        if(optionsComp.length==0){
+          var selectCompany = list.map(function (item) {
+            if (item.indexOf("@==") > -1) {
+              const company = item.split("@==");
 
-            optionsComp.push({
-              value: company[1] + "@==" + company[0],
-              label: company[1],
-            });
-            return (
-              <Option value={item} selected>
-                {company[1]}
-              </Option>
-            );
-          }
-        });
-        setCompanyList(selectCompany);
+              optionsComp.push({
+                value: company[1] + "@==" + company[0],
+                label: company[1],
+              });
+              // return (
+              //   <Option value={item} selected>
+              //     {company[1]}
+              //   </Option>
+              // );
+            }
+          });
+          setCompanyList(selectCompany);
+        } 
         if ((await list.length) == 1) {
           let select = await list[0].split("@==");
           setCompanyCode(await select[0]);
