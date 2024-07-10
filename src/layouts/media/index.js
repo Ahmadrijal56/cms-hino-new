@@ -49,10 +49,17 @@ var _ = require('lodash');
 
 const columns = [
   {
-    title: "Name",
+    title: "Nama",
     dataIndex: "name",
     sorter: {
       compare: (a, b) => a.name - b.name,
+    },
+  },
+  {
+    title: "Tipe",
+    dataIndex: "type",
+    sorter: {
+      compare: (a, b) => a.type - b.type,
     },
   },
   // {
@@ -63,7 +70,7 @@ const columns = [
   //   },
   // },
   {
-    title: "Publish Date",
+    title: "Tanggal Publikasi",
     dataIndex: "publishdate",
     sorter: {
       compare: (a, b) => a.publishdate - b.publishdate,
@@ -71,7 +78,7 @@ const columns = [
     },
   },
   {
-    title: "Expiry Date",
+    title: "Tanggal Habis",
     dataIndex: "expireddate",
     sorter: {
       compare: (a, b) => a.expireddate - b.expireddate,
@@ -79,7 +86,7 @@ const columns = [
     },
   },
   {
-    title: "Last Modify",
+    title: "Tanggal Perubahan",
     dataIndex: "updated_at",
     sorter: {
       compare: (a, b) => a.updated_at - b.updated_at,
@@ -96,28 +103,35 @@ const columns = [
     },
   },
   {
-    title: "Action",
+    title: "Tindakan",
     dataIndex: "action",
   },
 ];
 
 const columnsDelete = [
   {
-    title: "Name",
+    title: "Nama",
     dataIndex: "name",
     sorter: {
       compare: (a, b) => a.name - b.name,
     },
   },
   {
-    title: "Content",
-    dataIndex: "description",
+    title: "Tipe",
+    dataIndex: "type",
     sorter: {
-      compare: (a, b) => a.description - b.description,
+      compare: (a, b) => a.type - b.type,
     },
   },
+  // {
+  //   title: "Content",
+  //   dataIndex: "description",
+  //   sorter: {
+  //     compare: (a, b) => a.description - b.description,
+  //   },
+  // },
   {
-    title: "Publish Date",
+    title: "Tanggal Publikasi",
     dataIndex: "publishdate",
     sorter: {
       compare: (a, b) => a.publishdate - b.publishdate,
@@ -125,7 +139,7 @@ const columnsDelete = [
     },
   },
   {
-    title: "Expiry Date",
+    title: "Tanggal Habis",
     dataIndex: "expireddate",
     sorter: {
       compare: (a, b) => a.expireddate - b.expireddate,
@@ -133,7 +147,7 @@ const columnsDelete = [
     },
   },
   {
-    title: "Last Modify",
+    title: "Tanggal Perubahan",
     dataIndex: "updated_at",
     sorter: {
       compare: (a, b) => a.updated_at - b.updated_at,
@@ -141,7 +155,7 @@ const columnsDelete = [
     },
   },
   {
-    title: "Action",
+    title: "Tindakan",
     dataIndex: "action",
   },
 ];
@@ -188,6 +202,10 @@ function Videos() {
       pageSize: 5,
     },
   });
+  const [getSettingMaxFileImage, setSettingMaxFileImage] = useState("")
+  const [getSettingMaxFileVideo, setSettingMaxFileVideo] = useState("")
+  const [getSettingTooltipImage, setSettingMaxTooltipImage] = useState("")
+  const [getSettingTooltipVideo, setSettingMaxTooltipVideo] = useState("")
 
   const dateFormat = "YYYY-MM-DD";
 
@@ -741,8 +759,8 @@ function Videos() {
 
   const contentFile = (
     <div>
-      <p>Max 100 Mb</p>
-      <p>Image(jpeg,png) and video (mp4)</p>
+      <p>Maksimal Ukuran File: { typeMedia =="video" ? getSettingMaxFileVideo : getSettingMaxFileImage }</p>
+      <p> { typeMedia =="video" ? getSettingTooltipVideo : getSettingTooltipImage }</p>
     </div>
   );
 
@@ -800,7 +818,12 @@ function Videos() {
       loadCompany();
     }
 
+    if (getSettingMaxFileImage==""){
+      callSettings();
+    }
+
     setLoading(false);
+    
   }, [
     open,
     isDelete,
@@ -896,6 +919,53 @@ function Videos() {
     }
   };
 
+  const callSettings = async () => {
+    //setTypeMedia(value);
+      const headers = {
+        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+        "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + sessionStorage.getItem("token"),
+      };
+      await axios
+        .get(process.env.REACT_APP_MAIN_API + "/media-config/all", {
+          headers,
+        })
+        .then(async (response) => {
+          console.log(response);
+          if ((await response.data) != null) {
+            if (await response.status === 200) {
+              response.data.forEach((dataSetting) => {
+                if (dataSetting.name_config=="MAX_FILE_IMAGE"){
+                  setSettingMaxFileImage(dataSetting.value)
+                  return
+                }
+                if (dataSetting.name_config=="MAX_FILE_VIDEO"){
+                  setSettingMaxFileVideo(dataSetting.value)
+                  return
+                }
+                if (dataSetting.name_config=="TOOLTIPS_IMAGE"){
+                  setSettingMaxTooltipImage(dataSetting.value)
+                  return
+                }
+
+                if (dataSetting.name_config=="TOOLTIPS_VIDEO"){
+                  setSettingMaxTooltipVideo(dataSetting.value)
+                  return
+                }
+
+
+              });
+            }
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+          message.error("Error delete file : " + error.message);
+        });
+    };
+
   const onChangeType = (value) => {
     setTypeMedia(value);
   };
@@ -937,7 +1007,7 @@ function Videos() {
                 <ArgonTypography variant="h5" fontWeight="bold">
                   Media
                 </ArgonTypography>
-                <ArgonTypography variant="h6">List of Media</ArgonTypography>
+                <ArgonTypography variant="h6">Daftar Media</ArgonTypography>
               </ArgonBox>
               <ArgonBox>
               <ArgonButton
@@ -947,7 +1017,7 @@ function Videos() {
                     setOpenSort(true);
                   }}
                 >
-                 Reorder Content
+                Urutan Konten
                 </ArgonButton>
                 <ArgonButton
                   color="info"
@@ -956,7 +1026,7 @@ function Videos() {
                   disabled={sessionStorage.getItem("companyDefault") == ""}
                   className="iconAction"
                 >
-                  Add Media
+                 Tambah Media
                 </ArgonButton>
               </ArgonBox>
             </ArgonBox>
@@ -971,10 +1041,10 @@ function Videos() {
               pt={0}
             >
               <ArgonBox p={3} pt={0} pl={0}>
-                <span className="titleDate">From </span>
-                <DatePicker onChange={onChangeDateStart} format={dateFormat} size="large" />
-                <span className="titleDate"> To </span>
-                <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large"  disabledDate={disabledDateTo}/>
+                <span className="titleDate">Dari </span>
+                <DatePicker onChange={onChangeDateStart} format={dateFormat} size="large" placeholder="Pilih Tanggal"/>
+                <span className="titleDate"> Ke </span>
+                <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large"  disabledDate={disabledDateTo} placeholder="Pilih Tanggal"/>
               </ArgonBox>
               <ArgonBox p={3} pt={0}>
                 <Input
