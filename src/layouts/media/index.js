@@ -314,7 +314,13 @@ function Videos() {
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
-      setFileList([file]);
+      const getMax= parseInt((typeMedia=="video" ? getSettingMaxFileVideo : getSettingMaxFileImage) ?? 1);
+      const isLt2M = file.size / 1024 / 1024 < getMax;
+      if (!isLt2M) {
+        message.error('File must smaller than '+( typeMedia =="video" ? getSettingMaxFileVideo : getSettingMaxFileImage )+' MB !');
+      }else{
+        setFileList([file]);
+      }
       return false;
     },
     fileList,
@@ -759,7 +765,7 @@ function Videos() {
 
   const contentFile = (
     <div>
-      <p>Maksimal Ukuran File: { typeMedia =="video" ? getSettingMaxFileVideo : getSettingMaxFileImage }</p>
+      <p>Maksimal Ukuran File: { typeMedia =="video" ? getSettingMaxFileVideo : getSettingMaxFileImage } MB</p>
       <p> { typeMedia =="video" ? getSettingTooltipVideo : getSettingTooltipImage }</p>
     </div>
   );
@@ -935,13 +941,13 @@ function Videos() {
           console.log(response);
           if ((await response.data) != null) {
             if (await response.status === 200) {
-              response.data.forEach((dataSetting) => {
+              response.data.forEach(async (dataSetting) => {
                 if (dataSetting.name_config=="MAX_FILE_IMAGE"){
-                  setSettingMaxFileImage(dataSetting.value)
+                  setSettingMaxFileImage(await dataSetting.value.toString().replace("MB",""))
                   return
                 }
                 if (dataSetting.name_config=="MAX_FILE_VIDEO"){
-                  setSettingMaxFileVideo(dataSetting.value)
+                  setSettingMaxFileVideo(await dataSetting.value.toString().replace("MB",""))
                   return
                 }
                 if (dataSetting.name_config=="TOOLTIPS_IMAGE"){
@@ -1161,7 +1167,7 @@ function Videos() {
           ) : (
             <Form.Item label="File" name="video">
               <Popover content={contentFile} title="File" trigger="hover">
-                <Upload {...props} maxCount={1}>
+                <Upload {...props} maxCount={1} disabled={typeMedia==""}>
                   <Button icon={<UploadOutlined />}>Select File</Button>
                 </Upload>
               </Popover>
