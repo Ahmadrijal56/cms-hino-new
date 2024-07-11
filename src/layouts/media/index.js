@@ -207,6 +207,7 @@ function Videos() {
   const [getSettingTooltipImage, setSettingMaxTooltipImage] = useState("")
   const [getSettingTooltipVideo, setSettingMaxTooltipVideo] = useState("")
   const [getMaxText, setMaxText] = useState(100)
+  const [userType, setUserType] = useState("");
 
   const dateFormat = "YYYY-MM-DD";
 
@@ -726,6 +727,8 @@ function Videos() {
               ),
               action: isTrash ? (
                 <>
+                 { item.created_by.toString().toUpperCase()=='HO' && userType.toString().toUpperCase()=='DEALER'  ? (<></>): (
+                  <>
                   <Icon
                     fontSize="small"
                     className="iconAction"
@@ -744,14 +747,17 @@ function Videos() {
                   >
                     delete
                   </Icon>
+                  </>)}
                 </>
               ) : (
                 <>
+                { item.created_by.toString().toUpperCase()=='HO' && userType.toString().toUpperCase()=='DEALER'  ? (<></>): (
+                  <>
                   <Icon
                     fontSize="small"
                     className="iconAction"
                     onClick={() => {
-                      onEdit(item);
+                     onEdit(item);
                     }}
                   >
                     edit
@@ -765,6 +771,10 @@ function Videos() {
                   >
                     delete
                   </Icon>
+                  </>
+                )
+              }
+                 
                   <Icon fontSize="small" className="iconAction" onClick={() => { onView(item);}}>
                     visibility
                   </Icon>
@@ -847,6 +857,10 @@ function Videos() {
 
     if (getSettingMaxFileImage==""){
       callSettings();
+    }
+
+    if(userType==""){
+      setUserType(sessionStorage.getItem("usertype"))
     }
 
     setLoading(false);
@@ -1175,6 +1189,9 @@ function Videos() {
           </Form.Item>
 
           {typeMedia == "text" ? (
+            <>
+
+<span style={{marginLeft:"33%", }}>Panjang Maksimal Deskripsi : {getMaxText}</span>
             <Form.Item
               label="Deskripsi"
               name="description"
@@ -1187,8 +1204,9 @@ function Videos() {
               initialValue={mediaDesc}
             >
               <TextArea rows={4} maxLength={getMaxText} />
-              Panjang Maksimal : {getMaxText}
+            
             </Form.Item>
+            </>
           ) : (
             <Form.Item label="File" name="video">
               <Popover content={contentFile} title="File" trigger="hover">
