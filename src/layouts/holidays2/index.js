@@ -48,14 +48,14 @@ const { Option } = Select;
 
 const columns = [
   {
-    title: "Date",
+    title: "Tanggal",
     dataIndex: "Date",
     sorter: {
       compare: (a, b) => a.Date - b.Date,
     },
   },
   {
-    title: "Description",
+    title: "Deskripsi",
     dataIndex: "description",
     sorter: {
       compare: (a, b) => a.description - b.description,
@@ -94,7 +94,7 @@ const columns = [
   //   },
   // },
   {
-    title: "Action",
+    title: "Tindakan",
     dataIndex: "action",
   },
 ];
@@ -215,10 +215,6 @@ function Videos() {
         current: 1,
       },
     });
-  };
-
-  const onChangeTags = (pageNumber) => {
-    console.log("Page: ", pageNumber);
   };
 
   const onChangeTable = (pagination, filters, sorter, extra) => {
@@ -796,7 +792,7 @@ function Videos() {
                 <ArgonTypography variant="h5" fontWeight="bold">
                   Holidays
                 </ArgonTypography>
-                <ArgonTypography variant="h6">List of Date</ArgonTypography>
+                <ArgonTypography variant="h6">Daftar Hari Libur</ArgonTypography>
               </ArgonBox>
               <ArgonBox>
                 <ArgonButton
@@ -806,7 +802,7 @@ function Videos() {
                   disabled={sessionStorage.getItem("companyDefault") == ""}
                   className="iconAction"
                 >
-                  Add Date
+                  Tambah Tanggal
                 </ArgonButton>
               </ArgonBox>
             </ArgonBox>
@@ -821,10 +817,10 @@ function Videos() {
               pt={0}
             >
               <ArgonBox p={3} pt={0} pl={0}>
-                <span className="titleDate">From </span>
-                <DatePicker onChange={onChangeDateStart} format={dateFormat} size="large" />
-                <span className="titleDate"> To </span>
-                <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large"  disabledDate={disabledDateTo}/>
+                <span className="titleDate">Dari </span>
+                <DatePicker onChange={onChangeDateStart} format={dateFormat} size="large" placeholder="Pilih Tanggal"/>
+                <span className="titleDate">Ke </span>
+                <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large"  disabledDate={disabledDateTo} placeholder="Pilih Tanggal"/>
               </ArgonBox>
               <ArgonBox p={3} pt={0}>
                 <Input
@@ -876,7 +872,7 @@ function Videos() {
                       onFinishFailed={onFinishFailed}
                     >
                       <Form.Item
-                        label="Date"
+                        label="Tanggal"
                         name="date"
                         rules={[
                           {
@@ -890,7 +886,7 @@ function Videos() {
                       </Form.Item>
 
                       <Form.Item
-                        label="Description"
+                        label="Deskripsi"
                         name="description"
                         rules={[
                           {
@@ -905,7 +901,7 @@ function Videos() {
 
 
                       <Form.Item
-                        label="isActive"
+                        label="Status Aktif"
                         name="isactive"
                         //initialValue={isactive  }
                         initialValue={isActive}

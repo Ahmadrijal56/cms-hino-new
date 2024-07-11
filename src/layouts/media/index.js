@@ -181,7 +181,7 @@ function Videos() {
   const [currentPage, setCurrentPage] = useState(1);
   const [publishDate, setPublishDate] = useState("");
   const [expiredDate, setExpiredDate] = useState("");
-  const [typeMedia, setTypeMedia] = useState("");
+  const [typeMedia, setTypeMedia] = useState("text");
   const [isApplyAll, setIsApplyAll] = useState(false);
   const [mediaName, setMediaName] = useState("");
   const [mediaDesc, setMediaDesc] = useState("");
@@ -206,6 +206,7 @@ function Videos() {
   const [getSettingMaxFileVideo, setSettingMaxFileVideo] = useState("")
   const [getSettingTooltipImage, setSettingMaxTooltipImage] = useState("")
   const [getSettingTooltipVideo, setSettingMaxTooltipVideo] = useState("")
+  const [getMaxText, setMaxText] = useState(100)
 
   const dateFormat = "YYYY-MM-DD";
 
@@ -348,7 +349,7 @@ function Videos() {
       setFileList([]);
       setMediaName("");
       setMediaDesc("");
-      setTypeMedia("");
+      setTypeMedia("text");
       // setDescription(item.description)
       // let date=moment(item.holidays_date)
       // setDefaultDate(date)
@@ -777,7 +778,6 @@ function Videos() {
   );
 
   useEffect(() => {
-    console.log(sessionStorage.getItem("companyDefault"));
     async function loadCompany() {
       optionsComp.pop([]);
       var list = await JSON.parse(sessionStorage.getItem("companyList") || "[]");
@@ -954,9 +954,12 @@ function Videos() {
                   setSettingMaxTooltipImage(dataSetting.value)
                   return
                 }
-
                 if (dataSetting.name_config=="TOOLTIPS_VIDEO"){
                   setSettingMaxTooltipVideo(dataSetting.value)
+                  return
+                }
+                if (dataSetting.name_config=="MAX_TEXT"){
+                  setMaxText(parseInt(dataSetting.value))
                   return
                 }
 
@@ -1133,12 +1136,12 @@ function Videos() {
           </Form.Item>
 
           <Form.Item
-            label="Type"
+            label="Tipe"
             name="type"
             rules={[
               {
                 required: true,
-                message: "Please input the type",
+                message: "Mohon Pilih Tipe",
               },
             ]}
             initialValue={typeMedia}
@@ -1152,7 +1155,7 @@ function Videos() {
 
           {typeMedia == "text" ? (
             <Form.Item
-              label="Description"
+              label="Deskripsi"
               name="description"
               rules={[
                 {
@@ -1162,7 +1165,8 @@ function Videos() {
               ]}
               initialValue={mediaDesc}
             >
-              <TextArea rows={4} />
+              <TextArea rows={4} maxLength={getMaxText} />
+              Panjang Maksimal : {getMaxText}
             </Form.Item>
           ) : (
             <Form.Item label="File" name="video">
@@ -1175,7 +1179,7 @@ function Videos() {
           )}
 
           <Form.Item
-            label="Publish Date"
+            label="Tanggal Publikasi"
             name="publish_date"
             rules={[
               {
@@ -1194,7 +1198,7 @@ function Videos() {
           </Form.Item>
 
           <Form.Item
-            label="Expired Date"
+            label="Tanggal Habis"
             name="expired_date"
             rules={[
               {
@@ -1213,20 +1217,20 @@ function Videos() {
             />
           </Form.Item>
 
-          <Form.Item label="Apply to All" name="applytoall">
+          <Form.Item label="Berlaku Untuk Semua" name="applytoall">
            <Popover content={contentAll} title="Branch" trigger="hover">
               <Checkbox onChange={onChangeApply} checked={isApplyAll}></Checkbox>
             </Popover>
           </Form.Item>
 
           {!isApplyAll ? (
-            <Form.Item label="Company" name="company" initialValue={defaultComp}>
+            <Form.Item label="Dealer" name="company" initialValue={defaultComp}>
               <Select
                 mode="tags"
                 style={{
                   width: "100%",
                 }}
-                placeholder="Company"
+                placeholder="Dealer"
                 onChange={onChangeTags}
                 options={optionsComp}
               />

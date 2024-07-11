@@ -40,6 +40,7 @@ import { message, Modal, Button, Form, InputNumber, Select, DatePicker, Checkbox
 const { Option } = Select;
 
 function Holidays() {
+  const [companyDefault, setCompanyDefault] = useState("");
   const [companyCode, setCompanyCode] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [companyList, setCompanyList] = useState([]);
@@ -166,27 +167,21 @@ function Holidays() {
 
   useEffect(() => {
     async function loadCompany() {
-      var list = await JSON.parse(sessionStorage.getItem("companyList") || "[]");
-      if (Array.isArray(list)) {
-        var selectCompany = list.map(function (item) {
-          if (item.indexOf("@==") > -1) {
-            const company = item.split("@==");
-            return (
-              <Option value={item} key={item}>
-                {company[1]}
-              </Option>
-            );
-          }
-        });
-        console.log(selectCompany);
-        setCompanyList(selectCompany);
-        if ((await list.length) == 1) {
-          let select = await list[0].split("@==");
-          setCompanyCode(await select[0]);
-          setCompanyName(await select[1]);
-          //loadData(select[0]);
-        }
+
+      if (await companyDefault == "") {
+        var compSession = await  sessionStorage.getItem("companyDefault");
+        let select =  compSession.split("@==");
+         setCompanyCode(select[0]);
+         setCompanyName(select[1]);
+         setCompanyDefault(compSession);
+      } else {
+        // alert(companyDefault)
+        let select =  companyDefault.split("@==");
+         setCompanyCode(select[0]);
+         setCompanyName(select[1]);
+        //loadData(select[0]);xs
       }
+      alert(compSession)
     }
 
     async function loadData(selected) {
@@ -276,9 +271,9 @@ function Holidays() {
     if (!open) {
       if (companyCode == "") {
         loadCompany();
-      } else {
-        loadData(companyCode);
       }
+        loadData(companyCode);
+      
     }
 
     console.log("componentDidUpdateFunction");
