@@ -181,7 +181,6 @@ function Holidays() {
          setCompanyName(select[1]);
         //loadData(select[0]);xs
       }
-      alert(compSession)
     }
 
     async function loadData(selected) {
