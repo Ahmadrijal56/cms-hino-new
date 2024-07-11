@@ -315,11 +315,32 @@ function Videos() {
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
+      var isErr=false
       const getMax= parseInt((typeMedia=="video" ? getSettingMaxFileVideo : getSettingMaxFileImage) ?? 1);
       const isLt2M = file.size / 1024 / 1024 < getMax;
       if (!isLt2M) {
+        isErr=true
         message.error('File must smaller than '+( typeMedia =="video" ? getSettingMaxFileVideo : getSettingMaxFileImage )+' MB !');
       }else{
+        if(typeMedia =="video"){
+          const isPNG = file.type === 'video/mpeg';
+          const isJPEG = file.type === 'video/mp4';
+          const isJPG = file.type === ' video/*';
+          if (!isPNG && !isJPEG && !isJPG) {
+            isErr=true
+            message.error(`${file.name} is not a video file`);
+          }
+        }else{
+          const isPNG = file.type === 'image/png';
+          const isJPEG = file.type === 'image/jpeg';
+          const isJPG = file.type === 'image/jpg';
+          if (!isPNG && !isJPEG && !isJPG) {
+            isErr=true
+            message.error(`${file.name} is not a (png/jpeg) file`);
+          }
+        }
+      }
+      if(!isErr){
         setFileList([file]);
       }
       return false;
