@@ -360,7 +360,7 @@ function Videos() {
     },
   };
 
-  const handleOpen = () => {
+  const handleOpen = async() => {
     if (sessionStorage.getItem("companyDefault") == "") {
       message.error("Please choose company code first");
     } else {
@@ -379,6 +379,12 @@ function Videos() {
       setPublishDate(moment().add(-1,'days').format("YYYY-MM-DD"));
       setExpiredDate(moment().format("YYYY-MM-DD"));
       setDefaultComp([]);
+      
+      let defaultCompValue = [];
+      if (userType.toString().toUpperCase()=='DEALER') {
+            defaultCompValue.push(companyName + "@==" + companyCode);
+      }
+      setDefaultComp(defaultCompValue);
     }
   };
   const handleClose = () => setOpen(false);
@@ -501,6 +507,7 @@ function Videos() {
     setLoading(true);
     const formData = new FormData();
     formData.append("trash", true);
+    formData.append("companycode", companyCode);
     formData.append("id_media", id);
 
     const headers = {
@@ -1256,11 +1263,15 @@ function Videos() {
             />
           </Form.Item>
 
-          <Form.Item label="Berlaku Untuk Semua" name="applytoall">
+          {userType.toString().toUpperCase()=='DEALER' ? (<></>):(
+            <Form.Item label="Berlaku Untuk Semua" name="applytoall">
            <Popover content={contentAll} title="Branch" trigger="hover">
               <Checkbox onChange={onChangeApply} checked={isApplyAll}></Checkbox>
             </Popover>
           </Form.Item>
+          )}
+
+          
 
           {!isApplyAll ? (
             <Form.Item label="Dealer" name="company" initialValue={defaultComp}>
