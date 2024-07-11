@@ -900,14 +900,14 @@ function Videos() {
                       </Form.Item>
 
 
-                      <Form.Item
+                      {/* <Form.Item
                         label="Status Aktif"
                         name="isactive"
                         //initialValue={isactive  }
                         initialValue={isActive}
                       >
                         <Checkbox onChange={onChangeStatus} checked={isActive}></Checkbox>
-                      </Form.Item>
+                      </Form.Item> */}
 
                       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                         <Button type="primary" htmlType="submit">
