@@ -919,7 +919,7 @@ function Videos() {
         Authorization: "Bearer " + sessionStorage.getItem("token"),
       };
       await axios
-        .get(process.env.REACT_APP_MAIN_API + "/get/media/104040000?type=" + value.toLowerCase(), {
+        .get(process.env.REACT_APP_MAIN_API + "/get/media/"+companyCode+"?type=" + value.toLowerCase(), {
           headers,
         })
         .then(async (response) => {
