@@ -36,6 +36,7 @@ import Table from "examples/Tables/Table";
 import axios from "axios";
 import moment from "moment";
 import { message, Modal, Button, Form, InputNumber, Select, DatePicker, Checkbox } from "antd";
+import { Height } from "@mui/icons-material";
 
 const { Option } = Select;
 
@@ -304,9 +305,9 @@ function Holidays() {
       </Backdrop>
       <DashboardNavbar />
       <ArgonBox py={3}>
-        <ArgonBox mb={3}>
+        <ArgonBox mb={3} >
           <Card>
-            <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
+            <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3} >
               <ArgonBox>
                 <ArgonTypography variant="h6">Configs</ArgonTypography>
                  {companyList.length > 1 ? (
@@ -340,6 +341,7 @@ function Holidays() {
               </ArgonBox> */}
             </ArgonBox>
             <ArgonBox
+            style={{height:"400px"}}
               sx={{
                 "& .MuiTableRow-root:not(:last-child)": {
                   "& td": {
