@@ -144,6 +144,7 @@ function Illustration() {
                   companyList.push(response.data.values["CompanyCode"]+"@=="+response.data.values["CompanyName"])
                 }
                 sessionStorage.setItem("companyList", JSON.stringify(companyList));
+                sessionStorage.setItem("usertype", response.data.isuser);
 
                 //TEMP
                 sessionStorage.setItem("companyDefault",response.data.default_values["CompanyCode"]+"@=="+response.data.default_values["CompanyName"])
