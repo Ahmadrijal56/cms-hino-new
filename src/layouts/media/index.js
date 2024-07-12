@@ -45,6 +45,7 @@ import { arrayMoveImmutable } from 'array-move'
 import ReactPlayer from "react-player";
 
 const { Option } = Select;
+const { confirm } = Modal;
 var _ = require('lodash');
 
 const columns = [
@@ -171,6 +172,8 @@ function Videos() {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [openSort, setOpenSort] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(0);
   const [isDelete, setIsDelete] = useState(false);
   const [keyHoliday, setKeyHoliday] = useState(0);
   const [selectedDate, setSelectedDate] = useState(0);
@@ -390,6 +393,7 @@ function Videos() {
   const handleClose = () => setOpen(false);
   const handleCloseSort = () => setOpenSort(false);
   const handleCloseView = () => setOpenView(false);
+  const handleCloseConfirm = () => setOpenConfirm(false);
 
   const onEdit = async (item) => {
     setId(item.id);
@@ -502,6 +506,18 @@ function Videos() {
         message.error("Error upload file : " + error.message);
       });
   };
+
+  const onConfirm = async (id) => {
+    confirm({
+      title: 'Apakah Anda yakin menghapus data ini?',
+      content: 'Data yang dihapus tidak akan kembali lagi',
+      onOk() {
+        onTrash(id);
+      },
+      onCancel() {
+      },
+    });
+  }
 
   const onDelete = async (id) => {
     setLoading(true);
@@ -749,7 +765,7 @@ function Videos() {
                     fontSize="small"
                     className="iconAction"
                     onClick={() => {
-                      onTrash(item.id);
+                      onConfirm(item.id);;
                     }}
                   >
                     delete
@@ -1131,6 +1147,9 @@ function Videos() {
         </ArgonBox>
       </ArgonBox>
       <Footer />
+      <Modal open={openConfirm} title="Konfirmasi" onCancel={handleCloseConfirm} onOk={handleCloseConfirm} footer={null} >
+          Apakah anda yakin akan hapus data ini?
+      </Modal>
       <Modal open={openSort} title="Change order of Contents" onCancel={handleCloseSort}  footer={null} >
         <div class="sortModal">
         <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
