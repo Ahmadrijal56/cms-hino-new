@@ -370,7 +370,6 @@ function Videos() {
       setKeyHoliday(keyHoliday + 1);
       setOpen(true);
       setUpdate(false);
-      setIsApplyAll(false);
       setFileList([]);
       setMediaName("");
       setMediaDesc("");
@@ -405,11 +404,11 @@ function Videos() {
     // setDescription(item.description)
     // let date=moment(item.holidays_date)
     // setDefaultDate(date)
-    setIsApplyAll(item.applytoall);
+    await setIsApplyAll(item.applytoall);
     //let datePublish = moment(item.publishdate);
-    setPublishDate(item.publishdate);
+    await setPublishDate(item.publishdate);
     //let dateExpired = moment(item.expireddate);
-    setExpiredDate(item.expireddate);
+    await setExpiredDate(item.expireddate);
     // setExpiredDate(item.expireddate.toString())
 
     let defaultCompValue = [];
@@ -1283,16 +1282,16 @@ function Videos() {
           </Form.Item>
 
           {userType.toString().toUpperCase()=='DEALER' ? (<></>):(
-            <Form.Item label="Berlaku Untuk Semua" name="applytoall">
+            <Form.Item label="Berlaku Untuk Semua" name="applytoall" >
            <Popover content={contentAll} title="Branch" trigger="hover">
-              <Checkbox onChange={onChangeApply} checked={isApplyAll}></Checkbox>
+              <Checkbox onChange={onChangeApply} checked={isApplyAll.toString().toLowerCase()=="true"}></Checkbox>
             </Popover>
           </Form.Item>
           )}
 
           
 
-          {!isApplyAll ? (
+          {!(isApplyAll.toString().toLowerCase()=="true") ? (
             <Form.Item label="Dealer" name="company" initialValue={defaultComp}>
               <Select
                 mode="tags"
