@@ -1223,12 +1223,16 @@ function Videos() {
               rules={[
                 {
                   required: true,
-                  message: "Please input the description",
+                  message: "Mohon isi data deskripsi",
+                },
+                {
+                  max: getMaxText,
+                  message: "Isi deksripsi harus dibawah "+getMaxText+" karakter huruf",
                 },
               ]}
               initialValue={mediaDesc}
             >
-              <TextArea rows={4} maxLength={getMaxText} />
+              <TextArea rows={4}  />
             
             </Form.Item>
             </>
