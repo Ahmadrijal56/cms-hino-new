@@ -378,8 +378,8 @@ function Videos() {
       // let date=moment(item.holidays_date)
       // setDefaultDate(date)
       setIsApplyAll(false);
-      setPublishDate(moment().add(-1,'days').format("YYYY-MM-DD"));
-      setExpiredDate(moment().format("YYYY-MM-DD"));
+      setPublishDate(moment().format("YYYY-MM-DD"));
+      setExpiredDate(moment().add(1,'days').format("YYYY-MM-DD"));
       setDefaultComp([]);
       
       let defaultCompValue = [];
