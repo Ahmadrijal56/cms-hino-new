@@ -384,7 +384,7 @@ function Videos() {
       
       let defaultCompValue = [];
       if (userType.toString().toUpperCase()=='DEALER') {
-            defaultCompValue.push(companyName + "@==" + companyCode);
+            defaultCompValue.push(companyCode);
       }
       setDefaultComp(defaultCompValue);
     }
@@ -415,7 +415,7 @@ function Videos() {
     if (item.forcompanycode != null) {
       await item.forcompanycode.map(function (comp) {
         if (comp != null) {
-          defaultCompValue.push(comp["companyname"] + "@==" + comp["companycode"]);
+          defaultCompValue.push(comp["companycode"]);
         }
       });
     }
@@ -465,8 +465,8 @@ function Videos() {
     } else {
       var compActive = [];
       values.company.forEach((item) => {
-        const company = item.split("@==");
-        compActive.push(company[1].toString());
+        //const company = item.split("@==");
+        compActive.push(item);
       });
       var text = JSON.stringify(compActive);
       formData.append("applytoall", false);
@@ -841,7 +841,7 @@ function Videos() {
               const company = item.split("@==");
 
               optionsComp.push({
-                value: company[1] + "@==" + company[0],
+                value: company[0],
                 label: company[1],
               });
               // return (
