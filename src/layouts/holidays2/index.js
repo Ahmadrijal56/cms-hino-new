@@ -622,7 +622,7 @@ function Videos() {
 
   const contentAll = (
     <div>
-      <p>Apply to All Vendors/ Branchs</p>
+      <p>Terapkan untuk semua Vendors/ Branchs</p>
     </div>
   );
 

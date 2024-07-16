@@ -90,7 +90,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
   useEffect(() => {
     const items = sessionStorage.getItem("token");
     if (!items) {
-      navigate("/authentication/sign-in");
+      //navigate("/authentication/sign-in");
+      window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
     }
 
     // Setting the navbar type

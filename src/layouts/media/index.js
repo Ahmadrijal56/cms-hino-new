@@ -79,7 +79,7 @@ const columns = [
     },
   },
   {
-    title: "Tanggal Habis",
+    title: "Tanggal Kedaluwarsa",
     dataIndex: "expireddate",
     sorter: {
       compare: (a, b) => a.expireddate - b.expireddate,
@@ -140,7 +140,7 @@ const columnsDelete = [
     },
   },
   {
-    title: "Tanggal Habis",
+    title: "Tanggal Kedaluwarsa",
     dataIndex: "expireddate",
     sorter: {
       compare: (a, b) => a.expireddate - b.expireddate,
@@ -719,6 +719,11 @@ function Videos() {
 
             return {
               ...item,
+              type: (
+                <ArgonTypography variant="caption"  fontWeight="medium">
+                  {item.type.toString().replace("text","Teks").replace("image","Foto").replace("video","Video")}
+                </ArgonTypography>
+              ),
               Description: (
                 <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                   {item.description}
@@ -826,7 +831,7 @@ function Videos() {
 
   const contentAll = (
     <div>
-      <p>Apply to All Vendors/ Branchs</p>
+      <p>Terapkan untuk semua Perusahaan</p>
     </div>
   );
 
@@ -1153,8 +1158,8 @@ function Videos() {
         <div class="sortModal">
         <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
               <Select.Option value="" >Choose type</Select.Option>
-              <Select.Option value="text">Text</Select.Option>
-              <Select.Option value="image">Image</Select.Option>
+              <Select.Option value="text">Teks</Select.Option>
+              <Select.Option value="image">Foto</Select.Option>
               <Select.Option value="video">Video</Select.Option>
             </Select>
             
@@ -1207,8 +1212,8 @@ function Videos() {
             initialValue={typeMedia}
           >
             <Select onChange={onChangeType}>
-              <Select.Option value="text">Text</Select.Option>
-              <Select.Option value="image">Image</Select.Option>
+              <Select.Option value="text">Teks</Select.Option>
+              <Select.Option value="image">Foto</Select.Option>
               <Select.Option value="video">Video</Select.Option>
             </Select>
           </Form.Item>
@@ -1266,7 +1271,7 @@ function Videos() {
           </Form.Item>
 
           <Form.Item
-            label="Tanggal Habis"
+            label="Tanggal Kedaluwarsa"
             name="expired_date"
             rules={[
               {
@@ -1286,7 +1291,7 @@ function Videos() {
           </Form.Item>
 
           {userType.toString().toUpperCase()=='DEALER' ? (<></>):(
-            <Form.Item label="Berlaku Untuk Semua" name="applytoall" >
+            <Form.Item label="Terapkan ke semua" name="applytoall" >
            <Popover content={contentAll} title="Branch" trigger="hover">
               <Checkbox onChange={onChangeApply} checked={isApplyAll.toString().toLowerCase()=="true"}></Checkbox>
             </Popover>
@@ -1296,13 +1301,13 @@ function Videos() {
           
 
           {!(isApplyAll.toString().toLowerCase()=="true") ? (
-            <Form.Item label="Dealer" name="company" initialValue={defaultComp}>
+            <Form.Item label="Perusahaan" name="company" initialValue={defaultComp}>
               <Select
                 mode="tags"
                 style={{
                   width: "100%",
                 }}
-                placeholder="Dealer"
+                placeholder="Perusahaan"
                 onChange={onChangeTags}
                 options={optionsComp}
               />

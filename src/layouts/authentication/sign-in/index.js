@@ -84,13 +84,14 @@ function Illustration() {
 
             setLoading(false);
           } else {
-            setLoading(false);
+              window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
           }
         });
           
         } catch(error) {
             console.log(error)
-            setLoading(false)
+             window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+            //setLoading(false)
           }
         }
 
@@ -100,7 +101,11 @@ function Illustration() {
     if (items) {
       navigate('/holidays');
     }else{
-      checkToken(token);
+      if(token){
+        checkToken(token);
+      }else{
+        window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+      }
     }
 
   },[]);
