@@ -613,19 +613,6 @@ function Videos() {
     }
   };
 
-  const contentFile = (
-    <div>
-      <p>Max 100 Mb</p>
-      <p>Image(jpeg,png) and video (mp4)</p>
-    </div>
-  );
-
-  const contentAll = (
-    <div>
-      <p>Terapkan untuk semua Vendors/ Branchs</p>
-    </div>
-  );
-
   useEffect(() => {
     console.log(sessionStorage.getItem("companyDefault"));
     async function loadCompany() {

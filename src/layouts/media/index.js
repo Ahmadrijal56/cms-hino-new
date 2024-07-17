@@ -831,7 +831,7 @@ function Videos() {
 
   const contentAll = (
     <div>
-      <p>Terapkan untuk semua Perusahaan</p>
+      <p>Jika dicentang, konten dapat dilihat oleh semua perusahaan</p>
     </div>
   );
 
@@ -1292,7 +1292,7 @@ function Videos() {
 
           {userType.toString().toUpperCase()=='DEALER' ? (<></>):(
             <Form.Item label="Terapkan ke semua" name="applytoall" >
-           <Popover content={contentAll} title="Branch" trigger="hover">
+           <Popover content={contentAll} title="Info" trigger="hover">
               <Checkbox onChange={onChangeApply} checked={isApplyAll.toString().toLowerCase()=="true"}></Checkbox>
             </Popover>
           </Form.Item>
