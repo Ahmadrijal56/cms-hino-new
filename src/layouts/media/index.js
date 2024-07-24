@@ -1294,7 +1294,7 @@ function Videos() {
 
           {userType.toString().toUpperCase()=='DEALER' ? (<></>):(
             <Form.Item label="Terapkan ke semua" name="applytoall" >
-           <Popover content={contentAll} title="Info" trigger="hover">
+           <Popover content={contentAll} title="Terapkan ke semua?" trigger="hover">
               <Checkbox onChange={onChangeApply} checked={isApplyAll.toString().toLowerCase()=="true"}></Checkbox>
             </Popover>
           </Form.Item>
