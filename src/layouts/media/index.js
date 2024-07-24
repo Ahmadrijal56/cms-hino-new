@@ -412,12 +412,14 @@ function Videos() {
     // setExpiredDate(item.expireddate.toString())
 
     let defaultCompValue = [];
-    if (item.forcompanycode != null) {
-      await item.forcompanycode.map(function (comp) {
-        if (comp != null) {
-          defaultCompValue.push(comp["companycode"]+"@=="+comp["companyname"]);
-        }
-      });
+    if(item.applytoall=="false"){
+      if (item.forcompanycode != null) {
+        await item.forcompanycode.map(function (comp) {
+          if (comp != null) {
+            defaultCompValue.push(comp["companycode"]+"@=="+comp["companyname"]);
+          }
+        });
+      }
     }
     setDefaultComp(defaultCompValue);
     setOpen(true);
