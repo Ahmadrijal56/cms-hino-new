@@ -229,7 +229,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
           <div className="headerCompanyList">
           { companyList.length >1 ?
                  (<Select
-                  howSearch={true}
+                  showSearch={true}
                   style={{ width: 320 }}
                   optionFilterProp="children"
                   onChange={async(value) => {

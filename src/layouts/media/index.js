@@ -415,7 +415,7 @@ function Videos() {
     if (item.forcompanycode != null) {
       await item.forcompanycode.map(function (comp) {
         if (comp != null) {
-          defaultCompValue.push(comp["companycode"]);
+          defaultCompValue.push(comp["companycode"]+"@=="+comp["companyname"]);
         }
       });
     }
@@ -465,8 +465,8 @@ function Videos() {
     } else {
       var compActive = [];
       values.company.forEach((item) => {
-        //const company = item.split("@==");
-        compActive.push(item);
+        let company = item.split("@==");
+        compActive.push(company[0]);
       });
       var text = JSON.stringify(compActive);
       formData.append("applytoall", false);
@@ -846,7 +846,7 @@ function Videos() {
               const company = item.split("@==");
 
               optionsComp.push({
-                value: company[0],
+                value: item,
                 label: company[1],
               });
               // return (
