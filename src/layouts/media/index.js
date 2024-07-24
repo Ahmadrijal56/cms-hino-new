@@ -510,7 +510,7 @@ function Videos() {
 
   const onConfirm = async (id) => {
     confirm({
-      title: 'Terapkan ke semua?',
+      title: 'Anda yakin ingin menghapus konten ini?',
       content: 'Data yang dihapus tidak akan kembali lagi',
       onOk() {
         onTrash(id);
