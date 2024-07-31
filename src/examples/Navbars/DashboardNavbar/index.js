@@ -36,6 +36,17 @@ import ArgonInput from "components/ArgonInput";
 // Argon Dashboard 2 MUI example components
 import Breadcrumbs from "examples/Breadcrumbs";
 import NotificationItem from "examples/Items/NotificationItem";
+import { message,  Modal, Button, Form, Input, Select, DatePicker, Checkbox } from 'antd';
+
+import { 
+ArrowLeftOutlined,
+FullscreenOutlined,
+UserSwitchOutlined,
+LogoutOutlined,
+} from "@ant-design/icons";
+
+
+import moment from "moment";
 
 // Custom styles for DashboardNavbar
 import {
@@ -55,11 +66,13 @@ import {
   setOpenConfigurator,
 } from "context";
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 // Images
 import team2 from "assets/images/team-2.jpg";
 import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
+import { colors } from "@mui/material";
+import { Margin } from "@mui/icons-material";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
@@ -68,15 +81,19 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
   const navigate = useNavigate();
+  const [companyList,setCompanyList] = useState([]);
+  const [companyCode,setCompanyCode] = useState("");
+  const [companyName,setCompanyName] = useState("");
+  const [companyDefault,setCompanyDefault] = useState("");
+  const [showSetting, setShowSetting] = useState(false);
 
   useEffect(() => {
-
-    const items = sessionStorage.getItem('token');
+    const items = sessionStorage.getItem("token");
     if (!items) {
-      navigate('/authentication/sign-in');
+      //navigate("/authentication/sign-in");
+      window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
     }
 
-    
     // Setting the navbar type
     if (fixedNavbar) {
       setNavbarType("sticky");
@@ -98,8 +115,40 @@ function DashboardNavbar({ absolute, light, isMini }) {
     // Call the handleTransparentNavbar function to set the state with the initial value.
     handleTransparentNavbar();
 
+
+    async function loadCompany() {
+      setCompanyDefault(sessionStorage.getItem("companyDefault"))
+      var list=await JSON.parse(sessionStorage.getItem("companyList") || "[]");
+          if (Array.isArray(list)) {
+          
+          var selectCompany = list.map(function(item) {
+            if(item.indexOf("@==")>-1){
+              const company= item.split("@==")
+              return (
+                <Option value={item} key={item}>
+                  {company[1]}
+                </Option>
+              );
+            }
+          });
+          console.log(selectCompany)
+          setCompanyList(selectCompany)
+          if (await list.length == 1){
+            let select= await list[0].split("@==")
+            setCompanyCode(await select[0])
+            setCompanyName(await select[1])
+            //loadData(select[0]);
+          }
+        }
+
+    }
+
+   loadCompany();
+
     // Remove event listener on cleanup
     return () => window.removeEventListener("scroll", handleTransparentNavbar);
+
+    
   }, [dispatch, fixedNavbar]);
 
   const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
@@ -146,9 +195,14 @@ function DashboardNavbar({ absolute, light, isMini }) {
     </Menu>
   );
 
-  const handleLogout=()=>{
+  const handleLogout = () => {
     sessionStorage.clear();
-    navigate('/authentication/sign-in');
+    //navigate("/authentication/sign-in");
+    window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+  };
+
+  const linkCMS = async () => {
+    window.location.href = process.env.REACT_APP_URL_DASH+"/login?token="+localStorage.getItem("token");
   }
 
   return (
@@ -157,76 +211,97 @@ function DashboardNavbar({ absolute, light, isMini }) {
       color="inherit"
       sx={(theme) => navbar(theme, { transparentNavbar, absolute, light })}
     >
-      <Toolbar sx={(theme) => navbarContainer(theme, { navbarType })}>
-        <ArgonBox
-          color={light && transparentNavbar ? "white" : "dark"}
-          mb={{ xs: 1, md: 0 }}
-          sx={(theme) => navbarRow(theme, { isMini })}
-        >
+      <Toolbar sx={(theme) => navbarContainer(theme, { navbarType })} style={{padding:0}}>
+        <div className="headerPanel">
+          <div className="headerBreadcumn">
           <Breadcrumbs
-            icon="home"
-            title={route[route.length - 1]}
-            route={route}
-            light={transparentNavbar ? light : false}
-          />
-          <Icon fontSize="medium" sx={navbarDesktopMenu} onClick={handleMiniSidenav}>
-            {miniSidenav ? "menu_open" : "menu"}
-          </Icon>
-        </ArgonBox>
-        {isMini ? null : (
-          <ArgonBox sx={(theme) => navbarRow(theme, { isMini })}>
-           
-            <ArgonBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in" onClick={handleLogout} >
-                <IconButton sx={navbarIconButton} size="small">
-                  <Icon
-                    sx={({ palette: { dark, white } }) => ({
-                      color: light && transparentNavbar ? white.main : dark.main,
-                    })}
+              icon="home"
+              title={route[route.length - 1]}
+              route={route}
+              light={transparentNavbar ? light : false}
+            />
+          </div>
+          <div style={{float:"left", display:"none" }}>
+              <Icon fontSize="medium" onClick={handleMiniSidenav}>
+                {miniSidenav ? "menu_open" : "menu"}
+              </Icon>
+            </div>
+          <div className="headerCompanyList">
+          { companyList.length >1 ?
+                 (<Select
+                  showSearch={true}
+                  style={{ width: 320 }}
+                  optionFilterProp="children"
+                  onChange={async(value) => {
+                    if (value != null) {
+                      let select= await value.split("@==")
+                      setCompanyCode(await select[0])
+                      setCompanyName(await select[1])
+                      sessionStorage.setItem("companyDefault",value)
+                      window.location.reload();
+                      //loadData(select[0]);
+                    }
+                  }}
+                  defaultValue={sessionStorage.getItem("companyDefault")??""}
                   >
-                    account_circle
-                  </Icon>
-                  <ArgonTypography
-                    variant="button"
-                    fontWeight="medium"
-                    color={light && transparentNavbar ? "white" : "dark"}
-                  >
-                    Sign Out
-                  </ArgonTypography>
-                </IconButton>
-              </Link>
-              {/* <IconButton
-                size="small"
-                color={light && transparentNavbar ? "white" : "dark"}
-                sx={navbarMobileMenu}
-                onClick={handleMiniSidenav}
-              >
-                <Icon>{miniSidenav ? "menu_open" : "menu"}</Icon>
+                     <Option value="" selected>
+                      Choose a Company
+                    </Option>
+                  {companyList}
+                </Select>):(
+                  <ArgonTypography variant="h5" style={{ width: 671, marginTop:5 }}>{companyName}</ArgonTypography>
+                )
+                 }
+          </div> 
+          <div style={{ float: "right" }}>
+          <Icon className="headerIcon" fontSize="large" onClick={()=>{
+            !showSetting ? setShowSetting(true) : setShowSetting(false)
+          }}>settings</Icon>
+            {/* <Link to="/authentication/sign-in" onClick={handleLogout}>
+              <IconButton sx={navbarIconButton} size="small">
+                <Icon
+                  sx={({ palette: { dark, white } }) => ({
+                    color: light && transparentNavbar ? white.main : dark.main,
+                  })}
+                >
+                  account_circle
+                </Icon>
+                <ArgonTypography
+                  variant="button"
+                  fontWeight="medium"
+                  color={light && transparentNavbar ? "red" : "dark"}
+                >
+                  Sign Out
+                </ArgonTypography>
               </IconButton>
-              <IconButton
-                size="small"
-                color={light && transparentNavbar ? "white" : "dark"}
-                sx={navbarIconButton}
-                onClick={handleConfiguratorOpen}
-              >
-                <Icon>settings</Icon>
-              </IconButton>
-              <IconButton
-                size="small"
-                color={light && transparentNavbar ? "white" : "dark"}
-                sx={navbarIconButton}
-                aria-controls="notification-menu"
-                aria-haspopup="true"
-                variant="contained"
-                onClick={handleOpenMenu}
-              >
-                <Icon>notifications</Icon>
-              </IconButton> */}
-              {renderMenu()}
-            </ArgonBox>
-          </ArgonBox>
-        )}
+            </Link> */}
+          </div>
+          <div className="headerDate">
+          {moment().format('DD MMMM YYYY')}
+          </div>
+        </div>
+        
       </Toolbar>
+
+      {showSetting ?(<div className="blockMenu">
+        <div className="settingsBlock" onClick={()=>{
+            setShowSetting(false)
+          }}>
+          
+          <ArrowLeftOutlined className="settingsIcon" />  
+          <div className="title">BACK</div>
+        </div>
+        <div className="settingsBlock"  onClick={linkCMS}>
+          <UserSwitchOutlined className="settingsIcon" />
+          <div className="title">To Dashboard</div>
+        </div>
+        <div className="settingsBlock" onClick={handleLogout}>
+        <LogoutOutlined className="settingsIcon" />
+          <div className="title">Log Out</div>
+        </div>
+      </div>)
+      :null}
+      
     </AppBar>
   );
 }

@@ -36,10 +36,12 @@ import Table from "examples/Tables/Table";
 import axios from "axios";
 import moment from "moment";
 import { message, Modal, Button, Form, InputNumber, Select, DatePicker, Checkbox } from "antd";
+import { Height } from "@mui/icons-material";
 
 const { Option } = Select;
 
 function Holidays() {
+  const [companyDefault, setCompanyDefault] = useState("");
   const [companyCode, setCompanyCode] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [companyList, setCompanyList] = useState([]);
@@ -166,26 +168,19 @@ function Holidays() {
 
   useEffect(() => {
     async function loadCompany() {
-      var list = await JSON.parse(sessionStorage.getItem("companyList") || "[]");
-      if (Array.isArray(list)) {
-        var selectCompany = list.map(function (item) {
-          if (item.indexOf("@==") > -1) {
-            const company = item.split("@==");
-            return (
-              <Option value={item} key={item}>
-                {company[1]}
-              </Option>
-            );
-          }
-        });
-        console.log(selectCompany);
-        setCompanyList(selectCompany);
-        if ((await list.length) == 1) {
-          let select = await list[0].split("@==");
-          setCompanyCode(await select[0]);
-          setCompanyName(await select[1]);
-          loadData(select[0]);
-        }
+
+      if (await companyDefault == "") {
+        var compSession = await  sessionStorage.getItem("companyDefault");
+        let select =  compSession.split("@==");
+         setCompanyCode(select[0]);
+         setCompanyName(select[1]);
+         setCompanyDefault(compSession);
+      } else {
+        // alert(companyDefault)
+        let select =  companyDefault.split("@==");
+         setCompanyCode(select[0]);
+         setCompanyName(select[1]);
+        //loadData(select[0]);xs
       }
     }
 
@@ -276,9 +271,9 @@ function Holidays() {
     if (!open) {
       if (companyCode == "") {
         loadCompany();
-      } else {
-        loadData(companyCode);
       }
+        loadData(companyCode);
+      
     }
 
     console.log("componentDidUpdateFunction");
@@ -310,12 +305,12 @@ function Holidays() {
       </Backdrop>
       <DashboardNavbar />
       <ArgonBox py={3}>
-        <ArgonBox mb={3}>
+        <ArgonBox mb={3} >
           <Card>
-            <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
+            <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3} >
               <ArgonBox>
                 <ArgonTypography variant="h6">Configs</ArgonTypography>
-                {companyList.length > 1 ? (
+                 {companyList.length > 1 ? (
                   <Select
                     showSearch={true}
                     style={{ width: 320 }}
@@ -346,6 +341,7 @@ function Holidays() {
               </ArgonBox> */}
             </ArgonBox>
             <ArgonBox
+            style={{height:"400px"}}
               sx={{
                 "& .MuiTableRow-root:not(:last-child)": {
                   "& td": {

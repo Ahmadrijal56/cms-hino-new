@@ -23,6 +23,7 @@ import PropTypes from "prop-types";
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
+import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 
 // Argon Dashboard 2 MUI context
 import { useArgonController, setLayout } from "context";
@@ -52,6 +53,9 @@ function DashboardLayout({ bgColor, children, ...rest }) {
         },
       })}
     >
+
+{/* <DashboardNavbar /> */}
+
       <ArgonBox
         bgColor={background || "red"}
         height="300px"
@@ -62,6 +66,8 @@ function DashboardLayout({ bgColor, children, ...rest }) {
         sx={darkMode && { bgColor: ({ palette: { background } }) => background.default }}
         {...rest}
       />
+
+
       {children}
     </ArgonBox>
   );

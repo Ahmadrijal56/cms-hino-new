@@ -119,12 +119,13 @@ const navbarIconButton = ({ typography: { size }, breakpoints }) => ({
 });
 
 const navbarDesktopMenu = ({ breakpoints }) => ({
-  display: "none !important",
-  cursor: "pointer",
+  // display: "none !important",
+ // cursor: "pointer",
+  float:"left",
 
-  [breakpoints.up("xl")]: {
-    display: "inline-block !important",
-  },
+  // [breakpoints.up("xl")]: {
+  //   display: "inline-block !important",
+  // },
 });
 
 const navbarMobileMenu = ({ breakpoints }) => ({

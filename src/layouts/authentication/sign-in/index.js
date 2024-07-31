@@ -36,14 +36,76 @@ function Illustration() {
   const navigate = useNavigate();
   const [rememberMe, setRememberMe] = useState(false);
   const [Loading,setLoading] = useState(false);
+  const query = new URLSearchParams(window.location.search);
+  const token = query.get('token')
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
   useEffect(() => {
 
+    const checkToken = async (token) => {
+
+      if(token){
+        setLoading(true);
+        try{
+          const headers = { 
+            "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+            "Access-Control-Allow-Methods": 'OPTIONS,POST,GET', // this states the allowed methods
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer '+token
+          };
+        await axios
+        .get(process.env.REACT_APP_MAIN_API + "/checklogin", {
+          headers,
+        })
+        .then(async (response) => {
+          if (response.data.status === 200) {
+
+            sessionStorage.setItem("username", "admin@hino.id");
+            sessionStorage.setItem("token", response.data.token);
+
+                console.log(response)
+                let companyList=[]
+                if( await response.data.values.length>1){
+                    await response.data.values.map(function(item) {
+                        companyList.push(item.CompanyCode+"@=="+item.CompanyName)
+                    })
+                }else{
+                  companyList.push(response.data.values["CompanyCode"]+"@=="+response.data.values["CompanyName"])
+                }
+                sessionStorage.setItem("companyList", JSON.stringify(companyList));
+                sessionStorage.setItem("usertype", response.data.isuser);
+
+                //TEMP
+                sessionStorage.setItem("companyDefault",response.data.default_values["CompanyCode"]+"@=="+response.data.default_values["CompanyName"])
+                sessionStorage.setItem("companyUser",response.data.default_values["CompanyCode"])
+              
+                navigate('/holidays');
+
+            setLoading(false);
+          } else {
+              window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+          }
+        });
+          
+        } catch(error) {
+            console.log(error)
+             window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+            //setLoading(false)
+          }
+        }
+
+    }
+
     const items = sessionStorage.getItem('token');
     if (items) {
       navigate('/holidays');
+    }else{
+      if(token){
+        checkToken(token);
+      }else{
+        window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+      }
     }
 
   },[]);
@@ -87,7 +149,11 @@ function Illustration() {
                   companyList.push(response.data.values["CompanyCode"]+"@=="+response.data.values["CompanyName"])
                 }
                 sessionStorage.setItem("companyList", JSON.stringify(companyList));
+                sessionStorage.setItem("usertype", response.data.isuser);
 
+                //TEMP
+                sessionStorage.setItem("companyDefault",response.data.default_values["CompanyCode"]+"@=="+response.data.default_values["CompanyName"])
+                sessionStorage.setItem("companyUser",response.data.default_values["CompanyCode"])
               
                 navigate('/holidays');
 

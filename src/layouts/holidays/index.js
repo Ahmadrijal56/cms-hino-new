@@ -19,8 +19,6 @@ import { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
@@ -41,6 +39,7 @@ import { message,  Modal, Button, Form, Input, Select, DatePicker, Checkbox } fr
 const { Option } = Select;
 
 function Holidays() {
+  const [companyDefault,setCompanyDefault] = useState("");
   const [companyCode,setCompanyCode] = useState("");
   const [companyName,setCompanyName] = useState("");
   const [companyList,setCompanyList] = useState([]);
@@ -146,14 +145,28 @@ function Holidays() {
                 );
               }
             });
-            console.log(selectCompany)
             setCompanyList(selectCompany)
-            if (await list.length == 1){
-              let select= await list[0].split("@==")
-              setCompanyCode(await select[0])
-              setCompanyName(await select[1])
+
+            if (companyDefault == "") {
+              var compSession = sessionStorage.getItem("companyDefault");
+              setCompanyDefault(compSession);
+              let select = compSession.split("@==");
+              setCompanyCode(select[0]);
+              setCompanyName(select[1]);
+              loadData(select[0]);
+            } else {
+              // alert(companyDefault)
+              let select = companyDefault.split("@==");
+              setCompanyCode(select[0]);
+              setCompanyName(select[1]);
               loadData(select[0]);
             }
+            // if (await list.length == 1){
+            //   let select= await list[0].split("@==")
+            //   setCompanyCode(await select[0])
+            //   setCompanyName(await select[1])
+            //   loadData(select[0]);
+            // }
           }
      }
 
@@ -219,6 +232,7 @@ function Holidays() {
           }
       }
       
+    setCompanyDefault(sessionStorage.getItem("companyDefault"))
     console.log("componentDidUpdateFunction");
 
   },[open,companyCode, isDelete])
@@ -288,16 +302,16 @@ function Holidays() {
         <CircularProgress color="inherit" />
       </Backdrop>
       <DashboardNavbar />
-      <ArgonBox py={3}>
+      <ArgonBox py={3} >
         <ArgonBox mb={3}>
           <Card>
-            <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
+            <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3} >
                <ArgonBox >
                  <ArgonTypography variant="h6">Holidays</ArgonTypography>
                  { companyList.length >1 ?
                  (<Select
                   howSearch={true}
-                  style={{ width: 320 }}
+                  style={{ width: 320, display:'none' }}
                   optionFilterProp="children"
                   onChange={async(value) => {
                     if (value != null) {
@@ -307,7 +321,7 @@ function Holidays() {
                       //loadData(select[0]);
                     }
                   }}
-                  defaultValue=""
+                  defaultValue={sessionStorage.getItem("companyDefault")}
                   >
                      <Option value="" selected>
                       Choose a Company
@@ -322,7 +336,7 @@ function Holidays() {
                  }
                  
               </ArgonBox>
-              <ArgonBox >
+              <ArgonBox>
                 <ArgonButton color="info" size="small" onClick={handleOpen} disabled={companyCode==""} >
                   Add Holiday
                 </ArgonButton>
@@ -337,6 +351,7 @@ function Holidays() {
                   },
                 },
               }}
+              height="35vw"
             >
               <Table columns={columns} rows={dataGrid} />
             </ArgonBox>

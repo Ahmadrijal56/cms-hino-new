@@ -51,6 +51,8 @@ import { useArgonController, setMiniSidenav, setOpenConfigurator } from "context
 import "assets/css/nucleo-icons.css";
 import "assets/css/nucleo-svg.css";
 
+import "assets/css/all.css";
+
 export default function App() {
   const [controller, dispatch] = useArgonController();
   const { miniSidenav, direction, layout, openConfigurator, sidenavColor, darkSidenav, darkMode } =

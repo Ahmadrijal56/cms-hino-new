@@ -43,7 +43,7 @@ function Breadcrumbs({ icon, title, route, light }) {
           <ArgonTypography
             component="span"
             variant="body2"
-            color={light ? "white" : "dark"}
+            color={light ? "red" : "dark"}
             opacity={light ? 0.8 : 0.5}
             sx={{ lineHeight: 0 }}
           >
@@ -57,7 +57,7 @@ function Breadcrumbs({ icon, title, route, light }) {
               variant="button"
               fontWeight="regular"
               textTransform="capitalize"
-              color={light ? "white" : "dark"}
+              color={light ? "green" : "dark"}
               opacity={light ? 0.8 : 0.5}
               sx={{ lineHeight: 0 }}
             >
@@ -69,21 +69,12 @@ function Breadcrumbs({ icon, title, route, light }) {
           variant="button"
           fontWeight="regular"
           textTransform="capitalize"
-          color={light ? "white" : "dark"}
-          sx={{ lineHeight: 0 }}
+          color={light ? "red" : "dark"}
+          sx={{ lineHeight: 0, }}
         >
-          {title.replace("-", " ")}
+         {"/ "} {title.replace("-", " ")}
         </ArgonTypography>
       </MuiBreadcrumbs>
-      <ArgonTypography
-        fontWeight="bold"
-        textTransform="capitalize"
-        variant="h6"
-        color={light ? "white" : "dark"}
-        noWrap
-      >
-        {title.replace("-", " ")}
-      </ArgonTypography>
     </ArgonBox>
   );
 }
