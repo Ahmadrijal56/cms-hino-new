@@ -1053,7 +1053,7 @@ function Videos() {
 
   const disabledDatePub = (current) => {
     // Can not select days before today and today
-    return current && current < dayjs().add(-2,'days').endOf('day');
+    return current && current < dayjs().add(-1,'days').endOf('day');
   };
 
   const disabledDateExp= (current) => {
