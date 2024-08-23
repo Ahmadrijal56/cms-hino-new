@@ -357,7 +357,7 @@ function Holidays() {
         </ArgonBox>
       </ArgonBox>
       <Footer />
-      <Modal open={open} title="Config" onCancel={handleClose} key={keyHoliday} footer={null}>
+      <Modal open={open} title="Config" onCancel={handleClose} key={keyHoliday} footer={null} maskClosable={false}>
         <Form
           name="basic"
           labelCol={{ span: 14 }}
