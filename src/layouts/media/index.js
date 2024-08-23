@@ -1153,10 +1153,10 @@ function Videos() {
         </ArgonBox>
       </ArgonBox>
       <Footer />
-      <Modal open={openConfirm} title="Konfirmasi" onCancel={handleCloseConfirm} onOk={handleCloseConfirm} footer={null} >
+      <Modal open={openConfirm} title="Konfirmasi" onCancel={handleCloseConfirm} onOk={handleCloseConfirm} footer={null}  maskClosable={false}>
           Apakah anda yakin akan hapus data ini?
       </Modal>
-      <Modal open={openSort} title="Change order of Contents" onCancel={handleCloseSort}  footer={null} >
+      <Modal open={openSort} title="Change order of Contents" onCancel={handleCloseSort}  footer={null} maskClosable={false} >
         <div class="sortModal">
         <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
               <Select.Option value="" >Choose type</Select.Option>
@@ -1180,7 +1180,7 @@ function Videos() {
         </div>
         
       </Modal>
-      <Modal open={open} title="Media" onCancel={handleClose} key={keyHoliday} footer={null}>
+      <Modal open={open} title="Media" onCancel={handleClose} key={keyHoliday} footer={null} maskClosable={false}>
         <Form
           name="basic"
           labelCol={{ span: 8 }}
@@ -1326,7 +1326,7 @@ function Videos() {
         </Form>
       </Modal>
 
-      <Modal open={openView} title="Media" onCancel={handleCloseView} key={keyHoliday} footer={null} width={800}>
+      <Modal open={openView} title="Media" onCancel={handleCloseView} key={keyHoliday} footer={null} width={800} maskClosable={false}>
        
 
           {typeMedia == "video" ? (
