@@ -849,6 +849,7 @@ function Videos() {
                     onCancel={handleClose}
                     key={keyHoliday}
                     footer={null}
+                    maskClosable={false}
                   >
                     <Form
                       name="basic"
