@@ -86,6 +86,14 @@ function Illustration() {
           } else {
               window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
           }
+        }).catch((error) => {
+          if(error.response.status===401){
+            localStorage.clear();
+            message.error(error + " Sesi telah habis,silahkan login kembali !");
+            window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+          }else{
+            message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+          }
         });
           
         } catch(error) {
@@ -162,6 +170,14 @@ function Illustration() {
                 alert("Invalid user or password");
                 setLoading(false);
               }
+          }).catch((error) => {
+            if(error.response.status===401){
+              localStorage.clear();
+              message.error(error + " Sesi telah habis,silahkan login kembali !");
+              window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+            }else{
+              message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+            }
           });
       } catch(error) {
           alert(error)
