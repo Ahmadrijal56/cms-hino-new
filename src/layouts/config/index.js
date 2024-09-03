@@ -159,11 +159,15 @@ function Holidays() {
           }
         }
       })
-      .catch((error) => {
-        setLoading(false);
-        console.log(error)
-        message.error(error + " (Config) Something Error !");
-      });
+        .catch((error) => {
+          if(error.response.status===401){
+            localStorage.clear();
+            message.error(error + " Sesi telah habis,silahkan login kembali !");
+            window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+          }else{
+            message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+          }
+        });
   };
 
   useEffect(() => {
@@ -261,7 +265,15 @@ function Holidays() {
               message.error("Invalid query");
               setLoading(false);
             }
-          });
+          }).catch((error) => {
+            if(error.response.status===401){
+              localStorage.clear();
+              message.error(error + " Sesi telah habis,silahkan login kembali !");
+              window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+            }else{
+              message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+            }
+          });;
       } catch (error) {
         message.error(error);
         setLoading(false);

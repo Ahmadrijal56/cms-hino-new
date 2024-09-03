@@ -258,9 +258,13 @@ function Videos() {
         }
       })
       .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        message.error("Error upload file : " + error.message);
+        if(error.response.status===401){
+          localStorage.clear();
+          message.error(error + " Sesi telah habis,silahkan login kembali !");
+          window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+        }else{
+          message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+        }
       });
   }
 
@@ -502,9 +506,13 @@ function Videos() {
         }
       })
       .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        message.error("Error upload file : " + error.message);
+        if(error.response.status===401){
+          localStorage.clear();
+          message.error(error + " Sesi telah habis,silahkan login kembali !");
+          window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+        }else{
+          message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+        }
       });
   };
 
@@ -550,9 +558,13 @@ function Videos() {
         }
       })
       .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        message.error("Error update : " + error.message);
+        if(error.response.status===401){
+          localStorage.clear();
+          message.error(error + " Sesi telah habis,silahkan login kembali !");
+          window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+        }else{
+          message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+        }
       });
   };
 
@@ -588,9 +600,13 @@ function Videos() {
         }
       })
       .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        message.error("Error update : " + error.message);
+        if(error.response.status===401){
+          localStorage.clear();
+          message.error(error + " Sesi telah habis,silahkan login kembali !");
+          window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+        }else{
+          message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+        }
       });
   };
 
@@ -624,9 +640,13 @@ function Videos() {
         }
       })
       .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        message.error("Error update : " + error.message);
+        if(error.response.status===401){
+          localStorage.clear();
+          message.error(error + " Sesi telah habis,silahkan login kembali !");
+          window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+        }else{
+          message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+        }
       });
   };
 
@@ -654,9 +674,13 @@ function Videos() {
         }
       })
       .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        message.error("Error delete file : " + error.message);
+        if(error.response.status===401){
+          localStorage.clear();
+          message.error(error + " Sesi telah habis,silahkan login kembali !");
+          window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+        }else{
+          message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+        }
       });
   };
 
@@ -820,7 +844,15 @@ function Videos() {
               total: response.data.rowCount,
             },
           });
-        });
+        }).catch((error) => {
+          if(error.response.status===401){
+            localStorage.clear();
+            message.error(error + " Sesi telah habis,silahkan login kembali !");
+            window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+          }else{
+            message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+          }
+        });;
     }
   };
 
@@ -980,9 +1012,13 @@ function Videos() {
           }
         })
         .catch((error) => {
-          console.log(error);
-          setLoading(false);
-          message.error("Error delete file : " + error.message);
+          if(error.response.status===401){
+            localStorage.clear();
+            message.error(error + " Sesi telah habis,silahkan login kembali !");
+            window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+          }else{
+            message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+          }
         });
     }else{
       setItemsOrder([])
@@ -1033,9 +1069,13 @@ function Videos() {
           }
         })
         .catch((error) => {
-          console.log(error);
-          setLoading(false);
-          message.error("Error delete file : " + error.message);
+          if(error.response.status===401){
+            localStorage.clear();
+            message.error(error + " Sesi telah habis,silahkan login kembali !");
+            window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+          }else{
+            message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+          }
         });
     };
 
