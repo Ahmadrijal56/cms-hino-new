@@ -747,7 +747,7 @@ function Videos() {
               ...item,
               type: (
                 <ArgonTypography variant="caption"  fontWeight="medium">
-                  {item.type.toString().replace("text","Teks").replace("image","Foto").replace("video","Video")}
+                  {item.type.toString().replace("text","Text").replace("image","Image").replace("video","Video")}
                 </ArgonTypography>
               ),
               Description: (
@@ -1200,8 +1200,8 @@ function Videos() {
         <div class="sortModal">
         <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
               <Select.Option value="" >Choose type</Select.Option>
-              <Select.Option value="text">Teks</Select.Option>
-              <Select.Option value="image">Foto</Select.Option>
+              <Select.Option value="text">Text</Select.Option>
+              <Select.Option value="image">Image</Select.Option>
               <Select.Option value="video">Video</Select.Option>
             </Select>
             
@@ -1254,8 +1254,8 @@ function Videos() {
             initialValue={typeMedia}
           >
             <Select onChange={onChangeType}>
-              <Select.Option value="text">Teks</Select.Option>
-              <Select.Option value="image">Foto</Select.Option>
+              <Select.Option value="text">Text</Select.Option>
+              <Select.Option value="image">Image</Select.Option>
               <Select.Option value="video">Video</Select.Option>
             </Select>
           </Form.Item>
