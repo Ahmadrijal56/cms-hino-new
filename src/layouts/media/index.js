@@ -96,12 +96,12 @@ const columns = [
   },
   {
     title: "Status",
-    dataIndex: "statusUpdate",
+    dataIndex: "status",
     key: (Math.random() + 1).toString(36).substring(7),
-    // sorter: {
-    //   compare: (a, b) => a.status - b.status,
-    //   multiple: 1,
-    // },
+    sorter: {
+      compare: (a, b) => a.status - b.status,
+      multiple: 1,
+    },
   },
   {
     title: "Tindakan",
@@ -770,7 +770,7 @@ function Videos() {
                   {moment(item.updated_at).format("DD MMM yyyy")}
                 </ArgonTypography>
               ),
-              statusUpdate: isTrash ? (
+              status: isTrash ? (
                 <></>
               ) : (
                 <>
