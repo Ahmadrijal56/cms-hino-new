@@ -295,7 +295,7 @@ function Videos() {
 
   const onChangeTable = (pagination, filters, sorter, extra) => {
     setOrderField(sorter.field);
-    setOrderBy((sorter.order ?? "").toString().replace("ascend", "asc").replace("descend", "desc"));
+    setOrderBy((sorter.order ?? "ascend").toString().replace("ascend", "asc").replace("descend", "desc"));
     setTableParams({
       pagination,
       filters,
