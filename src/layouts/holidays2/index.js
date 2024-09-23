@@ -49,7 +49,7 @@ const { Option } = Select;
 const columns = [
   {
     title: "Tanggal",
-    dataIndex: "Date",
+    dataIndex: "holidays_date",
     sorter: {
       compare: (a, b) => a.Date - b.Date,
     },
@@ -219,7 +219,7 @@ function Videos() {
 
   const onChangeTable = (pagination, filters, sorter, extra) => {
     setOrderField(sorter.field);
-    setOrderBy((sorter.order ?? "").toString().replace("ascend", "asc").replace("descend", "desc"));
+    setOrderBy((sorter.order ?? "ascend").toString().replace("ascend", "asc").replace("descend", "desc"));
     setTableParams({
       pagination,
       filters,
@@ -534,7 +534,7 @@ function Videos() {
           const resp = await response.data.map(function (item) {
             return {
               ...item,
-              Date: (
+              Holidays_date: (
                 <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                   {moment(item.holidays_date).format("DD MMM yyyy")}
                 </ArgonTypography>
