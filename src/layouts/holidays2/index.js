@@ -61,14 +61,14 @@ const columns = [
       compare: (a, b) => a.description - b.description,
     },
   },
-  // {
-  //   title: "Publish Date",
-  //   dataIndex: "publishdate",
-  //   sorter: {
-  //     compare: (a, b) => a.publishdate - b.publishdate,
-  //     multiple: 1,
-  //   },
-  // },
+  {
+    title: "Holiday Date",
+    dataIndex: "holidays_date",
+    sorter: {
+      compare: (a, b) => a.holidays_date - b.holidays_date,
+      multiple: 1,
+    },
+  },
   // {
   //   title: "Expiry Date",
   //   dataIndex: "expireddate",
@@ -534,7 +534,7 @@ function Videos() {
           const resp = await response.data.map(function (item) {
             return {
               ...item,
-              Date: (
+              holidays_date: (
                 <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                   {moment(item.holidays_date).format("DD MMM yyyy")}
                 </ArgonTypography>
