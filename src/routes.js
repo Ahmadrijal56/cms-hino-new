@@ -102,7 +102,7 @@ const routes = [
     type: "route",
     name: "Swipe Configs",
     key: "swipeeConfig",
-    route: "/swipeconfig",
+    route: "/swipe",
     icon: (
       <ArgonBox component="i" color="info" fontSize="14px" className="ni ni-watch-time" />
     ),
