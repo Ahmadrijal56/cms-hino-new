@@ -59,8 +59,8 @@ function Swipe() {
   const [getColumn, setColumn] = useState("");
   const columns = [
     { name: "no", align: "center" },
-    { name: "name", align: "left" },
-    { name: "display", align: "center" },
+    { name: "nama board", align: "left", },
+    { name: "waktu bertahan", align: "center" },
     { name: "Edit", align: "center",  },
   ];
   
@@ -176,12 +176,12 @@ function Swipe() {
                       {i++}
                     </ArgonTypography>
                   ),
-                  name: (
+                  "nama board": (
                     <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                       {item.name}
                     </ArgonTypography>
                   ),
-                  display: (
+                  "waktu bertahan": (
                     <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                       {item.display}
                     </ArgonTypography>
