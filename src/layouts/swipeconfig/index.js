@@ -60,7 +60,7 @@ function Swipe() {
   const columns = [
     { name: "no", align: "center" },
     { name: "nama board", align: "left", },
-    { name: "waktu bertahan", align: "center" },
+    { name: "waktu tayang", align: "center" },
     { name: "Edit", align: "center",  },
   ];
   
@@ -181,7 +181,7 @@ function Swipe() {
                       {item.name}
                     </ArgonTypography>
                   ),
-                  "waktu bertahan": (
+                  "waktu tayang": (
                     <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                       {item.display}
                     </ArgonTypography>
@@ -318,7 +318,7 @@ function Swipe() {
           <br></br>
 
           <Form.Item
-            label="Waktu Bertahan"
+            label="Waktu Tayang"
             name="timer"
             rules={[
               {
