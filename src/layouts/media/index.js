@@ -163,6 +163,7 @@ const columnsDelete = [
 
 const { TextArea } = Input;
 const optionsComp = [];
+let optionsCategory = [];
 
 function Videos() {
   const [companyDefault, setCompanyDefault] = useState("");
@@ -185,6 +186,9 @@ function Videos() {
   const [publishDate, setPublishDate] = useState("");
   const [expiredDate, setExpiredDate] = useState("");
   const [typeMedia, setTypeMedia] = useState("text");
+  const [location, setLocation] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
+  const [category, setCategory] = useState("");
   const [isApplyAll, setIsApplyAll] = useState(false);
   const [mediaName, setMediaName] = useState("");
   const [mediaDesc, setMediaDesc] = useState("");
@@ -267,8 +271,6 @@ function Videos() {
         }
       });
   }
-
-
 
   const onChange = (key) => {
     if (key == 2) {
@@ -378,6 +380,8 @@ function Videos() {
       setMediaName("");
       setMediaDesc("");
       setTypeMedia("text");
+      setCategory("");
+      setLocation("")
       // setDescription(item.description)
       // let date=moment(item.holidays_date)
       // setDefaultDate(date)
@@ -405,6 +409,8 @@ function Videos() {
     setMediaName(item.name);
     setMediaDesc(item.description);
     setTypeMedia(item.type);
+    setLocation(item.content_location_media)
+    setCategory(item.category_media)
     // setDescription(item.description)
     // let date=moment(item.holidays_date)
     // setDefaultDate(date)
@@ -428,7 +434,6 @@ function Videos() {
     setDefaultComp(defaultCompValue);
     setOpen(true);
   };
-
 
   const onView = async (item) => {
     setId(item.id);
@@ -460,7 +465,8 @@ function Videos() {
     formData.append("status", true);
     formData.append("trash", false);
     formData.append("companycode", companyCode);
-    //formData.append("companycode", "Allcompany");
+    formData.append("category_media", values.category);
+    formData.append("content_location_media", values.location);
     if (values.type != "text") {
       fileList.forEach((file) => {
         formData.append("file", file);
@@ -901,6 +907,44 @@ function Videos() {
       }
     }
 
+    async function loadCategory() {
+     var valuesCat=[]
+      const headers = {
+        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+        "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + sessionStorage.getItem("token"),
+      };
+      await axios
+        .get(process.env.REACT_APP_MAIN + "/hmsi/board/api/category_media", {
+          headers,
+        })
+        .then(async (response) => {
+          console.log(response);
+          if ((await response.data) != null) {
+            if (response.status === 200) {
+              await response.data.forEach((item) => {
+                valuesCat.push({
+                  value: item["category"],
+                  label: item["category"],
+                });
+              });
+            }
+          }
+        })
+        .catch((error) => {
+          if(error.response.status===401){
+            localStorage.clear();
+            message.error(error + " Sesi telah habis,silahkan login kembali !");
+            window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+          }else{
+            message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+          }
+        });
+        optionsCategory=valuesCat
+    }
+
+
     if (!open) {
       if (companyDefault == "") {
         var compSession = sessionStorage.getItem("companyDefault");
@@ -914,6 +958,12 @@ function Videos() {
       }
       fetchData();
       loadCompany();
+    }
+
+
+
+    if(optionsCategory.length==0){
+      loadCategory();
     }
 
     if (getSettingMaxFileImage==""){
@@ -1083,6 +1133,18 @@ function Videos() {
     setTypeMedia(value);
   };
 
+  const onChangeLocation = (value) => {
+    setLocation(value);
+  };
+
+  const onChangeLocationFilter = (value) => {
+    setLocationFilter(value);
+  };
+
+  const onChangeCategory = (value) => {
+    setCategory(value);
+  };
+
   const onChangePublishDate = (_, dateString) => {
     setPublishDate(dateString);
   };
@@ -1196,14 +1258,26 @@ function Videos() {
       <Modal open={openConfirm} title="Konfirmasi" onCancel={handleCloseConfirm} onOk={handleCloseConfirm} footer={null}  maskClosable={false}>
           Apakah anda yakin akan hapus data ini?
       </Modal>
-      <Modal open={openSort} title="Change order of Contents" onCancel={handleCloseSort}  footer={null} maskClosable={false} >
+      <Modal open={openSort} title="Pengaturan urutan kontent" onCancel={handleCloseSort}  footer={null} maskClosable={false} >
         <div class="sortModal">
-        <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
-              <Select.Option value="" >Choose type</Select.Option>
-              <Select.Option value="text">Text</Select.Option>
-              <Select.Option value="image">Image</Select.Option>
-              <Select.Option value="video">Video</Select.Option>
-            </Select>
+
+            {/* <Select onChange={onChangeLocationFilter} className="sortChoose" >
+              <Select.Option value="" >Pilih Lokasi</Select.Option>
+              <Select.Option value="Ruang Admin">Ruang Admin</Select.Option>
+              <Select.Option value="Ruang Tunggu">Ruang Tunggu</Select.Option>
+            </Select> */}
+
+              {/* {
+                location==="Ruang Tunggu" ?( */}
+              <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
+                        <Select.Option value="" >Pilh Type</Select.Option>
+                        <Select.Option value="text">Text</Select.Option>
+                        <Select.Option value="image">Image</Select.Option>
+                        <Select.Option value="video">Video</Select.Option>
+                      </Select>
+              {/* //   ):(<></>)
+              // } */}
+            
             
             <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
             {itemsOrder.map((item) => (
@@ -1240,6 +1314,40 @@ function Videos() {
             initialValue={mediaName}
           >
             <Input />
+          </Form.Item>
+
+          <Form.Item label="Katagori" name="category" 
+            rules={[
+              {
+                required: true,
+                message: "Mohon Pilih Lokasi",
+              },
+            ]}
+            initialValue={category}>
+              <Select
+                style={{
+                  width: "100%",
+                }}
+                onChange={onChangeCategory}
+                options={optionsCategory}
+              />
+            </Form.Item>
+
+            <Form.Item
+            label="Lokasi"
+            name="location"
+            rules={[
+              {
+                required: true,
+                message: "Mohon Pilih Lokasi",
+              },
+            ]}
+            initialValue={location}
+          >
+            <Select onChange={onChangeLocation}>
+              <Select.Option value="Ruang Admin">Ruang Admin</Select.Option>
+              <Select.Option value="Ruang Tunggu">Ruang Tunggu</Select.Option>
+            </Select>
           </Form.Item>
 
           <Form.Item
