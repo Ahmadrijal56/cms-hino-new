@@ -239,7 +239,7 @@ function Videos() {
 
     const formData = new FormData();
     formData.append("companycode", companyCode);
-    formData.append(typeOrder, "["+items.substring(0, items.length - 1)+"]");
+    formData.append((locationFilter=="Ruang Admin")?"allmedia":typeOrder, "["+items.substring(0, items.length - 1)+"]");
 
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
@@ -248,8 +248,9 @@ function Videos() {
       Authorization: "Bearer " + sessionStorage.getItem("token"),
     };
 
+    let url= (locationFilter=="Ruang Admin")?"/update_playing_media_dcb":"/update_playing_media";
     await axios
-      .post(process.env.REACT_APP_MAIN_API + "/update_playing_media", formData, {
+      .post(process.env.REACT_APP_MAIN_API + url, formData, {
         headers,
       })
       .then(async (response) => {
@@ -1305,7 +1306,7 @@ function Videos() {
       <Modal open={openSort} title="Pengaturan urutan kontent" onCancel={handleCloseSort}  footer={null} maskClosable={false} >
         <div class="sortModal">
 
-           <Select onChange={onChangeLocationFilter} className="sortChoose" >
+           <Select onChange={onChangeLocationFilter} className="sortChoose" defaultValue="" >
               <Select.Option value="" >Pilih Lokasi</Select.Option>
               <Select.Option value="Ruang Admin">Ruang Admin</Select.Option>
               <Select.Option value="Ruang Tunggu">Ruang Tunggu</Select.Option>
