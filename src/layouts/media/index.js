@@ -1075,6 +1075,46 @@ function Videos() {
     }
   };
 
+  const onChangeDcbSort = async (value) => {
+    //setTypeMedia(value);
+    if(value!=""){
+      const headers = {
+        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+        "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + sessionStorage.getItem("token"),
+      };
+      await axios
+        .get(process.env.REACT_APP_MAIN_API + "/get/media/dcb/"+companyCode+"?type=" + value.toLowerCase(), {
+          headers,
+        })
+        .then(async (response) => {
+          console.log(response);
+          if ((await response.data) != null) {
+            if (response.status === 200) {
+              setLoading(false);
+              var mediaValue=[]
+              response.data.forEach((item) => {
+                mediaValue.push(item);
+              });
+              setItemsOrder(mediaValue)
+            }
+          }
+        })
+        .catch((error) => {
+          if(error.response.status===401){
+            localStorage.clear();
+            message.error(error + " Sesi telah habis,silahkan login kembali !");
+            window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+          }else{
+            message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+          }
+        });
+    }else{
+      setItemsOrder([])
+    }
+  };
+
   const callSettings = async () => {
     //setTypeMedia(value);
       const headers = {
@@ -1139,6 +1179,10 @@ function Videos() {
 
   const onChangeLocationFilter = (value) => {
     setLocationFilter(value);
+    setItemsOrder([])
+    if (value=="Ruang Admin"){
+      onChangeDcbSort(value)
+    }
   };
 
   const onChangeCategory = (value) => {
@@ -1261,22 +1305,22 @@ function Videos() {
       <Modal open={openSort} title="Pengaturan urutan kontent" onCancel={handleCloseSort}  footer={null} maskClosable={false} >
         <div class="sortModal">
 
-            {/* <Select onChange={onChangeLocationFilter} className="sortChoose" >
+           <Select onChange={onChangeLocationFilter} className="sortChoose" >
               <Select.Option value="" >Pilih Lokasi</Select.Option>
               <Select.Option value="Ruang Admin">Ruang Admin</Select.Option>
               <Select.Option value="Ruang Tunggu">Ruang Tunggu</Select.Option>
-            </Select> */}
+            </Select>
 
-              {/* {
-                location==="Ruang Tunggu" ?( */}
+              {
+                locationFilter==="Ruang Tunggu"  ?(
               <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
                         <Select.Option value="" >Pilh Type</Select.Option>
                         <Select.Option value="text">Text</Select.Option>
                         <Select.Option value="image">Image</Select.Option>
                         <Select.Option value="video">Video</Select.Option>
                       </Select>
-              {/* //   ):(<></>)
-              // } */}
+                  ): locationFilter=="" ? (<></>):(<div style={{width:450, marginTop:20, fontWeight:"bold"}}>Dealer Content Board</div>)
+               } 
             
             
             <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
