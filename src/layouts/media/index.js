@@ -254,7 +254,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setLoading(false);
@@ -467,7 +466,7 @@ function Videos() {
     formData.append("trash", false);
     formData.append("companycode", companyCode);
     formData.append("category_media", values.category);
-    formData.append("content_location_media", values.location);
+    formData.append("content_location_media", JSON.stringify(values.location));
     if (values.type != "text") {
       fileList.forEach((file) => {
         formData.append("file", file);
@@ -1327,7 +1326,7 @@ function Videos() {
             <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
             {itemsOrder.map((item) => (
               <SortableItem key={item.id} >
-                <div className="itemSort" key={item.id} value={item.id}>{item.name}</div>
+                <div className="itemSort" key={item.id} value={item.id}>{item.name +" - ("+ item.type.toUpperCase()+")"}</div>
               </SortableItem>
             ))}
           </SortableList>
@@ -1389,7 +1388,8 @@ function Videos() {
             ]}
             initialValue={location}
           >
-            <Select onChange={onChangeLocation}>
+            <Select onChange={onChangeLocation} 
+             mode="tags">
               <Select.Option value="Ruang Admin">Ruang Admin</Select.Option>
               <Select.Option value="Ruang Tunggu">Ruang Tunggu</Select.Option>
             </Select>
