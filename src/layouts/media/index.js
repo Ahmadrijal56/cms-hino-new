@@ -63,13 +63,10 @@ const columns = [
       compare: (a, b) => a.type - b.type,
     },
   },
-  // {
-  //   title: "Content",
-  //   dataIndex: "description",
-  //   sorter: {
-  //     compare: (a, b) => a.description - b.description,
-  //   },
-  // },
+  {
+    title: "Lokasi",
+    dataIndex: "location"
+  },
   {
     title: "Tanggal Publikasi",
     dataIndex: "publishdate",
@@ -433,6 +430,17 @@ function Videos() {
       }
     }
     setDefaultComp(defaultCompValue);
+
+    let defaultLocValue = [];
+    if (item.content_location_media!= null) {
+      await item.content_location_media.map(function (comp) {
+        if (comp != null) {
+          defaultLocValue.push(comp["id"]);
+        }
+      });
+    }
+    setLocation(defaultLocValue);
+
     setOpen(true);
   };
 
@@ -723,13 +731,6 @@ function Videos() {
           }
         )
         .then(async (response) => {
-          console.log(
-            process.env.REACT_APP_MAIN_API +
-              `/get/allmedia${urlTrash}/${companyCode}?${qs.stringify(
-                getRandomuserParams(tableParams)
-              )}` +
-              query
-          );
           const resp = await response.data.data.map(function  (item) {
 
             const switchChecked=  item.status.toString() =="true"  ? ( <Switch
@@ -750,11 +751,21 @@ function Videos() {
             </>
             )
 
+            var test=""
+            item.content_location_media.map(function (comp) {
+                test+=comp.description+", "
+            })
+
             return {
               ...item,
               type: (
                 <ArgonTypography variant="caption"  fontWeight="medium">
                   {item.type.toString().replace("text","Text").replace("image","Image").replace("video","Video")}
+                </ArgonTypography>
+              ),
+              location: (
+                <ArgonTypography variant="caption"  fontWeight="medium">
+                  {test.slice(0, -2)}
                 </ArgonTypography>
               ),
               Description: (
@@ -1417,7 +1428,7 @@ function Videos() {
             </Form.Item>
 
             <Form.Item
-            label={"Lokasi"+isUpdate}
+            label={"Lokasi"}
             name="location"
             rules={[
               {
