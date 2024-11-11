@@ -164,6 +164,7 @@ const columnsDelete = [
 const { TextArea } = Input;
 const optionsComp = [];
 let optionsCategory = [];
+let optionsLocations = [];
 
 function Videos() {
   const [companyDefault, setCompanyDefault] = useState("");
@@ -944,6 +945,43 @@ function Videos() {
         optionsCategory=valuesCat
     }
 
+    async function loadLocation() {
+      var valuesLoc=[]
+       const headers = {
+         "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+         "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+         "Content-Type": "multipart/form-data",
+         Authorization: "Bearer " + sessionStorage.getItem("token"),
+       };
+       await axios
+         .get(process.env.REACT_APP_MAIN + "/hmsi/board/api/location/getlist", {
+           headers,
+         })
+         .then(async (response) => {
+           console.log(response);
+           if ((await response.data) != null) {
+             if (response.status === 200) {
+               await response.data.forEach((item) => {
+                 valuesLoc.push({
+                   value: item["id"],
+                   label: item["description"],
+                 });
+               });
+             }
+           }
+         })
+         .catch((error) => {
+           if(error.response.status===401){
+             localStorage.clear();
+             message.error(error + " Sesi telah habis,silahkan login kembali !");
+             window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+           }else{
+             message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+           }
+         });
+         optionsLocations=valuesLoc
+     }
+
 
     if (!open) {
       if (companyDefault == "") {
@@ -958,6 +996,7 @@ function Videos() {
       }
       fetchData();
       loadCompany();
+      loadLocation();
     }
 
 
@@ -1305,7 +1344,7 @@ function Videos() {
       <Modal open={openSort} title="Pengaturan urutan kontent" onCancel={handleCloseSort}  footer={null} maskClosable={false} >
         <div class="sortModal">
 
-           <Select onChange={onChangeLocationFilter} className="sortChoose" defaultValue="" >
+           <Select onChange={onChangeLocationFilter} className="sortChoose" defaultValue=""  >
               <Select.Option value="" >Pilih Lokasi</Select.Option>
               <Select.Option value="Ruang Admin">Ruang Admin</Select.Option>
               <Select.Option value="Ruang Tunggu">Ruang Tunggu</Select.Option>
@@ -1364,7 +1403,7 @@ function Videos() {
             rules={[
               {
                 required: true,
-                message: "Mohon Pilih Lokasi",
+                message: "Mohon Pilih Katagori",
               },
             ]}
             initialValue={category}>
@@ -1378,7 +1417,7 @@ function Videos() {
             </Form.Item>
 
             <Form.Item
-            label="Lokasi"
+            label={"Lokasi"+isUpdate}
             name="location"
             rules={[
               {
@@ -1386,12 +1425,10 @@ function Videos() {
                 message: "Mohon Pilih Lokasi",
               },
             ]}
-            initialValue={location}
+            initialValue={isUpdate ? location : []}
           >
-            <Select onChange={onChangeLocation} 
+            <Select onChange={onChangeLocation} options={optionsLocations}
              mode="tags">
-              <Select.Option value="Ruang Admin">Ruang Admin</Select.Option>
-              <Select.Option value="Ruang Tunggu">Ruang Tunggu</Select.Option>
             </Select>
           </Form.Item>
 
