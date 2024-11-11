@@ -1365,7 +1365,7 @@ function Videos() {
             <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
             {itemsOrder.map((item) => (
               <SortableItem key={item.id} >
-                <div className="itemSort" key={item.id} value={item.id}>{item.name +" - ("+ item.type.toUpperCase()+")"}</div>
+                <div className="itemSort" key={item.id} value={item.id}>{item.name + (locationFilter==="Ruang Tunggu"? "" : " - ("+ item.type.toUpperCase()+")")}</div>
               </SortableItem>
             ))}
           </SortableList>
