@@ -1410,11 +1410,11 @@ function Videos() {
             <Input />
           </Form.Item>
 
-          <Form.Item label="Katagori" name="category" 
+          <Form.Item label="Kategori" name="category" 
             rules={[
               {
                 required: true,
-                message: "Mohon Pilih Katagori",
+                message: "Mohon Pilih Kategori",
               },
             ]}
             initialValue={category}>

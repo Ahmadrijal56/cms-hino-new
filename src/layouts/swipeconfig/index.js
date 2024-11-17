@@ -39,6 +39,18 @@ import { message, Modal, Button, Form, InputNumber, Select, TimePicker } from "a
 
 const { Option } = Select;
 
+const disabledDateTime = () => ({
+  disabledHours: () => range(0, 24).splice(3, 21),
+});
+
+const range = (start, end) => {
+  const result = [];
+  for (let i = start; i < end; i++) {
+    result.push(i);
+  }
+  return result;
+};
+
 function Swipe() {
   const [companyDefault, setCompanyDefault] = useState("");
   const [companyCode, setCompanyCode] = useState("");
@@ -54,7 +66,7 @@ function Swipe() {
   const [isUpdate, setIsUpdate] = useState(false);
   const [isActive, setActive] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
-  const [getTimer, setTimer] = useState(dayjs('00:00', 'mm:ss'));
+  const [getTimer, setTimer] = useState(dayjs('00:00:00', 'HH:mm:ss'));
   const [getName, setName] = useState("");
   const [getColumn, setColumn] = useState("");
   const columns = [
@@ -92,7 +104,7 @@ function Swipe() {
       .then(async (response) => {
         if ((await response.data) != null) {
           if (response.status === 200) {
-            setTimer(dayjs('00:00', 'mm:ss'));
+            setTimer(dayjs('00:00:00', 'HH:mm:ss'));
             setName("");
             setColumn("");
             setOpen(false);
@@ -113,21 +125,22 @@ function Swipe() {
   };
 
   const convertSecond = async (values) =>{
-    let checkVal=values.format('mm:ss');
+    let checkVal=values.format('HH:mm:ss');
     if (checkVal.indexOf(":") > -1){
       let time =  checkVal.split(":");
-      let minutes=parseInt(time[0])*60
-      let second=parseInt(time[1])
-      return minutes+second
+      let hours=parseInt(time[0])*3600
+      let minutes=parseInt(time[1])*60
+      let second=parseInt(time[2])
+      return hours+minutes+second
     }
     return 0
   }
 
   const convertTime = async(val) =>{
-    let values=parseInt(val)
-    let second=await values>=60?values%60:values
-    let minutes= await (values-second)>=60?(values-second)/60:0
-    return dayjs(minutes+':'+second, 'mm:ss')
+    let values=moment().startOf('day')
+    .seconds(val)
+    .format('HH:mm:ss');
+    return dayjs(values, 'HH:mm:ss')
   }
 
   useEffect(() => {
@@ -328,7 +341,7 @@ function Swipe() {
             ]}
             initialValue={getTimer}
           >
-             <TimePicker   format="mm:ss" showNow={false} needConfirm={false}/>
+             <TimePicker   format="HH:mm:ss" showNow={false} needConfirm={false} size="large" disabledTime={disabledDateTime}/>
           </Form.Item>
 
           <br></br>
