@@ -183,7 +183,7 @@ function Videos() {
   const [currentPage, setCurrentPage] = useState(1);
   const [publishDate, setPublishDate] = useState("");
   const [expiredDate, setExpiredDate] = useState("");
-  const [typeMedia, setTypeMedia] = useState("text");
+  const [typeMedia, setTypeMedia] = useState(null);
   const [location, setLocation] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [category, setCategory] = useState("");
@@ -213,6 +213,7 @@ function Videos() {
   const [getSettingTooltipVideo, setSettingMaxTooltipVideo] = useState("")
   const [getMaxText, setMaxText] = useState(100)
   const [userType, setUserType] = useState("");
+  const [form] = Form.useForm();
 
   const dateFormat = "YYYY-MM-DD";
 
@@ -368,6 +369,7 @@ function Videos() {
   };
 
   const handleOpen = async() => {
+    await form.resetFields();
     if (sessionStorage.getItem("companyDefault") == "") {
       message.error("Please choose company code first");
     } else {
@@ -377,7 +379,7 @@ function Videos() {
       setFileList([]);
       setMediaName("");
       setMediaDesc("");
-      setTypeMedia("text");
+      setTypeMedia(null);
       setCategory("");
       setLocation("")
       // setDescription(item.description)
@@ -401,9 +403,10 @@ function Videos() {
   const handleCloseConfirm = () => setOpenConfirm(false);
 
   const onEdit = async (item) => {
+    await form.resetFields();
+    setKeyHoliday(keyHoliday + 1);
     setId(item.id);
     setUpdate(true);
-    setKeyHoliday(keyHoliday + 1);
     setMediaName(item.name);
     setMediaDesc(item.description);
     setTypeMedia(item.type);
@@ -439,7 +442,7 @@ function Videos() {
         }
       });
     }
-    setLocation(defaultLocValue);
+    await setLocation(defaultLocValue);
 
     setOpen(true);
   };
@@ -1224,6 +1227,7 @@ function Videos() {
   };
 
   const onChangeLocation = (value) => {
+    form.setFieldValue("type", "")
     setLocation(value);
   };
 
@@ -1388,13 +1392,14 @@ function Videos() {
         </div>
         
       </Modal>
-      <Modal open={open} title="Media" onCancel={handleClose} key={keyHoliday} footer={null} maskClosable={false}>
+      <Modal open={open} title="Media" onCancel={handleClose} key={keyHoliday} footer={null} maskClosable={false} destroyOnClose>
         <Form
           name="basic"
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
-          initialValues={{ remember: true }}
           onFinish={onFinish}
+          form={form}
+          key={keyHoliday+"form"}
         >
           <Form.Item
             label="Name"
@@ -1446,6 +1451,7 @@ function Videos() {
           <Form.Item
             label="Tipe"
             name="type"
+            key="type"
             rules={[
               {
                 required: true,
@@ -1455,7 +1461,8 @@ function Videos() {
             initialValue={typeMedia}
           >
             <Select onChange={onChangeType}>
-              <Select.Option value="text">Text</Select.Option>
+              {location.indexOf(189265) > -1 ? (<></>):(
+                <Select.Option value="text">Text</Select.Option>)}
               <Select.Option value="image">Image</Select.Option>
               <Select.Option value="video">Video</Select.Option>
             </Select>
