@@ -177,7 +177,7 @@ function Videos() {
   const [keyHoliday, setKeyHoliday] = useState(0);
   const [selectedDate, setSelectedDate] = useState(0);
   const [fileList, setFileList] = useState([]);
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
   const [orderBy, setOrderBy] = useState();
   const [orderField, setOrderField] = useState();
   const [currentPage, setCurrentPage] = useState(1);
@@ -204,7 +204,7 @@ function Videos() {
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
-      pageSize: 5,
+      pageSize: 10,
     },
   });
   const [getSettingMaxFileImage, setSettingMaxFileImage] = useState("")
@@ -213,6 +213,7 @@ function Videos() {
   const [getSettingTooltipVideo, setSettingMaxTooltipVideo] = useState("")
   const [getMaxText, setMaxText] = useState(100)
   const [userType, setUserType] = useState("");
+  const [sortLocation, setSortLocation] = useState("");
   const [form] = Form.useForm();
 
   const dateFormat = "YYYY-MM-DD";
@@ -303,6 +304,11 @@ function Videos() {
       ...sorter,
     });
     console.log("params", pagination, filters, sorter, extra);
+
+     // `dataSource` is useless since `pageSize` changed
+     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+      setData([]);
+    }
   };
 
   const items = [
@@ -367,6 +373,13 @@ function Videos() {
       }
     },
   };
+
+  const handleOpenSort = async() => {
+    setKeyHoliday(keyHoliday + 1);
+    setOpenSort(true);
+    setSortLocation("")
+    setItemsOrder([])
+  }
 
   const handleOpen = async() => {
     await form.resetFields();
@@ -1286,9 +1299,7 @@ function Videos() {
               <ArgonButton
                   color="warning"
                   size="small"
-                  onClick={()=>{
-                    setOpenSort(true);
-                  }}
+                  onClick={handleOpenSort}
                 >
                 Urutan Konten
                 </ArgonButton>
@@ -1343,9 +1354,10 @@ function Videos() {
               <Table
                 columns={isTrash ? columnsDelete : columns}
                 dataSource={_.cloneDeep(data)}
+                rowKey={(record) => record.id_media}
                 onChange={onChangeTable}
-                display={false}
                 pagination={tableParams.pagination}
+                showSizeChanger={true}
               />
               {/* <Pagination showQuickJumper defaultCurrent={2} total={500} onChange={onChangePage} className={dataGrid.length==0?"pageNumberEmpty":"pageNumber"}  disabled={dataGrid.length==0? true:false}/> */}
             </ArgonBox>
@@ -1356,39 +1368,55 @@ function Videos() {
       <Modal open={openConfirm} title="Konfirmasi" onCancel={handleCloseConfirm} onOk={handleCloseConfirm} footer={null}  maskClosable={false}>
           Apakah anda yakin akan hapus data ini?
       </Modal>
-      <Modal open={openSort} title="Pengaturan urutan kontent" onCancel={handleCloseSort}  footer={null} maskClosable={false} >
+      <Modal key={keyHoliday}  open={openSort} title="Pengaturan urutan kontent" onCancel={handleCloseSort}  footer={null} maskClosable={false} destroyOnClose>
         <div class="sortModal">
-
-           <Select onChange={onChangeLocationFilter} className="sortChoose" defaultValue=""  >
-              <Select.Option value="" >Pilih Lokasi</Select.Option>
-              <Select.Option value="Ruang Admin">Ruang Admin</Select.Option>
-              <Select.Option value="Ruang Tunggu">Ruang Tunggu</Select.Option>
-            </Select>
+        <Form
+          name="basic"
+          form={form}
+          key={keyHoliday+"formsort"}
+        >
+           <Form.Item
+            initialValue={sortLocation}
+          >
+            <Select onChange={onChangeLocationFilter} className="sortChoose" defaultValue=""  >
+                <Select.Option value="" >Pilih Lokasi </Select.Option>
+                <Select.Option value="Ruang Admin">Ruang Admin</Select.Option>
+                <Select.Option value="Ruang Tunggu">Ruang Tunggu</Select.Option>
+              </Select>
+            </Form.Item>
 
               {
                 locationFilter==="Ruang Tunggu"  ?(
+                  <Form.Item
+                  initialValue={sortLocation}
+                >
               <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
                         <Select.Option value="" >Pilh Type</Select.Option>
                         <Select.Option value="text">Text</Select.Option>
                         <Select.Option value="image">Image</Select.Option>
                         <Select.Option value="video">Video</Select.Option>
                       </Select>
-                  ): locationFilter=="" ? (<></>):(<div style={{width:450, marginTop:20, fontWeight:"bold"}}>Dealer Content Board</div>)
+                      </Form.Item>): locationFilter=="" ? (<></>):(<div style={{width:450, marginTop:20, fontWeight:"bold"}}>Dealer Content Board</div>)
                } 
             
-            
-            <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
-            {itemsOrder.map((item) => (
-              <SortableItem key={item.id} >
-                <div className="itemSort" key={item.id} value={item.id}>{item.name + (locationFilter==="Ruang Tunggu"? "" : " - ("+ item.type.toUpperCase()+")")}</div>
-              </SortableItem>
-            ))}
-          </SortableList>
+            <Form.Item
+                  initialValue={sortLocation}
+                >
+                <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
+                {itemsOrder.map((item) => (
+                  <SortableItem key={item.id} >
+                    <div className="itemSort" key={item.id} value={item.id}>{item.name + (locationFilter==="Ruang Tunggu"? "" : " - ("+ item.type.toUpperCase()+")")}</div>
+                  </SortableItem>
+                ))}
+              </SortableList>
+          </Form.Item>
+
+          </Form>
+
 
           <Button type="primary" style={{marginTop:"20px"}} onClick={saveSort} disabled={itemsOrder.length ==0}>
               Save
             </Button>
-
         </div>
         
       </Modal>
