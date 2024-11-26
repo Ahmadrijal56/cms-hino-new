@@ -65,7 +65,10 @@ const columns = [
   },
   {
     title: "Lokasi",
-    dataIndex: "location"
+    dataIndex: "location",
+    sorter: {
+      compare: (a, b) => a.type - b.type,
+    },
   },
   {
     title: "Tanggal Publikasi",
@@ -1335,7 +1338,7 @@ function Videos() {
                   size="large"
                   placeholder="Cari Media"
                   prefix={<SearchOutlined />}
-                  onPressEnter={clickSearch}
+                  onChange={clickSearch}
                 />
               </ArgonBox>
             </ArgonBox>
