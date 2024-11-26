@@ -847,7 +847,7 @@ function Videos() {
                   size="large"
                   placeholder="Cari"
                   prefix={<SearchOutlined />}
-                  onPressEnter={clickSearch}
+                  onChange={clickSearch}
                 />
               </ArgonBox>
             </ArgonBox>

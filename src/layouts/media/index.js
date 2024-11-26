@@ -65,7 +65,7 @@ const columns = [
   },
   {
     title: "Lokasi",
-    dataIndex: "location",
+    dataIndex: "datalocation_string",
     sorter: {
       compare: (a, b) => a.type - b.type,
     },
@@ -124,13 +124,13 @@ const columnsDelete = [
       compare: (a, b) => a.type - b.type,
     },
   },
-  // {
-  //   title: "Content",
-  //   dataIndex: "description",
-  //   sorter: {
-  //     compare: (a, b) => a.description - b.description,
-  //   },
-  // },
+   {
+    title: "Lokasi",
+    dataIndex: "datalocation_string",
+    sorter: {
+      compare: (a, b) => a.type - b.type,
+    },
+  },
   {
     title: "Tanggal Publikasi",
     dataIndex: "publishdate",
@@ -382,6 +382,7 @@ function Videos() {
     setOpenSort(true);
     setSortLocation("")
     setItemsOrder([])
+    setLocationFilter("");
   }
 
   const handleOpen = async() => {
@@ -1393,7 +1394,7 @@ function Videos() {
                   <Form.Item
                   initialValue={sortLocation}
                 >
-              <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
+              <Select onChange={onChangeFileSort}  defaultValue="">
                         <Select.Option value="" >Pilh Type</Select.Option>
                         <Select.Option value="text">Text</Select.Option>
                         <Select.Option value="image">Image</Select.Option>
