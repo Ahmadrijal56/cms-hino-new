@@ -96,7 +96,6 @@ function Swipe() {
       Authorization: "Bearer " + sessionStorage.getItem("token"),
       crudtype: isUpdate ? "update" : "insert",
     };
-    console.log(article)
     await axios
       .post(process.env.REACT_APP_MAIN_API + "/new/crudconfig_timer", article, {
         headers,
@@ -178,8 +177,6 @@ function Swipe() {
           })
           .then(async (response) => {
             if (response.status === 200) {
-              //console.log(response)
-              //setDataGrid(response.data)
               let dataMapping=[]
               let i=1
               await response.data.forEach(function async(item) {
@@ -247,12 +244,9 @@ function Swipe() {
         loadData(companyCode);
       
     }
-
-    console.log("componentDidUpdateFunction");
   }, [open, companyCode, isDelete]);
 
   const onEdit = async (item) => {
-    console.log(companyCode);
     setKeyHoliday(keyHoliday + 1);
     setIsUpdate(true);
     setActive(item.active);

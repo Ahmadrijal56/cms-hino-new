@@ -218,14 +218,15 @@ function Videos() {
   };
 
   const onChangeTable = (pagination, filters, sorter, extra) => {
-    setOrderField(sorter.field);
+    if( sorter.field !=undefined){
+      setOrderField(sorter.field);
+    }
     setOrderBy((sorter.order ?? "ascend").toString().replace("ascend", "asc").replace("descend", "desc"));
     setTableParams({
       pagination,
       filters,
       ...sorter,
     });
-    console.log("params", pagination, filters, sorter, extra);
   };
 
   const items = [
@@ -252,7 +253,6 @@ function Videos() {
     },
     fileList,
     onChange(info) {
-      console.log(JSON.stringify(info));
       if (info.file.status !== "uploading") {
         console.log(info.file, info.fileList);
       }
@@ -280,7 +280,6 @@ function Videos() {
   const handleClose = () => setOpen(false);
 
   const onEdit = async (item) => {
-    console.log(companyCode)
     setKeyHoliday(keyHoliday+1);
     setIsUpdate(true);
     setDescription(item.description)
@@ -362,7 +361,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response)
         if (
           (await response.data) != null
         ) {
@@ -392,7 +390,6 @@ function Videos() {
     formData.append("status", status);
     formData.append("id_media", item.id);
 
-    console.log(!item.status);
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
@@ -405,7 +402,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setIsUpdateStatusId(item.id);
@@ -444,7 +440,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setIsUpdateStatusId(id + "restore");
@@ -479,7 +474,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setIsDelete(false);
@@ -643,7 +637,6 @@ function Videos() {
   };
 
   useEffect(() => {
-    console.log(sessionStorage.getItem("companyDefault"));
     async function loadCompany() {
       var list = await JSON.parse(sessionStorage.getItem("companyList") || "[]");
       if (Array.isArray(list)) {
@@ -710,7 +703,6 @@ function Videos() {
       setLoading(false);
     }
 
-    console.log("componentDidUpdateFunction");
   }, [companyDefault]);
 
   const onChangeDateStart = (date, dateString) => {
@@ -760,7 +752,6 @@ function Videos() {
           headers,
         })
         .then(async (response) => {
-          console.log(response);
           if ((await response.data) != null) {
             if (response.status === 200) {
               setLoading(false);
@@ -788,7 +779,6 @@ function Videos() {
   };
 
   const onChangeDate=(date, dateString) => {
-    console.log(dateString)
     setSelectedDate(dateString);
   };
 

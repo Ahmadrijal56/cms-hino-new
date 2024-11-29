@@ -96,7 +96,6 @@ function Holidays() {
   const handleClose = () => setOpen(false);
 
   const onChangeDate = (date, dateString) => {
-    console.log(dateString);
     setSelectedDate(dateString);
   };
 
@@ -204,8 +203,6 @@ function Holidays() {
           })
           .then(async (response) => {
             if (response.status === 200) {
-              //console.log(response)
-              //setDataGrid(response.data)
 
               const item = response.data;
               setDataGrid([
@@ -288,11 +285,9 @@ function Holidays() {
       
     }
 
-    console.log("componentDidUpdateFunction");
   }, [open, companyCode, isDelete]);
 
   const onEdit = async (item) => {
-    console.log(companyCode);
     setKeyHoliday(keyHoliday + 1);
     setIsUpdate(true);
     setDescription(item.description);

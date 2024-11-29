@@ -131,7 +131,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
               );
             }
           });
-          console.log(selectCompany)
           setCompanyList(selectCompany)
           if (await list.length == 1){
             let select= await list[0].split("@==")

@@ -299,14 +299,15 @@ function Videos() {
   };
 
   const onChangeTable = (pagination, filters, sorter, extra) => {
-    setOrderField(sorter.field);
+    if( sorter.field !=undefined){
+      setOrderField(sorter.field);
+    }
     setOrderBy((sorter.order ?? "ascend").toString().replace("ascend", "asc").replace("descend", "desc"));
     setTableParams({
       pagination,
       filters,
       ...sorter,
     });
-    console.log("params", pagination, filters, sorter, extra);
 
      // `dataSource` is useless since `pageSize` changed
      if (pagination.pageSize !== tableParams.pagination?.pageSize) {
@@ -365,7 +366,6 @@ function Videos() {
     },
     fileList,
     onChange(info) {
-      console.log(JSON.stringify(info));
       if (info.file.status !== "uploading") {
         console.log(info.file, info.fileList);
       }
@@ -530,7 +530,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setSelectedDate("");
@@ -582,7 +581,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setUpdateStatusId(id + "-delete");
@@ -610,7 +608,6 @@ function Videos() {
     formData.append("status", status);
     formData.append("id_media", item.id);
 
-    console.log(!item.status);
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
@@ -623,7 +620,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setUpdateStatusId(item.id);
@@ -664,7 +660,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setUpdateStatusId(id + "restore");
@@ -699,7 +694,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setIsDelete(false);
@@ -952,7 +946,6 @@ function Videos() {
           headers,
         })
         .then(async (response) => {
-          console.log(response);
           if ((await response.data) != null) {
             if (response.status === 200) {
               await response.data.forEach((item) => {
@@ -989,7 +982,6 @@ function Videos() {
            headers,
          })
          .then(async (response) => {
-           console.log(response);
            if ((await response.data) != null) {
              if (response.status === 200) {
                await response.data.forEach((item) => {
@@ -1068,7 +1060,6 @@ function Videos() {
       setLoading(false);
     }
 
-    console.log("componentDidUpdateFunction");
   }, [companyDefault]);
 
   const onChangeDateStart = (date, dateString) => {
@@ -1118,7 +1109,6 @@ function Videos() {
           headers,
         })
         .then(async (response) => {
-          console.log(response);
           if ((await response.data) != null) {
             if (response.status === 200) {
               setLoading(false);
@@ -1159,7 +1149,6 @@ function Videos() {
           headers,
         })
         .then(async (response) => {
-          console.log(response);
           if ((await response.data) != null) {
             if (response.status === 200) {
               setLoading(false);
@@ -1198,7 +1187,6 @@ function Videos() {
           headers,
         })
         .then(async (response) => {
-          console.log(response);
           if ((await response.data) != null) {
             if (await response.status === 200) {
               response.data.forEach(async (dataSetting) => {
