@@ -135,7 +135,6 @@ function Holidays() {
       Authorization: "Bearer " + sessionStorage.getItem("token"),
       crudtype: isUpdate ? "insert" : "insert",
     };
-    console.log(article)
     await axios
       .post(process.env.REACT_APP_MAIN_API_NEW + "/crudconfig", article, {
         headers,
