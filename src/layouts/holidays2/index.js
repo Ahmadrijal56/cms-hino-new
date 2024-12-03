@@ -41,8 +41,6 @@ import { UploadOutlined, SearchOutlined } from "@ant-design/icons";
 
 
 import qs from "qs";
-import SortableList, { SortableItem } from 'react-easy-sort'
-import { arrayMoveImmutable } from 'array-move'
 
 const { Option } = Select;
 
@@ -103,56 +101,25 @@ const columnsDelete = [
   {
     title: "Name",
     dataIndex: "name",
-    sorter: {
-      compare: (a, b) => a.name - b.name,
-    },
   },
   {
-    title: "Content",
+    title: "",
     dataIndex: "description",
-    sorter: {
-      compare: (a, b) => a.description - b.description,
-    },
   },
   {
-    title: "Publish Date",
+    title: "",
     dataIndex: "publishdate",
-    sorter: {
-      compare: (a, b) => a.publishdate - b.publishdate,
-      multiple: 2,
-    },
   },
   {
     title: "Last Modify",
-    dataIndex: "updated_at",
-    sorter: {
-      compare: (a, b) => a.updated_at - b.updated_at,
-      multiple: 1,
-    },
+    dataIndex: "updated_at"
   },
   {
     title: "Publish Date",
-    dataIndex: "publishdate",
-    sorter: {
-      compare: (a, b) => a.publishdate - b.publishdate,
-      multiple: 1,
-    },
-  },
-  {
-    title: "Expiry Date",
-    dataIndex: "expireddate",
-    sorter: {
-      compare: (a, b) => a.expireddate - b.expireddate,
-      multiple: 1,
-    },
-  },
-  {
-    title: "Action",
-    dataIndex: "action",
-  },
+    dataIndex: "publishdate"
+  }
 ];
 
-const { TextArea } = Input;
 const optionsComp = [];
 
 function Videos() {
@@ -161,7 +128,6 @@ function Videos() {
   const [companyName, setCompanyName] = useState("");
   const [companyList, setCompanyList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [dataGrid, setDataGrid] = useState([]);
   const [open, setOpen] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [keyHoliday, setKeyHoliday] = useState(0);
@@ -171,18 +137,13 @@ function Videos() {
   const [orderBy, setOrderBy] = useState();
   const [orderField, setOrderField] = useState();
   const [currentPage, setCurrentPage] = useState(1);
-  const [publishDate, setPublishDate] = useState("");
   const [defaultDate, setDefaultDate] = useState("");
   const [description, setDescription] = useState("");
-  const [defaultComp, setDefaultComp] = useState([]);
-  const [id, setId] = useState([]);
-  const [isTrash, setIsTrash] = useState(false);
+  const [isWeekday, setIsWeekday] = useState(false);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [searchText, setSearchText] = useState("");
   const [updateStatusId, setIsUpdateStatusId] = useState("");
-  const [itemsOrder, setItemsOrder] = useState([])
-  const [typeOrder, setTypeOrder] = useState("");
   const [isActive, setActive] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [tableParams, setTableParams] = useState({
@@ -191,6 +152,7 @@ function Videos() {
       pageSize: 5,
     },
   });
+  const [bottom, SetBottom] = useState('none');
 
   const dateFormat = "YYYY-MM-DD";
 
@@ -204,17 +166,17 @@ function Videos() {
 
   const onChange = (key) => {
     if (key == 2) {
-      setIsTrash(true);
+      setIsWeekday(true);
     } else {
-      setIsTrash(false);
+      setIsWeekday(false);
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          ...tableParams.pagination,
+          current: 1,
+        },
+      });
     }
-    setTableParams({
-      ...tableParams,
-      pagination: {
-        ...tableParams.pagination,
-        current: 1,
-      },
-    });
   };
 
   const onChangeTable = (pagination, filters, sorter, extra) => {
@@ -230,39 +192,16 @@ function Videos() {
   };
 
   const items = [
-    // {
-    //   key: "1",
-    //   label: "MAIN",
-    // },
-    // {
-    //   key: "2",
-    //   label: "TRASH",
-    // },
+    {
+      key: "1",
+      label: "HOLIDAY",
+    },
+    {
+      key: "2",
+      label: "WEEKEND",
+    },
   ];
 
-  const props = {
-    onRemove: (file) => {
-      const index = fileList.indexOf(file);
-      const newFileList = fileList.slice();
-      newFileList.splice(index, 1);
-      setFileList(newFileList);
-    },
-    beforeUpload: (file) => {
-      setFileList([file]);
-      return false;
-    },
-    fileList,
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-  };
 
   const handleOpen = () => {
     if (sessionStorage.getItem("companyDefault") == "") {
@@ -384,44 +323,6 @@ function Videos() {
 
   }
 
-  const onChangeStatus = async (item,status) => {
-    setLoading(true);
-    const formData = new FormData();
-    formData.append("status", status);
-    formData.append("id_media", item.id);
-
-    const headers = {
-      "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
-      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
-      "Content-Type": "multipart/form-data",
-      Authorization: "Bearer " + sessionStorage.getItem("token"),
-    };
-
-    await axios
-      .post(process.env.REACT_APP_MAIN_API + "/update/media", formData, {
-        headers,
-      })
-      .then(async (response) => {
-        if ((await response.data) != null) {
-          if (response.status === 200) {
-            setIsUpdateStatusId(item.id);
-            setSelectedDate("");
-            setLoading(false);
-            message.success(response.data.message);
-          }
-        }
-      })
-      .catch((error) => {
-        if(error.response.status===401){
-          localStorage.clear();
-          message.error(error + " Sesi telah habis,silahkan login kembali !");
-          window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
-        }else{
-          message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
-        }
-      });
-  };
-
   const onRestore = async (id) => {
     setLoading(true);
     const formData = new FormData();
@@ -495,7 +396,55 @@ function Videos() {
 
   const fetchData = () => {
     if (companyCode != "") {
-      var urlTrash = isTrash ? "/trash" : "";
+      if (isWeekday){
+        let arrMonth=['Bulan','January','February','March','April','May','June']
+        const resp =  arrMonth.map(function (item) {
+          return {
+            name: <>
+              <Checkbox >Sabtu</Checkbox>
+              <Checkbox >Minggu</Checkbox>
+            </>,
+            Description: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+            {item}
+          </ArgonTypography>,
+            Description: 
+              <Checkbox onChange={onChange}>Checkbox</Checkbox>
+            ,
+            action:
+              <>
+                <Icon
+                  fontSize="small"
+                  className="iconAction"
+                  onClick={() => {
+                    onRestore(item);
+                  }}
+                >
+                  recycling
+                </Icon>
+                <Icon
+                  fontSize="small"
+                  className="iconAction"
+                  onClick={() => {
+                    onTrash(item);
+                  }}
+                >
+                  delete
+                </Icon>
+              </>
+          };
+        });
+        setData(resp);
+        setLoading(false);
+        setTableParams({
+          pagination: {
+            current: 1,
+            pageSize: 50,
+            total: 12,
+          },
+        });
+
+      }else{
+      var urlTrash = isWeekday ? "/trash" : "";
       var query = "";
       if (dateFrom != "") {
         query += "&from_date=" + dateFrom;
@@ -541,7 +490,7 @@ function Videos() {
                   {item.description}
                 </ArgonTypography>
               ),
-              // statusUpdate: isTrash ? (
+              // statusUpdate: isWeekday ? (
               //   <></>
               // ) : (
               //   <ArgonTypography variant="caption" color="secondary" fontWeight="small" >
@@ -567,7 +516,7 @@ function Videos() {
               //     />)}
               //   </ArgonTypography>
               // ),
-              action: isTrash ? (
+              action: isWeekday ? (
                 <>
                   <Icon
                     fontSize="small"
@@ -633,6 +582,7 @@ function Videos() {
             message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
           }
         });
+      }
     }
   };
 
@@ -689,7 +639,7 @@ function Videos() {
     tableParams.pagination?.current,
     tableParams.pagination?.pageSize,
     orderBy,
-    isTrash,
+    isWeekday,
     dateFrom,
     dateTo,
     searchText,
@@ -738,45 +688,6 @@ function Videos() {
     });
   };
 
-  const onChangeFileSort = async (value) => {
-    //setTypeMedia(value);
-    if(value!=""){
-      const headers = {
-        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
-        "Content-Type": "multipart/form-data",
-        Authorization: "Bearer " + sessionStorage.getItem("token"),
-      };
-      await axios
-        .get(process.env.REACT_APP_MAIN_API + "/get/media/104040000?type=" + value.toLowerCase(), {
-          headers,
-        })
-        .then(async (response) => {
-          if ((await response.data) != null) {
-            if (response.status === 200) {
-              setLoading(false);
-              var mediaValue=[]
-              response.data.forEach((item) => {
-                mediaValue.push(item);
-              });
-              setItemsOrder(mediaValue)
-              setTypeOrder(value.toLowerCase())
-            }
-          }
-        })
-        .catch((error) => {
-          if(error.response.status===401){
-            localStorage.clear();
-            message.error(error + " Sesi telah habis,silahkan login kembali !");
-            window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
-          }else{
-            message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
-          }
-        });
-    }else{
-      setItemsOrder([])
-    }
-  };
 
   const onChangeDate=(date, dateString) => {
     setSelectedDate(dateString);
@@ -854,11 +765,12 @@ function Videos() {
             >
               {/* <Table columns={columns} rows={dataGrid} /> */}
               <Table
-                columns={isTrash ? columnsDelete : columns}
+                columns={isWeekday ? columnsDelete : columns}
                 dataSource={data}
                 onChange={onChangeTable}
                 display={false}
-                pagination={tableParams.pagination}
+                //pagination={tableParams.pagination}
+                pagination={isWeekday ? { position: [bottom] }:tableParams.pagination}
               />
               {/* <Pagination showQuickJumper defaultCurrent={2} total={500} onChange={onChangePage} className={dataGrid.length==0?"pageNumberEmpty":"pageNumber"}  disabled={dataGrid.length==0? true:false}/> */}
             </ArgonBox>
