@@ -64,7 +64,6 @@ function Illustration() {
             sessionStorage.setItem("username", "admin@hino.id");
             sessionStorage.setItem("token", response.data.token);
 
-                console.log(response)
                 let companyList=[]
                 if( await response.data.values.length>1){
                     await response.data.values.map(function(item) {
@@ -147,7 +146,6 @@ function Illustration() {
                 sessionStorage.setItem("username", data.get("email"));
                 sessionStorage.setItem("token", response.data.token);
 
-                console.log(response)
                 let companyList=[]
                 if( await response.data.values.length>1){
                     await response.data.values.map(function(item) {

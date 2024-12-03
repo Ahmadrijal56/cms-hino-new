@@ -63,13 +63,13 @@ const columns = [
       compare: (a, b) => a.type - b.type,
     },
   },
-  // {
-  //   title: "Content",
-  //   dataIndex: "description",
-  //   sorter: {
-  //     compare: (a, b) => a.description - b.description,
-  //   },
-  // },
+  {
+    title: "Lokasi",
+    dataIndex: "datalocation_string",
+    sorter: {
+      compare: (a, b) => a.type - b.type,
+    },
+  },
   {
     title: "Tanggal Publikasi",
     dataIndex: "publishdate",
@@ -124,13 +124,13 @@ const columnsDelete = [
       compare: (a, b) => a.type - b.type,
     },
   },
-  // {
-  //   title: "Content",
-  //   dataIndex: "description",
-  //   sorter: {
-  //     compare: (a, b) => a.description - b.description,
-  //   },
-  // },
+   {
+    title: "Lokasi",
+    dataIndex: "datalocation_string",
+    sorter: {
+      compare: (a, b) => a.type - b.type,
+    },
+  },
   {
     title: "Tanggal Publikasi",
     dataIndex: "publishdate",
@@ -163,6 +163,8 @@ const columnsDelete = [
 
 const { TextArea } = Input;
 const optionsComp = [];
+let optionsCategory = [];
+let optionsLocations = [];
 
 function Videos() {
   const [companyDefault, setCompanyDefault] = useState("");
@@ -178,13 +180,16 @@ function Videos() {
   const [keyHoliday, setKeyHoliday] = useState(0);
   const [selectedDate, setSelectedDate] = useState(0);
   const [fileList, setFileList] = useState([]);
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
   const [orderBy, setOrderBy] = useState();
   const [orderField, setOrderField] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [publishDate, setPublishDate] = useState("");
   const [expiredDate, setExpiredDate] = useState("");
-  const [typeMedia, setTypeMedia] = useState("text");
+  const [typeMedia, setTypeMedia] = useState(null);
+  const [location, setLocation] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
+  const [category, setCategory] = useState("");
   const [isApplyAll, setIsApplyAll] = useState(false);
   const [mediaName, setMediaName] = useState("");
   const [mediaDesc, setMediaDesc] = useState("");
@@ -202,7 +207,7 @@ function Videos() {
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
-      pageSize: 5,
+      pageSize: 10,
     },
   });
   const [getSettingMaxFileImage, setSettingMaxFileImage] = useState("")
@@ -211,6 +216,8 @@ function Videos() {
   const [getSettingTooltipVideo, setSettingMaxTooltipVideo] = useState("")
   const [getMaxText, setMaxText] = useState(100)
   const [userType, setUserType] = useState("");
+  const [sortLocation, setSortLocation] = useState("");
+  const [form] = Form.useForm();
 
   const dateFormat = "YYYY-MM-DD";
 
@@ -235,7 +242,7 @@ function Videos() {
 
     const formData = new FormData();
     formData.append("companycode", companyCode);
-    formData.append(typeOrder, "["+items.substring(0, items.length - 1)+"]");
+    formData.append((locationFilter=="Ruang Admin")?"allmedia":typeOrder, "["+items.substring(0, items.length - 1)+"]");
 
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
@@ -244,12 +251,12 @@ function Videos() {
       Authorization: "Bearer " + sessionStorage.getItem("token"),
     };
 
+    let url= (locationFilter=="Ruang Admin")?"/update_playing_media_dcb":"/update_playing_media";
     await axios
-      .post(process.env.REACT_APP_MAIN_API + "/update_playing_media", formData, {
+      .post(process.env.REACT_APP_MAIN_API + url, formData, {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setLoading(false);
@@ -267,8 +274,6 @@ function Videos() {
         }
       });
   }
-
-
 
   const onChange = (key) => {
     if (key == 2) {
@@ -294,14 +299,20 @@ function Videos() {
   };
 
   const onChangeTable = (pagination, filters, sorter, extra) => {
-    setOrderField(sorter.field);
+    if( sorter.field !=undefined){
+      setOrderField(sorter.field);
+    }
     setOrderBy((sorter.order ?? "ascend").toString().replace("ascend", "asc").replace("descend", "desc"));
     setTableParams({
       pagination,
       filters,
       ...sorter,
     });
-    console.log("params", pagination, filters, sorter, extra);
+
+     // `dataSource` is useless since `pageSize` changed
+     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+      setData([]);
+    }
   };
 
   const items = [
@@ -355,7 +366,6 @@ function Videos() {
     },
     fileList,
     onChange(info) {
-      console.log(JSON.stringify(info));
       if (info.file.status !== "uploading") {
         console.log(info.file, info.fileList);
       }
@@ -367,7 +377,16 @@ function Videos() {
     },
   };
 
+  const handleOpenSort = async() => {
+    setKeyHoliday(keyHoliday + 1);
+    setOpenSort(true);
+    setSortLocation("")
+    setItemsOrder([])
+    setLocationFilter("");
+  }
+
   const handleOpen = async() => {
+    await form.resetFields();
     if (sessionStorage.getItem("companyDefault") == "") {
       message.error("Please choose company code first");
     } else {
@@ -377,7 +396,9 @@ function Videos() {
       setFileList([]);
       setMediaName("");
       setMediaDesc("");
-      setTypeMedia("text");
+      setTypeMedia(null);
+      setCategory("");
+      setLocation("")
       // setDescription(item.description)
       // let date=moment(item.holidays_date)
       // setDefaultDate(date)
@@ -399,12 +420,15 @@ function Videos() {
   const handleCloseConfirm = () => setOpenConfirm(false);
 
   const onEdit = async (item) => {
+    await form.resetFields();
+    setKeyHoliday(keyHoliday + 1);
     setId(item.id);
     setUpdate(true);
-    setKeyHoliday(keyHoliday + 1);
     setMediaName(item.name);
     setMediaDesc(item.description);
     setTypeMedia(item.type);
+    setLocation(item.content_location_media)
+    setCategory(item.category_media)
     // setDescription(item.description)
     // let date=moment(item.holidays_date)
     // setDefaultDate(date)
@@ -426,9 +450,19 @@ function Videos() {
       }
     }
     setDefaultComp(defaultCompValue);
+
+    let defaultLocValue = [];
+    if (item.content_location_media!= null) {
+      await item.content_location_media.map(function (comp) {
+        if (comp != null) {
+          defaultLocValue.push(comp["id"]);
+        }
+      });
+    }
+    await setLocation(defaultLocValue);
+
     setOpen(true);
   };
-
 
   const onView = async (item) => {
     setId(item.id);
@@ -460,7 +494,8 @@ function Videos() {
     formData.append("status", true);
     formData.append("trash", false);
     formData.append("companycode", companyCode);
-    //formData.append("companycode", "Allcompany");
+    formData.append("category_media", values.category);
+    formData.append("content_location_media", JSON.stringify(values.location));
     if (values.type != "text") {
       fileList.forEach((file) => {
         formData.append("file", file);
@@ -495,7 +530,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setSelectedDate("");
@@ -547,7 +581,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setUpdateStatusId(id + "-delete");
@@ -575,7 +608,6 @@ function Videos() {
     formData.append("status", status);
     formData.append("id_media", item.id);
 
-    console.log(!item.status);
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
@@ -588,7 +620,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setUpdateStatusId(item.id);
@@ -629,7 +660,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setUpdateStatusId(id + "restore");
@@ -664,7 +694,6 @@ function Videos() {
         headers,
       })
       .then(async (response) => {
-        console.log(response);
         if ((await response.data) != null) {
           if (response.status === 200) {
             setIsDelete(false);
@@ -716,13 +745,6 @@ function Videos() {
           }
         )
         .then(async (response) => {
-          console.log(
-            process.env.REACT_APP_MAIN_API +
-              `/get/allmedia${urlTrash}/${companyCode}?${qs.stringify(
-                getRandomuserParams(tableParams)
-              )}` +
-              query
-          );
           const resp = await response.data.data.map(function  (item) {
 
             const switchChecked=  item.status.toString() =="true"  ? ( <Switch
@@ -743,11 +765,21 @@ function Videos() {
             </>
             )
 
+            var test=""
+            item.content_location_media.map(function (comp) {
+                test+=comp.description+", "
+            })
+
             return {
               ...item,
               type: (
                 <ArgonTypography variant="caption"  fontWeight="medium">
                   {item.type.toString().replace("text","Text").replace("image","Image").replace("video","Video")}
+                </ArgonTypography>
+              ),
+              location: (
+                <ArgonTypography variant="caption"  fontWeight="medium">
+                  {test.slice(0, -2)}
                 </ArgonTypography>
               ),
               Description: (
@@ -901,6 +933,79 @@ function Videos() {
       }
     }
 
+    async function loadCategory() {
+     var valuesCat=[]
+      const headers = {
+        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+        "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + sessionStorage.getItem("token"),
+      };
+      await axios
+        .get(process.env.REACT_APP_MAIN + "/hmsi/board/api/category_media", {
+          headers,
+        })
+        .then(async (response) => {
+          if ((await response.data) != null) {
+            if (response.status === 200) {
+              await response.data.forEach((item) => {
+                valuesCat.push({
+                  value: item["category"],
+                  label: item["category"],
+                });
+              });
+            }
+          }
+        })
+        .catch((error) => {
+          if(error.response.status===401){
+            localStorage.clear();
+            message.error(error + " Sesi telah habis,silahkan login kembali !");
+            window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+          }else{
+            message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+          }
+        });
+        optionsCategory=valuesCat
+    }
+
+    async function loadLocation() {
+      var valuesLoc=[]
+       const headers = {
+         "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+         "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+         "Content-Type": "multipart/form-data",
+         Authorization: "Bearer " + sessionStorage.getItem("token"),
+       };
+       await axios
+         .get(process.env.REACT_APP_MAIN + "/hmsi/board/api/location/getlist", {
+           headers,
+         })
+         .then(async (response) => {
+           if ((await response.data) != null) {
+             if (response.status === 200) {
+               await response.data.forEach((item) => {
+                 valuesLoc.push({
+                   value: item["id"],
+                   label: item["description"],
+                 });
+               });
+             }
+           }
+         })
+         .catch((error) => {
+           if(error.response.status===401){
+             localStorage.clear();
+             message.error(error + " Sesi telah habis,silahkan login kembali !");
+             window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+           }else{
+             message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+           }
+         });
+         optionsLocations=valuesLoc
+     }
+
+
     if (!open) {
       if (companyDefault == "") {
         var compSession = sessionStorage.getItem("companyDefault");
@@ -914,6 +1019,13 @@ function Videos() {
       }
       fetchData();
       loadCompany();
+      loadLocation();
+    }
+
+
+
+    if(optionsCategory.length==0){
+      loadCategory();
     }
 
     if (getSettingMaxFileImage==""){
@@ -948,7 +1060,6 @@ function Videos() {
       setLoading(false);
     }
 
-    console.log("componentDidUpdateFunction");
   }, [companyDefault]);
 
   const onChangeDateStart = (date, dateString) => {
@@ -998,7 +1109,6 @@ function Videos() {
           headers,
         })
         .then(async (response) => {
-          console.log(response);
           if ((await response.data) != null) {
             if (response.status === 200) {
               setLoading(false);
@@ -1008,6 +1118,45 @@ function Videos() {
               });
               setItemsOrder(mediaValue)
               setTypeOrder(value.toLowerCase())
+            }
+          }
+        })
+        .catch((error) => {
+          if(error.response.status===401){
+            localStorage.clear();
+            message.error(error + " Sesi telah habis,silahkan login kembali !");
+            window.location.href = process.env.REACT_APP_URL_DASH+"/login?token=logoutcms";
+          }else{
+            message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
+          }
+        });
+    }else{
+      setItemsOrder([])
+    }
+  };
+
+  const onChangeDcbSort = async (value) => {
+    //setTypeMedia(value);
+    if(value!=""){
+      const headers = {
+        "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+        "Content-Type": "multipart/form-data",
+        Authorization: "Bearer " + sessionStorage.getItem("token"),
+      };
+      await axios
+        .get(process.env.REACT_APP_MAIN_API + "/get/media/dcb/"+companyCode+"?type=" + value.toLowerCase(), {
+          headers,
+        })
+        .then(async (response) => {
+          if ((await response.data) != null) {
+            if (response.status === 200) {
+              setLoading(false);
+              var mediaValue=[]
+              response.data.forEach((item) => {
+                mediaValue.push(item);
+              });
+              setItemsOrder(mediaValue)
             }
           }
         })
@@ -1038,7 +1187,6 @@ function Videos() {
           headers,
         })
         .then(async (response) => {
-          console.log(response);
           if ((await response.data) != null) {
             if (await response.status === 200) {
               response.data.forEach(async (dataSetting) => {
@@ -1081,6 +1229,23 @@ function Videos() {
 
   const onChangeType = (value) => {
     setTypeMedia(value);
+  };
+
+  const onChangeLocation = (value) => {
+    form.setFieldValue("type", "")
+    setLocation(value);
+  };
+
+  const onChangeLocationFilter = (value) => {
+    setLocationFilter(value);
+    setItemsOrder([])
+    if (value=="Ruang Admin"){
+      onChangeDcbSort(value)
+    }
+  };
+
+  const onChangeCategory = (value) => {
+    setCategory(value);
   };
 
   const onChangePublishDate = (_, dateString) => {
@@ -1126,9 +1291,7 @@ function Videos() {
               <ArgonButton
                   color="warning"
                   size="small"
-                  onClick={()=>{
-                    setOpenSort(true);
-                  }}
+                  onClick={handleOpenSort}
                 >
                 Urutan Konten
                 </ArgonButton>
@@ -1164,7 +1327,7 @@ function Videos() {
                   size="large"
                   placeholder="Cari Media"
                   prefix={<SearchOutlined />}
-                  onPressEnter={clickSearch}
+                  onChange={clickSearch}
                 />
               </ArgonBox>
             </ArgonBox>
@@ -1183,9 +1346,10 @@ function Videos() {
               <Table
                 columns={isTrash ? columnsDelete : columns}
                 dataSource={_.cloneDeep(data)}
+                rowKey={(record) => record.id_media}
                 onChange={onChangeTable}
-                display={false}
                 pagination={tableParams.pagination}
+                showSizeChanger={true}
               />
               {/* <Pagination showQuickJumper defaultCurrent={2} total={500} onChange={onChangePage} className={dataGrid.length==0?"pageNumberEmpty":"pageNumber"}  disabled={dataGrid.length==0? true:false}/> */}
             </ArgonBox>
@@ -1196,37 +1360,66 @@ function Videos() {
       <Modal open={openConfirm} title="Konfirmasi" onCancel={handleCloseConfirm} onOk={handleCloseConfirm} footer={null}  maskClosable={false}>
           Apakah anda yakin akan hapus data ini?
       </Modal>
-      <Modal open={openSort} title="Change order of Contents" onCancel={handleCloseSort}  footer={null} maskClosable={false} >
+      <Modal key={keyHoliday}  open={openSort} title="Pengaturan urutan kontent" onCancel={handleCloseSort}  footer={null} maskClosable={false} destroyOnClose>
         <div class="sortModal">
-        <Select onChange={onChangeFileSort} className="sortChoose" defaultValue="">
-              <Select.Option value="" >Choose type</Select.Option>
-              <Select.Option value="text">Text</Select.Option>
-              <Select.Option value="image">Image</Select.Option>
-              <Select.Option value="video">Video</Select.Option>
-            </Select>
+        <Form
+          name="basic"
+          form={form}
+          key={keyHoliday+"formsort"}
+        >
+           <Form.Item
+            initialValue={sortLocation}
+          >
+            <Select onChange={onChangeLocationFilter} className="sortChoose" defaultValue=""  >
+                <Select.Option value="" >Pilih Lokasi </Select.Option>
+                <Select.Option value="Ruang Admin">Ruang Admin</Select.Option>
+                <Select.Option value="Ruang Tunggu">Ruang Tunggu</Select.Option>
+              </Select>
+            </Form.Item>
+
+              {
+                locationFilter==="Ruang Tunggu"  ?(
+                  <Form.Item
+                  initialValue={sortLocation}
+                >
+              <Select onChange={onChangeFileSort}  defaultValue="">
+                        <Select.Option value="" >Pilh Type</Select.Option>
+                        <Select.Option value="text">Text</Select.Option>
+                        <Select.Option value="image">Image</Select.Option>
+                        <Select.Option value="video">Video</Select.Option>
+                      </Select>
+                      </Form.Item>): locationFilter=="" ? (<></>):(<div style={{width:450, marginTop:20, fontWeight:"bold"}}>Dealer Content Board</div>)
+               } 
             
-            <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
-            {itemsOrder.map((item) => (
-              <SortableItem key={item.id} >
-                <div className="itemSort" key={item.id} value={item.id}>{item.name}</div>
-              </SortableItem>
-            ))}
-          </SortableList>
+            <Form.Item
+                  initialValue={sortLocation}
+                >
+                <SortableList onSortEnd={onSortEnd} className="list" draggedItemClassName="dragged">
+                {itemsOrder.map((item) => (
+                  <SortableItem key={item.id} >
+                    <div className="itemSort" key={item.id} value={item.id}>{item.name + (locationFilter==="Ruang Tunggu"? "" : " - ("+ item.type.toUpperCase()+")")}</div>
+                  </SortableItem>
+                ))}
+              </SortableList>
+          </Form.Item>
+
+          </Form>
+
 
           <Button type="primary" style={{marginTop:"20px"}} onClick={saveSort} disabled={itemsOrder.length ==0}>
               Save
             </Button>
-
         </div>
         
       </Modal>
-      <Modal open={open} title="Media" onCancel={handleClose} key={keyHoliday} footer={null} maskClosable={false}>
+      <Modal open={open} title="Media" onCancel={handleClose} key={keyHoliday} footer={null} maskClosable={false} destroyOnClose>
         <Form
           name="basic"
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
-          initialValues={{ remember: true }}
           onFinish={onFinish}
+          form={form}
+          key={keyHoliday+"form"}
         >
           <Form.Item
             label="Name"
@@ -1242,9 +1435,43 @@ function Videos() {
             <Input />
           </Form.Item>
 
+          <Form.Item label="Kategori" name="category" 
+            rules={[
+              {
+                required: true,
+                message: "Mohon Pilih Kategori",
+              },
+            ]}
+            initialValue={category}>
+              <Select
+                style={{
+                  width: "100%",
+                }}
+                onChange={onChangeCategory}
+                options={optionsCategory}
+              />
+            </Form.Item>
+
+            <Form.Item
+            label={"Lokasi"}
+            name="location"
+            rules={[
+              {
+                required: true,
+                message: "Mohon Pilih Lokasi",
+              },
+            ]}
+            initialValue={isUpdate ? location : []}
+          >
+            <Select onChange={onChangeLocation} options={optionsLocations}
+             mode="tags">
+            </Select>
+          </Form.Item>
+
           <Form.Item
             label="Tipe"
             name="type"
+            key="type"
             rules={[
               {
                 required: true,
@@ -1254,7 +1481,8 @@ function Videos() {
             initialValue={typeMedia}
           >
             <Select onChange={onChangeType}>
-              <Select.Option value="text">Text</Select.Option>
+              {location.indexOf(189265) > -1 ? (<></>):(<Select.Option value="text">Text</Select.Option>
+                )}
               <Select.Option value="image">Image</Select.Option>
               <Select.Option value="video">Video</Select.Option>
             </Select>

@@ -19,8 +19,7 @@ import { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+
 
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
@@ -33,14 +32,26 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import Table from "examples/Tables/Table";
 
+import dayjs, { Dayjs } from "dayjs";
 import axios from "axios";
 import moment from "moment";
-import { message, Modal, Button, Form, InputNumber, Select, DatePicker, Checkbox } from "antd";
-import { Height } from "@mui/icons-material";
+import { message, Modal, Button, Form, InputNumber, Select, TimePicker } from "antd";
 
 const { Option } = Select;
 
-function Holidays() {
+const disabledDateTime = () => ({
+  disabledHours: () => range(0, 24).splice(3, 21),
+});
+
+const range = (start, end) => {
+  const result = [];
+  for (let i = start; i < end; i++) {
+    result.push(i);
+  }
+  return result;
+};
+
+function Swipe() {
   const [companyDefault, setCompanyDefault] = useState("");
   const [companyCode, setCompanyCode] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -55,53 +66,17 @@ function Holidays() {
   const [isUpdate, setIsUpdate] = useState(false);
   const [isActive, setActive] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
-  const [timeDisplay, setTimeDisplay] = useState(0);
-  const [outstandingWoLevel1, setOutstandingWoLevel1] = useState(0);
-  const [outstandingWoLevel2, setOutstandingWoLevel2] = useState(0);
-  const [outstandingSoLevel1, setOutstandingSoLevel1] = useState(0);
-  const [outstandingSoLevel2, setOutstandingSoLevel2] = useState(0);
-  const [warehouseLevel1, setWarehouseLevel1] = useState(0);
-  const [warehouseLevel2, setWarehouseLevel2] = useState(0);
+  const [getTimer, setTimer] = useState(dayjs('00:00:00', 'HH:mm:ss'));
+  const [getName, setName] = useState("");
+  const [getColumn, setColumn] = useState("");
   const columns = [
-    { name: "TIME_DISPLAY", align: "center" },
-    { name: "OUTSTANDING_WO_LEVEL_1", align: "center" },
-    { name: "OUTSTANDING_WO_LEVEL_2", align: "center" },
-    { name: "OUTSTANDING_SO_LEVEL_1", align: "center" },
-    { name: "OUTSTANDING_SO_LEVEL_2", align: "center" },
-    { name: "WHAREHOUSE_LEVEL_1", align: "center" },
-    { name: "WHAREHOUSE_LEVEL_2", align: "center" },
-    { name: "Edit", align: "center" },
+    { name: "no", align: "center" },
+    { name: "nama board", align: "left", },
+    { name: "waktu tayang", align: "center" },
+    { name: "Edit", align: "center",  },
   ];
-
-  const handleOpen = () => {
-    if (companyCode == "") {
-      message.error("Please choose company code first");
-    } else {
-      setDefaultDate("");
-      setSelectedDate("");
-      setDescription("");
-      setTimeDisplay(0);
-      setOutstandingSoLevel1(0);
-      setOutstandingSoLevel2(0);
-      setOutstandingWoLevel1(0);
-      setOutstandingWoLevel2(0);
-      setWarehouseLevel1(0);
-      setWarehouseLevel2(0);
-      setActive(true);
-      setIsUpdate(false);
-      setOpen(true);
-      setKeyHoliday(keyHoliday + 1);
-    }
-  };
+  
   const handleClose = () => setOpen(false);
-
-  const onChangeDate = (date, dateString) => {
-    setSelectedDate(dateString);
-  };
-
-  const onChangeStatus = (e) => {
-    setActive(e.target.checked);
-  };
 
   const onFinishFailed = (errorInfo) => {
     message.error("Failed: " + errorInfo);
@@ -110,50 +85,30 @@ function Holidays() {
   //login via input
   const onFinish = async (values) => {
     setLoading(true);
-     // "companycode": 1234,
-              // "time_display": 5,
-              // "outstanding_wo_level_1": 10,
-              // "outstanding_wo_level_1": 60,
-              // "outstanding_so_level_1": 30,
-              // "outstanding_so_level_2": 60,
-              // "warehouse_level_1": 30,
-              // "warehouse_level_2": 60
     const article = {
       companycode: companyCode,
-      time_display: values.time_display,
-      outstanding_wo_level_1: values.outstanding_wo_level_1,
-      outstanding_wo_level_2: values.outstanding_wo_level_2,
-      outstanding_so_level_1: values.outstanding_so_level_1,
-      outstanding_so_level_2: values.outstanding_so_level_2,
-      warehouse_level_1: values.warehouse_level_1,
-      warehouse_level_2: values.warehouse_level_2,
     };
+    article[getColumn]=  await convertSecond(values.timer);
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
       "Content-Type": "application/json",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
-      crudtype: isUpdate ? "insert" : "insert",
+      crudtype: isUpdate ? "update" : "insert",
     };
     await axios
-      .post(process.env.REACT_APP_MAIN_API_NEW + "/crudconfig", article, {
+      .post(process.env.REACT_APP_MAIN_API + "/new/crudconfig_timer", article, {
         headers,
       })
       .then(async (response) => {
         if ((await response.data) != null) {
           if (response.status === 200) {
-            setSelectedDate("");
-            setDescription("");
-            setTimeDisplay(0);
-            setOutstandingSoLevel1(0);
-            setOutstandingSoLevel2(0);
-            setOutstandingWoLevel1(0);
-            setOutstandingWoLevel2(0);
-            setWarehouseLevel1(0);
-            setWarehouseLevel2(0);
+            setTimer(dayjs('00:00:00', 'HH:mm:ss'));
+            setName("");
+            setColumn("");
             setOpen(false);
             setLoading(false);
-            message.success(response.data.Message);
+            message.success(response.data.message);
           }
         }
       })
@@ -167,6 +122,25 @@ function Holidays() {
           }
         });
   };
+
+  const convertSecond = async (values) =>{
+    let checkVal=values.format('HH:mm:ss');
+    if (checkVal.indexOf(":") > -1){
+      let time =  checkVal.split(":");
+      let hours=parseInt(time[0])*3600
+      let minutes=parseInt(time[1])*60
+      let second=parseInt(time[2])
+      return hours+minutes+second
+    }
+    return 0
+  }
+
+  const convertTime = async(val) =>{
+    let values=moment().startOf('day')
+    .seconds(val)
+    .format('HH:mm:ss');
+    return dayjs(values, 'HH:mm:ss')
+  }
 
   useEffect(() => {
     async function loadCompany() {
@@ -196,49 +170,30 @@ function Holidays() {
       };
 
       try {
+        if(selected!=""){
         await axios
-          .get(process.env.REACT_APP_MAIN_API_NEW + "/showconfig/" + selected, {
+          .get(process.env.REACT_APP_MAIN_API + "/new/config_timer/"+selected, {
             headers,
           })
           .then(async (response) => {
             if (response.status === 200) {
-
-              const item = response.data;
-              setDataGrid([
-                {
-                  TIME_DISPLAY: (
+              let dataMapping=[]
+              let i=1
+              await response.data.forEach(function async(item) {
+                dataMapping.push({
+                  no: (
                     <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                      {item.time_display}
+                      {i++}
                     </ArgonTypography>
                   ),
-                  OUTSTANDING_WO_LEVEL_1: (
+                  "nama board": (
                     <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                      {item.outstanding_wo_level_1}
+                      {item.name}
                     </ArgonTypography>
                   ),
-                  OUTSTANDING_WO_LEVEL_2: (
+                  "waktu tayang": (
                     <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                      {item.outstanding_wo_level_2}
-                    </ArgonTypography>
-                  ),
-                  OUTSTANDING_SO_LEVEL_1: (
-                    <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                      {item.outstanding_so_level_1}
-                    </ArgonTypography>
-                  ),
-                  OUTSTANDING_SO_LEVEL_2: (
-                    <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                      {item.outstanding_so_level_2}
-                    </ArgonTypography>
-                  ),
-                  WHAREHOUSE_LEVEL_1: (
-                    <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                      {item.warehouse_level_1}
-                    </ArgonTypography>
-                  ),
-                  WHAREHOUSE_LEVEL_2: (
-                    <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                      {item.warehouse_level_2}
+                      {item.display}
                     </ArgonTypography>
                   ),
                   Edit: (
@@ -253,8 +208,10 @@ function Holidays() {
                       Edit
                     </ArgonButton>
                   ),
-                },
-              ]);
+                })
+              });
+
+              setDataGrid(dataMapping);
 
               setLoading(false);
             } else {
@@ -269,7 +226,11 @@ function Holidays() {
             }else{
               message.error(error + " Ups! Terjadi kesalahan saat mengambil data. Silakan coba lagi dalam beberapa saat. ");
             }
-          });;
+          });
+        }else{
+          setLoading(false);
+          setDataGrid([])
+        }
       } catch (error) {
         message.error(error);
         setLoading(false);
@@ -283,24 +244,15 @@ function Holidays() {
         loadData(companyCode);
       
     }
-
   }, [open, companyCode, isDelete]);
 
   const onEdit = async (item) => {
     setKeyHoliday(keyHoliday + 1);
     setIsUpdate(true);
-    setDescription(item.description);
-    let date = moment(item.holidays_date);
-    setDefaultDate(date);
     setActive(item.active);
-    setSelectedDate(date.format("YYYY-MM-DD"));
-    setTimeDisplay(item.time_display);
-    setOutstandingSoLevel1(item.outstanding_wo_level_1);
-    setOutstandingSoLevel2(item.outstanding_wo_level_2);
-    setOutstandingWoLevel1(item.outstanding_so_level_1);
-    setOutstandingWoLevel2(item.outstanding_so_level_2);
-    setWarehouseLevel1(item.warehouse_level_1);
-    setWarehouseLevel2(item.warehouse_level_2);
+    setTimer(await convertTime(item.timer));
+    setName(item.name);
+    setColumn(item.column);
     setOpen(true);
   };
 
@@ -315,7 +267,7 @@ function Holidays() {
           <Card>
             <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3} >
               <ArgonBox>
-                <ArgonTypography variant="h6">Configs</ArgonTypography>
+                <ArgonTypography variant="h6">Timer Configs</ArgonTypography>
                  {companyList.length > 1 ? (
                   <Select
                     showSearch={true}
@@ -347,7 +299,7 @@ function Holidays() {
               </ArgonBox> */}
             </ArgonBox>
             <ArgonBox
-            style={{height:"400px"}}
+            style={{height:"500px"}}
               sx={{
                 "& .MuiTableRow-root:not(:last-child)": {
                   "& td": {
@@ -363,118 +315,30 @@ function Holidays() {
         </ArgonBox>
       </ArgonBox>
       <Footer />
-      <Modal open={open} title="Config" onCancel={handleClose} key={keyHoliday} footer={null} maskClosable={false}>
+      <Modal open={open} title={getName} onCancel={handleClose} key={keyHoliday} footer={null} maskClosable={false}>
         <Form
           name="basic"
-          labelCol={{ span: 14 }}
-          wrapperCol={{ span: 16 }}
           initialValues={{ remember: true }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
         >
+          <br></br>
 
           <Form.Item
-            label="Time Display"
-            name="time_display"
+            label="Waktu Tayang"
+            name="timer"
             rules={[
               {
                 required: true,
-                message: "Please input the time display",
+                message: "Please input the time Service Perfromance - CPUS",
               },
             ]}
-            initialValue={timeDisplay}
+            initialValue={getTimer}
           >
-            <InputNumber />
+             <TimePicker   format="HH:mm:ss" showNow={false} needConfirm={false} size="large" disabledTime={disabledDateTime}/>
           </Form.Item>
 
-          <Form.Item
-            label="Outstanding WO Level 1"
-            name="outstanding_wo_level_1"
-            rules={[
-              {
-                required: true,
-                message: "Please input the time Outstanding WO Level 1",
-              },
-            ]}
-            initialValue={outstandingWoLevel1}
-          >
-            <InputNumber />
-          </Form.Item>
-
-
-          <Form.Item
-            label="Outstanding WO Level 2"
-            name="outstanding_wo_level_2"
-            rules={[
-              {
-                required: true,
-                message: "Please input the time Outstanding WO Level 2",
-              },
-            ]}
-            initialValue={outstandingWoLevel2}
-          >
-            <InputNumber />
-          </Form.Item>
-
-
-          <Form.Item
-            label="Outstanding SO Level 1"
-            name="outstanding_so_level_1"
-            rules={[
-              {
-                required: true,
-                message: "Please input the time Outstanding SO Level 1",
-              },
-            ]}
-            initialValue={outstandingSoLevel1}
-          >
-            <InputNumber />
-          </Form.Item>
-
-
-          <Form.Item
-            label="Outstanding SO Level 2"
-            name="outstanding_so_level_2"
-            rules={[
-              {
-                required: true,
-                message: "Please input the time Outstanding SO Level 2",
-              },
-            ]}
-            initialValue={outstandingSoLevel2}
-          >
-            <InputNumber />
-          </Form.Item>
-
-
-          <Form.Item
-            label="Warehouse SO Level 1"
-            name="warehouse_level_1"
-            rules={[
-              {
-                required: true,
-                message: "Please input the time Warehouse Level 1",
-              },
-            ]}
-            initialValue={warehouseLevel1}
-          >
-            <InputNumber />
-          </Form.Item>
-
-
-          <Form.Item
-            label="Warehouse SO Level 2"
-            name="warehouse_level_2"
-            rules={[
-              {
-                required: true,
-                message: "Please input the time Warehouse Level 2",
-              },
-            ]}
-            initialValue={warehouseLevel2}
-          >
-            <InputNumber />
-          </Form.Item>
+          <br></br>
 
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
@@ -488,4 +352,4 @@ function Holidays() {
   );
 }
 
-export default Holidays;
+export default Swipe;
