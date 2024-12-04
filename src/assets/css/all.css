@@ -172,3 +172,23 @@
   .none{
     display: none;
   }
+
+  .textHeader{
+    float: left;
+  }
+
+  .textWhite{
+    color: #fff ;
+
+    float: left;
+  }
+
+  .totalhk{
+    float: left;
+    margin-left: 2em;
+  }
+
+  .totalhk2{
+    float: left;
+    margin-left: 3em;
+  }

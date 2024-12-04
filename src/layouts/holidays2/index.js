@@ -99,24 +99,20 @@ const columns = [
 
 const columnsDelete = [
   {
-    title: "Name",
+    title: "",
     dataIndex: "name",
   },
   {
-    title: "",
-    dataIndex: "description",
+    title: "SERVICE",
+    dataIndex: "service",
   },
   {
-    title: "",
-    dataIndex: "publishdate",
+    title: "SPAREPART",
+    dataIndex: "sparepart",
   },
   {
-    title: "Last Modify",
-    dataIndex: "updated_at"
-  },
-  {
-    title: "Publish Date",
-    dataIndex: "publishdate"
+    title: "SALES",
+    dataIndex: "sales"
   }
 ];
 
@@ -394,54 +390,114 @@ function Videos() {
       });
   };
 
+  const onChangeCheckBox = (e) => {
+    console.log(`checked = ${e.target.checked}`);
+  };
+
   const fetchData = () => {
     if (companyCode != "") {
       if (isWeekday){
-        let arrMonth=['Bulan','January','February','March','April','May','June']
-        const resp =  arrMonth.map(function (item) {
-          return {
-            name: <>
-              <Checkbox >Sabtu</Checkbox>
-              <Checkbox >Minggu</Checkbox>
-            </>,
-            Description: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-            {item}
-          </ArgonTypography>,
-            Description: 
-              <Checkbox onChange={onChange}>Checkbox</Checkbox>
-            ,
-            action:
-              <>
-                <Icon
-                  fontSize="small"
-                  className="iconAction"
-                  onClick={() => {
-                    onRestore(item);
-                  }}
-                >
-                  recycling
-                </Icon>
-                <Icon
-                  fontSize="small"
-                  className="iconAction"
-                  onClick={() => {
-                    onTrash(item);
-                  }}
-                >
-                  delete
-                </Icon>
-              </>
-          };
-        });
-        setData(resp);
-        setLoading(false);
-        setTableParams({
-          pagination: {
-            current: 1,
-            pageSize: 50,
-            total: 12,
-          },
-        });
+
+        let respDataService=[]
+        const article = {
+          companycode: "3155098",
+          tahun: "2024",
+        };
+        const headers = {
+          "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
+          "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + sessionStorage.getItem("token"),
+        };
+        axios
+          .post(
+            process.env.REACT_APP_MAIN_API +`/holidays/new/get`,
+            article,
+            {
+              headers,
+            }
+          )
+          .then(async (response) => {
+            // await response.data.map(function (item) {
+            //   console.log(item)
+            //   // respDataService.push(item)
+
+            // });
+          });
+
+              
+       
+                      let arrMonth=['Bulan','January','February','March','April','May','June']
+                      const resp =  arrMonth.map(function (item) {
+                        return {
+                          name: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                            <b>{item}</b>
+                          </ArgonTypography>,
+                          service: <>
+                          {item=="Bulan"? (<div >
+                              <Checkbox onChange={onChangeCheckBox} className="textHeader">Sabtu</Checkbox>
+                              <Checkbox  onChange={onChangeCheckBox} className="textHeader">Minggu</Checkbox>
+                              <div className="totalhk">Total HK</div>
+                            </div>):(<>
+                              <Checkbox onChange={onChangeCheckBox} className="textWhite">Sabtu</Checkbox>
+                              <Checkbox  onChange={onChangeCheckBox} className="textWhite">Minggu</Checkbox>
+                              <div className="totalhk2">0</div>
+                            </>)}
+                          </>,
+                          sparepart: <>
+                          {item=="Bulan"? (<div >
+                              <Checkbox onChange={onChangeCheckBox} className="textHeader">Sabtu</Checkbox>
+                              <Checkbox  onChange={onChangeCheckBox} className="textHeader">Minggu</Checkbox>
+                              <div className="totalhk">Total HK</div>
+                            </div>):(<>
+                              <Checkbox onChange={onChangeCheckBox} className="textWhite">Sabtu</Checkbox>
+                              <Checkbox  onChange={onChangeCheckBox} className="textWhite">Minggu</Checkbox>
+                              <div className="totalhk2">0</div>
+                            </>)}
+                          </>,
+                          sales: <>
+                          {item=="Bulan"? (<div >
+                              <Checkbox onChange={onChangeCheckBox} className="textHeader">Sabtu</Checkbox>
+                              <Checkbox  onChange={onChangeCheckBox} className="textHeader">Minggu</Checkbox>
+                              <div className="totalhk">Total HK</div>
+                            </div>):(<>
+                              <Checkbox onChange={onChangeCheckBox} className="textWhite">Sabtu</Checkbox>
+                              <Checkbox  onChange={onChangeCheckBox} className="textWhite">Minggu</Checkbox>
+                              <div className="totalhk2">0</div>
+                            </>)}
+                          </>,
+                          action:
+                            <>
+                              <Icon
+                                fontSize="small"
+                                className="iconAction"
+                                onClick={() => {
+                                  onRestore(item);
+                                }}
+                              >
+                                recycling
+                              </Icon>
+                              <Icon
+                                fontSize="small"
+                                className="iconAction"
+                                onClick={() => {
+                                  onTrash(item);
+                                }}
+                              >
+                                delete
+                              </Icon>
+                            </>
+                        };
+                      });
+                      setData(resp);
+                      setLoading(false);
+                      setTableParams({
+                        pagination: {
+                          current: 1,
+                          pageSize: 50,
+                          total: 12,
+                        },
+                      });
 
       }else{
       var urlTrash = isWeekday ? "/trash" : "";
@@ -738,11 +794,16 @@ function Videos() {
               pt={0}
             >
               <ArgonBox p={3} pt={0} pl={0}>
-                <span className="titleDate">Dari </span>
-                <DatePicker onChange={onChangeDateStart} format={dateFormat} size="large" placeholder="Pilih Tanggal"/>
-                <span className="titleDate">Ke </span>
-                <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large"  disabledDate={disabledDateTo} placeholder="Pilih Tanggal"/>
+                <span className="titleDate">{isWeekday ? "Tahun" :"Dari"} </span>
+                <DatePicker onChange={onChangeDateStart} format={dateFormat} size="large" placeholder="Pilih Tanggal" picker={isWeekday ? "year" :""}/>
+                {isWeekday ? "" :
+                  (<>
+                    <span className="titleDate">Ke </span>
+                    <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large"  disabledDate={disabledDateTo} placeholder="Pilih Tanggal"/></>)
+                } 
               </ArgonBox>
+              {isWeekday ? "" :
+                  (<>
               <ArgonBox p={3} pt={0}>
                 <Input
                   size="large"
@@ -751,6 +812,7 @@ function Videos() {
                   onChange={clickSearch}
                 />
               </ArgonBox>
+              </>)}
             </ArgonBox>
             <ArgonBox
               sx={{
