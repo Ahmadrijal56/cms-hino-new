@@ -494,8 +494,7 @@ function Videos() {
                       setTableParams({
                         pagination: {
                           current: 1,
-                          pageSize: 50,
-                          total: 12,
+                          total: 20,
                         },
                       });
 
@@ -832,7 +831,7 @@ function Videos() {
                 onChange={onChangeTable}
                 display={false}
                 //pagination={tableParams.pagination}
-                pagination={isWeekday ? { position: [bottom] }:tableParams.pagination}
+                pagination={isWeekday ? {...tableParams.pagination, pageSize: 50, position: [bottom] }:tableParams.pagination}
               />
               {/* <Pagination showQuickJumper defaultCurrent={2} total={500} onChange={onChangePage} className={dataGrid.length==0?"pageNumberEmpty":"pageNumber"}  disabled={dataGrid.length==0? true:false}/> */}
             </ArgonBox>
