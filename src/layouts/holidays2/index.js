@@ -427,7 +427,7 @@ function Videos() {
 
               
        
-                      let arrMonth=['Bulan','January','February','March','April','May','June']
+                      let arrMonth=['Bulan','January','February','March','April','May','June','July','August','September','October','November','December']
                       const resp =  arrMonth.map(function (item) {
                         return {
                           name: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
