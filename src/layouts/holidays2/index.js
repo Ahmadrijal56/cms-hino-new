@@ -121,6 +121,10 @@ const optionsComp = [];
 function Videos() {
   let respDataService={}
   let totalwork_service={}
+  let respDataSparepart={}
+  let totalwork_sparepart={}
+  let respDataSales={}
+  let totalwork_sales={}
   const [companyDefault, setCompanyDefault] = useState("");
   const [companyCode, setCompanyCode] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -398,15 +402,19 @@ function Videos() {
     console.log(`checked = ${e.target.checked}`);
   };
 
-  const fetchData = async() => {
+  const fetchData = async(date) => {
     if (companyCode != "") {
       if (isWeekday){
 
         respDataService={}
         totalwork_service={}
+        respDataSparepart={}
+        totalwork_sparepart={}
+        respDataSales={}
+        totalwork_sales={}
         const article = {
           companycode: "3155098",
-          tahun: yearFrom,
+          tahun: date,
         };
         const headers = {
           "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
@@ -425,6 +433,10 @@ function Videos() {
           .then(async (response) => {
             respDataService=response.data.data.service
             totalwork_service=response.data.data.totalwork_service
+            respDataSparepart=response.data.data.sparepart
+            totalwork_sparepart=response.data.data.totalwork_sparepart
+            respDataSales=response.data.data.sales
+            totalwork_sales=response.data.data.totalwork_sales
             // await response.data.map(function (item) {
             //   console.log(item)
             //   // respDataService.push(item)
@@ -458,9 +470,9 @@ function Videos() {
                               <Checkbox  onChange={onChangeCheckBox} className="textHeader">Minggu</Checkbox>
                               <div className="totalhk">Total HK</div>
                             </div>):(<>
-                              <Checkbox onChange={onChangeCheckBox} className="textWhite">Sabtu</Checkbox>
-                              <Checkbox  onChange={onChangeCheckBox} className="textWhite">Minggu</Checkbox>
-                              <div className="totalhk2">0</div>
+                              <Checkbox onChange={onChangeCheckBox} className="textWhite" checked={respDataSparepart[item.toLocaleLowerCase()]["sabtu"]??false}>Sabtu</Checkbox>
+                              <Checkbox  onChange={onChangeCheckBox} className="textWhite" checked={respDataSparepart[item.toLocaleLowerCase()]["minggu"]??false}>Minggu</Checkbox>
+                              <div className="totalhk2">{totalwork_sparepart[item.toLocaleLowerCase()]??0}</div>
                             </>)}
                           </>,
                           sales: <>
@@ -469,9 +481,9 @@ function Videos() {
                               <Checkbox  onChange={onChangeCheckBox} className="textHeader">Minggu</Checkbox>
                               <div className="totalhk">Total HK</div>
                             </div>):(<>
-                              <Checkbox onChange={onChangeCheckBox} className="textWhite">Sabtu</Checkbox>
-                              <Checkbox  onChange={onChangeCheckBox} className="textWhite">Minggu</Checkbox>
-                              <div className="totalhk2">0</div>
+                              <Checkbox onChange={onChangeCheckBox} className="textWhite" checked={respDataSales[item.toLocaleLowerCase()]["sabtu"]??false}>Sabtu</Checkbox>
+                              <Checkbox  onChange={onChangeCheckBox} className="textWhite" checked={respDataSales[item.toLocaleLowerCase()]["minggu"]??false}>Minggu</Checkbox>
+                              <div className="totalhk2">{totalwork_sales[item.toLocaleLowerCase()]??0}</div>
                             </>)}
                           </>,
                           action:
@@ -689,7 +701,7 @@ function Videos() {
         setCompanyName(select[1]);
         //loadData(select[0]);xs
       }
-      fetchData();
+      fetchData(yearFrom);
       loadCompany();
     }
 
@@ -718,10 +730,10 @@ function Videos() {
 
   }, [companyDefault]);
 
-  const onChangeDateStart = (date, dateString) => {
+  const onChangeDateStart = async(date, dateString) => {
     if(isWeekday){
       setYearFrom(dateString)
-      fetchData();
+      fetchData(dateString);
     }else{
       setDateFrom(dateString);
     }
@@ -807,7 +819,7 @@ function Videos() {
             >
               <ArgonBox p={3} pt={0} pl={0}>
                 <span className="titleDate">{isWeekday ? "Tahun" :"Dari"} </span>
-                <DatePicker onChange={onChangeDateStart} format={isWeekday ? dateFormatYear:dateFormat} size="large" placeholder="Pilih Tanggal" picker={isWeekday ? "year" :""}/>
+                <DatePicker onChange={onChangeDateStart} value={isWeekday ? dayjs(yearFrom, dateFormatYear):null} format={isWeekday ? dateFormatYear:dateFormat} size="large" placeholder="Pilih Tanggal" picker={isWeekday ? "year" :""}/>
                 {isWeekday ? "" :
                   (<>
                     <span className="titleDate">Ke </span>
