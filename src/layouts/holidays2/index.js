@@ -119,6 +119,8 @@ const columnsDelete = [
 const optionsComp = [];
 
 function Videos() {
+  let respDataService={}
+  let totalwork_service={}
   const [companyDefault, setCompanyDefault] = useState("");
   const [companyCode, setCompanyCode] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -137,6 +139,7 @@ function Videos() {
   const [description, setDescription] = useState("");
   const [isWeekday, setIsWeekday] = useState(false);
   const [dateFrom, setDateFrom] = useState("");
+  const [yearFrom, setYearFrom] = useState(moment().format("YYYY"));
   const [dateTo, setDateTo] = useState("");
   const [searchText, setSearchText] = useState("");
   const [updateStatusId, setIsUpdateStatusId] = useState("");
@@ -151,6 +154,7 @@ function Videos() {
   const [bottom, SetBottom] = useState('none');
 
   const dateFormat = "YYYY-MM-DD";
+  const dateFormatYear = "YYYY";
 
   const getRandomuserParams = (params) => ({
     limit: params.pagination?.pageSize,
@@ -394,14 +398,15 @@ function Videos() {
     console.log(`checked = ${e.target.checked}`);
   };
 
-  const fetchData = () => {
+  const fetchData = async() => {
     if (companyCode != "") {
       if (isWeekday){
 
-        let respDataService=[]
+        respDataService={}
+        totalwork_service={}
         const article = {
           companycode: "3155098",
-          tahun: "2024",
+          tahun: yearFrom,
         };
         const headers = {
           "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
@@ -409,7 +414,7 @@ function Videos() {
           "Content-Type": "application/json",
           Authorization: "Bearer " + sessionStorage.getItem("token"),
         };
-        axios
+        await axios
           .post(
             process.env.REACT_APP_MAIN_API +`/holidays/new/get`,
             article,
@@ -418,6 +423,8 @@ function Videos() {
             }
           )
           .then(async (response) => {
+            respDataService=response.data.data.service
+            totalwork_service=response.data.data.totalwork_service
             // await response.data.map(function (item) {
             //   console.log(item)
             //   // respDataService.push(item)
@@ -435,13 +442,14 @@ function Videos() {
                           </ArgonTypography>,
                           service: <>
                           {item=="Bulan"? (<div >
-                              <Checkbox onChange={onChangeCheckBox} className="textHeader">Sabtu</Checkbox>
+                              <Checkbox onChange={onChangeCheckBox} className="textHeader" >Sabtu</Checkbox>
                               <Checkbox  onChange={onChangeCheckBox} className="textHeader">Minggu</Checkbox>
                               <div className="totalhk">Total HK</div>
                             </div>):(<>
-                              <Checkbox onChange={onChangeCheckBox} className="textWhite">Sabtu</Checkbox>
-                              <Checkbox  onChange={onChangeCheckBox} className="textWhite">Minggu</Checkbox>
-                              <div className="totalhk2">0</div>
+                            
+                              <Checkbox onChange={onChangeCheckBox} className="textWhite" checked={respDataService[item.toLocaleLowerCase()]["sabtu"]??false}>Sabtu</Checkbox>
+                              <Checkbox  onChange={onChangeCheckBox} className="textWhite" checked={respDataService[item.toLocaleLowerCase()]["minggu"]??false}>Minggu</Checkbox>
+                              <div className="totalhk2">{totalwork_service[item.toLocaleLowerCase()]??0}</div>
                             </>)}
                           </>,
                           sparepart: <>
@@ -711,7 +719,12 @@ function Videos() {
   }, [companyDefault]);
 
   const onChangeDateStart = (date, dateString) => {
-    setDateFrom(dateString);
+    if(isWeekday){
+      setYearFrom(dateString)
+      fetchData();
+    }else{
+      setDateFrom(dateString);
+    }
     setTableParams({
       ...tableParams,
       pagination: {
@@ -794,7 +807,7 @@ function Videos() {
             >
               <ArgonBox p={3} pt={0} pl={0}>
                 <span className="titleDate">{isWeekday ? "Tahun" :"Dari"} </span>
-                <DatePicker onChange={onChangeDateStart} format={dateFormat} size="large" placeholder="Pilih Tanggal" picker={isWeekday ? "year" :""}/>
+                <DatePicker onChange={onChangeDateStart} format={isWeekday ? dateFormatYear:dateFormat} size="large" placeholder="Pilih Tanggal" picker={isWeekday ? "year" :""}/>
                 {isWeekday ? "" :
                   (<>
                     <span className="titleDate">Ke </span>
