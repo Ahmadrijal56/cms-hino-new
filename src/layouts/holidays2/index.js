@@ -479,7 +479,7 @@ function Videos() {
   const onUpdateHoliday = async () => {
     setLoading(true)
     const article = {
-      companycode: "3155098",
+      companycode: companyCode,
       tahun: yearFrom,
       service: {
         january: "["+(allData["service"]["january"]["sabtu"]?"sabtu":"")+","+(allData["service"]["january"]["minggu"]?"minggu":"")+"]",
@@ -705,7 +705,7 @@ function Videos() {
         if(isLoad){
               setAllData(resetData)
               const article = {
-                companycode: "3155098",
+                companycode: companyCode,
                 tahun: date,
               };
               const headers = {
