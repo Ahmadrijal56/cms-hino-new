@@ -475,33 +475,70 @@ function Videos() {
 
 
   //login via input
-  const onUpdateHoliday = async (values) => {
+  const onUpdateHoliday = async () => {
     setLoading(true)
     const article = {
-      CompanyCode: companyCode,
-      Description: values.description,
-      Holidays_date: selectedDate,
-      Active:isActive
+      companycode: "3155098",
+      tahun: yearFrom,
+      service: {
+        january: "["+(allData["service"]["january"]["sabtu"]?"sabtu":"")+","+(allData["service"]["january"]["minggu"]?"minggu":"")+"]",
+        february:  "["+(allData["service"]["february"]["sabtu"]?"sabtu":"")+","+(allData["service"]["february"]["minggu"]?"minggu":"")+"]",
+        march:  "["+(allData["service"]["march"]["sabtu"]?"sabtu":"")+","+(allData["service"]["march"]["minggu"]?"minggu":"")+"]",
+        april:  "["+(allData["service"]["april"]["sabtu"]?"sabtu":"")+","+(allData["service"]["april"]["minggu"]?"minggu":"")+"]",
+        may:  "["+(allData["service"]["may"]["sabtu"]?"sabtu":"")+","+(allData["service"]["may"]["minggu"]?"minggu":"")+"]",
+        june:  "["+(allData["service"]["june"]["sabtu"]?"sabtu":"")+","+(allData["service"]["june"]["minggu"]?"minggu":"")+"]",
+        july:  "["+(allData["service"]["july"]["sabtu"]?"sabtu":"")+","+(allData["service"]["july"]["minggu"]?"minggu":"")+"]",
+        august:  "["+(allData["service"]["august"]["sabtu"]?"sabtu":"")+","+(allData["service"]["august"]["minggu"]?"minggu":"")+"]",
+        september:  "["+(allData["service"]["september"]["sabtu"]?"sabtu":"")+","+(allData["service"]["september"]["minggu"]?"minggu":"")+"]",
+        october:  "["+(allData["service"]["october"]["sabtu"]?"sabtu":"")+","+(allData["service"]["october"]["minggu"]?"minggu":"")+"]",
+        november:  "["+(allData["service"]["november"]["sabtu"]?"sabtu":"")+","+(allData["service"]["november"]["minggu"]?"minggu":"")+"]",
+        december:  "["+(allData["service"]["december"]["sabtu"]?"sabtu":"")+","+(allData["service"]["december"]["minggu"]?"minggu":"")+"]",
+      },
+      sparepart: {
+        january: "["+(allData["sparepart"]["january"]["sabtu"]?"sabtu":"")+","+(allData["sparepart"]["january"]["minggu"]?"minggu":"")+"]",
+        february:  "["+(allData["sparepart"]["february"]["sabtu"]?"sabtu":"")+","+(allData["sparepart"]["february"]["minggu"]?"minggu":"")+"]",
+        march:  "["+(allData["sparepart"]["march"]["sabtu"]?"sabtu":"")+","+(allData["sparepart"]["march"]["minggu"]?"minggu":"")+"]",
+        april:  "["+(allData["sparepart"]["april"]["sabtu"]?"sabtu":"")+","+(allData["sparepart"]["april"]["minggu"]?"minggu":"")+"]",
+        may:  "["+(allData["sparepart"]["may"]["sabtu"]?"sabtu":"")+","+(allData["sparepart"]["may"]["minggu"]?"minggu":"")+"]",
+        june:  "["+(allData["sparepart"]["june"]["sabtu"]?"sabtu":"")+","+(allData["sparepart"]["june"]["minggu"]?"minggu":"")+"]",
+        july:  "["+(allData["sparepart"]["july"]["sabtu"]?"sabtu":"")+","+(allData["sparepart"]["july"]["minggu"]?"minggu":"")+"]",
+        august:  "["+(allData["sparepart"]["august"]["sabtu"]?"sabtu":"")+","+(allData["sparepart"]["august"]["minggu"]?"minggu":"")+"]",
+        september:  "["+(allData["sparepart"]["september"]["sabtu"]?"sabtu":"")+","+(allData["sparepart"]["september"]["minggu"]?"minggu":"")+"]",
+        october:  "["+(allData["sparepart"]["october"]["sabtu"]?"sabtu":"")+","+(allData["sparepart"]["october"]["minggu"]?"minggu":"")+"]",
+        november:  "["+(allData["sparepart"]["november"]["sabtu"]?"sabtu":"")+","+(allData["sparepart"]["november"]["minggu"]?"minggu":"")+"]",
+        december:  "["+(allData["sparepart"]["december"]["sabtu"]?"sabtu":"")+","+(allData["sparepart"]["december"]["minggu"]?"minggu":"")+"]",
+      },
+      sales: {
+        january: "["+(allData["sales"]["january"]["sabtu"]?"sabtu":"")+","+(allData["sales"]["january"]["minggu"]?"minggu":"")+"]",
+        february:  "["+(allData["sales"]["february"]["sabtu"]?"sabtu":"")+","+(allData["sales"]["february"]["minggu"]?"minggu":"")+"]",
+        march:  "["+(allData["sales"]["march"]["sabtu"]?"sabtu":"")+","+(allData["sales"]["march"]["minggu"]?"minggu":"")+"]",
+        april:  "["+(allData["sales"]["april"]["sabtu"]?"sabtu":"")+","+(allData["sales"]["april"]["minggu"]?"minggu":"")+"]",
+        may:  "["+(allData["sales"]["may"]["sabtu"]?"sabtu":"")+","+(allData["sales"]["may"]["minggu"]?"minggu":"")+"]",
+        june:  "["+(allData["sales"]["june"]["sabtu"]?"sabtu":"")+","+(allData["sales"]["june"]["minggu"]?"minggu":"")+"]",
+        july:  "["+(allData["sales"]["july"]["sabtu"]?"sabtu":"")+","+(allData["sales"]["july"]["minggu"]?"minggu":"")+"]",
+        august:  "["+(allData["sales"]["august"]["sabtu"]?"sabtu":"")+","+(allData["sales"]["august"]["minggu"]?"minggu":"")+"]",
+        september:  "["+(allData["sales"]["september"]["sabtu"]?"sabtu":"")+","+(allData["sales"]["september"]["minggu"]?"minggu":"")+"]",
+        october:  "["+(allData["sales"]["october"]["sabtu"]?"sabtu":"")+","+(allData["sales"]["october"]["minggu"]?"minggu":"")+"]",
+        november:  "["+(allData["sales"]["november"]["sabtu"]?"sabtu":"")+","+(allData["sales"]["november"]["minggu"]?"minggu":"")+"]",
+        december:  "["+(allData["sales"]["december"]["sabtu"]?"sabtu":"")+","+(allData["sales"]["december"]["minggu"]?"minggu":"")+"]",
+      }
     };
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
-      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
+      "Access-Control-Allow-Methods": "POST", // this states the allowed methods
       "Content-Type": "application/json",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
-      'crudtype': isUpdate ? 'update':'insert',
     };
     await axios
-      .post(process.env.REACT_APP_MAIN_API + "/holiday", article, {
+      .post(process.env.REACT_APP_MAIN_API + "/holidays/new", article, {
         headers,
       })
       .then(async (response) => {
         if (
           (await response.data) != null
         ) {
-          if (response.status === 200)
+          if (response.status === 200 || response.status === 201)
            {
-            setSelectedDate("");
-            setDescription("");
             setOpen(false);
             setLoading(false)
             message.success(response.data.Message)
@@ -533,8 +570,6 @@ function Videos() {
       Active:isActive
     };
     const headers = {
-      "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
-      "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
       "Content-Type": "application/json",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
       'crudtype': 'delete',
@@ -682,7 +717,7 @@ function Videos() {
                           </ArgonTypography>,
                           service: <>
                           {item=="Bulan"? (<div >
-                              <Checkbox onChange={(e) =>onChangeCheckBox(e,"sabtu")} className="textHeader" >Sabtu</Checkbox>
+                              <Checkbox onChange={onChangeCheckBox} className="textHeader" >Sabtu</Checkbox>
                               <Checkbox  onChange={onChangeCheckBox} className="textHeader">Minggu</Checkbox>
                               <div className="totalhk">Total HK</div>
                             </div>):(<>
@@ -1067,10 +1102,14 @@ function Videos() {
                 //pagination={tableParams.pagination}
                 pagination={isWeekday ? {...tableParams.pagination, pageSize: 50, position: [bottom] }:tableParams.pagination}
               />
-
-                <Button type="primary" htmlType="submit">
-                          update
+                {
+                  isWeekday? (<>
+                    <Button type="primary" htmlType="submit" onClick={onUpdateHoliday} className="btnUpdateWeek">
+                          Update
                         </Button>
+                  </>) :(<></>)
+                }
+                
               {/* <Pagination showQuickJumper defaultCurrent={2} total={500} onChange={onChangePage} className={dataGrid.length==0?"pageNumberEmpty":"pageNumber"}  disabled={dataGrid.length==0? true:false}/> */}
             </ArgonBox>
           </Card>
