@@ -119,6 +119,7 @@ const columnsDelete = [
 const optionsComp = [];
 
 function Videos() {
+  const arrMonth=['Bulan','January','February','March','April','May','June','July','August','September','October','November','December']                    
   const resetData={
         "service": {
             "january": {
@@ -673,20 +674,34 @@ function Videos() {
       });
   };
 
-  const onChangeCheckBox = async(e, type, month, week) => {
+  const onChangeCheckBox = async(e, type, month, week,showData) => {
     setLoading(true);
-    let data=allData;
-    setAllData(resetData)
+    let data=showData;
     data[type][month][week]=e.target.checked;
     setAllData(data)
-     await fetchData(yearFrom,false)
+     await fetchData(yearFrom,false,data)
      setLoading(false);
   };
 
-  const fetchData = async(date, isLoad) => {
+
+  const onChangeCheckBoxAll = async(e, type, week,showData) => {
+    setLoading(true);
+    let data=showData;
+    arrMonth.map(function (item) {
+      if(item!="Bulan"){
+        data[type][item.toLowerCase()][week]=e.target.checked;
+      }
+    });
+    setAllData(data)
+     await fetchData(yearFrom,false,data)
+     setLoading(false);
+  };
+
+  const fetchData = async(date, isLoad, showAll) => {
     if (companyCode != "") {
       if (isWeekday){
 
+        let dataShow=showAll;
         if(isLoad){
               setAllData(resetData)
               const article = {
@@ -705,47 +720,79 @@ function Videos() {
                   }
                 )
                 .then(async (response) => {
-                    setAllData(await response.data.data)
+                    setAllData(await response.data.data);
+                    dataShow=response.data.data;
                 });
         }
+
+
+        let countServiceSabtu=0
+        let countServiceMinggu=0
+        let countSparepartSabtu=0
+        let countSparepartMinggu=0
+        let countSalesSabtu=0
+        let countSalesMinggu=0
+        arrMonth.map(function (item) {
+          if(item!="Bulan"){
+
+            if(dataShow["service"][item.toLowerCase()]["sabtu"]==true){
+              countServiceSabtu++
+            }
+            if(dataShow["service"][item.toLowerCase()]["minggu"]==true){
+              countServiceMinggu++
+            }
+            if(dataShow["sparepart"][item.toLowerCase()]["sabtu"]==true){
+              countSparepartSabtu++
+            }
+            if(dataShow["sparepart"][item.toLowerCase()]["minggu"]==true){
+              countSparepartMinggu++
+            }
+            if(dataShow["sales"][item.toLowerCase()]["sabtu"]==true){
+              countSalesSabtu++
+            }
+            if(dataShow["sales"][item.toLowerCase()]["minggu"]==true){
+              countSalesMinggu++
+            }
+
+          }
+        });
               
-                      let arrMonth=['Bulan','January','February','March','April','May','June','July','August','September','October','November','December']
-                      const resp =   arrMonth.map(function (item) {
+                     const resp =   arrMonth.map(function (item) {
                         return {
                           name: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                             <b>{item}</b>
                           </ArgonTypography>,
                           service: <>
                           {item=="Bulan"? (<div >
-                              <Checkbox onChange={onChangeCheckBox} className="textHeader" >Sabtu</Checkbox>
-                              <Checkbox  onChange={onChangeCheckBox} className="textHeader">Minggu</Checkbox>
+                              <Checkbox onChange={(e) =>onChangeCheckBoxAll(e,"service","sabtu",dataShow)}  className="textHeader" checked={countServiceSabtu==12}>Sabtu</Checkbox>
+                              <Checkbox  onChange={(e) =>onChangeCheckBoxAll(e,"service","minggu",dataShow)}  className="textHeader" checked={countServiceMinggu==12}>Minggu</Checkbox>
                               <div className="totalhk">Total HK</div>
                             </div>):(<>
-                              <Checkbox onChange={(e) =>onChangeCheckBox(e,"service",item.toLocaleLowerCase(),"sabtu")} className="textWhite"   checked={allData["service"][item.toLocaleLowerCase()]["sabtu"]==undefined?false:allData["service"][item.toLocaleLowerCase()]["sabtu"]}>sabtu</Checkbox>
-                              <Checkbox  onChange={(e) =>onChangeCheckBox(e,"service",item.toLocaleLowerCase(),"minggu")} className="textWhite" checked={allData["service"][item.toLocaleLowerCase()]["minggu"]==undefined?false:allData["service"][item.toLocaleLowerCase()]["minggu"]}>Minggu</Checkbox>
-                              <div className="totalhk2">{allData["totalwork_service"][item.toLocaleLowerCase()]}</div>
+                              <Checkbox onChange={(e) =>onChangeCheckBox(e,"service",item.toLocaleLowerCase(),"sabtu",dataShow)} className="textWhite"   checked={dataShow["service"][item.toLocaleLowerCase()]["sabtu"]==undefined?false:dataShow["service"][item.toLocaleLowerCase()]["sabtu"]}>sabtu</Checkbox>
+                              <Checkbox  onChange={(e) =>onChangeCheckBox(e,"service",item.toLocaleLowerCase(),"minggu",dataShow)} className="textWhite" checked={dataShow["service"][item.toLocaleLowerCase()]["minggu"]==undefined?false:dataShow["service"][item.toLocaleLowerCase()]["minggu"]}>Minggu</Checkbox>
+                              <div className="totalhk2">{dataShow["totalwork_service"][item.toLocaleLowerCase()]}</div>
                             </>)}
                           </>,
                           sparepart: <>
                           {item=="Bulan"? (<div >
-                              <Checkbox onChange={onChangeCheckBox} className="textHeader">Sabtu</Checkbox>
-                              <Checkbox  onChange={onChangeCheckBox} className="textHeader">Minggu</Checkbox>
+                            <Checkbox onChange={(e) =>onChangeCheckBoxAll(e,"sparepart","sabtu",dataShow)}  className="textHeader" checked={countSparepartSabtu==12} >Sabtu</Checkbox>
+                            <Checkbox  onChange={(e) =>onChangeCheckBoxAll(e,"sparepart","minggu",dataShow)}  className="textHeader" checked={countSparepartMinggu==12} >Minggu</Checkbox>
                               <div className="totalhk">Total HK</div>
                             </div>):(<>
-                              <Checkbox onChange={(e) =>onChangeCheckBox(e,"sparepart",item.toLocaleLowerCase(),"sabtu")} className="textWhite"   checked={allData["sparepart"][item.toLocaleLowerCase()]["sabtu"]==undefined?false:allData["sparepart"][item.toLocaleLowerCase()]["sabtu"]}>sabtu</Checkbox>
-                              <Checkbox  onChange={(e) =>onChangeCheckBox(e,"sparepart",item.toLocaleLowerCase(),"minggu")} className="textWhite" checked={allData["sparepart"][item.toLocaleLowerCase()]["minggu"]==undefined?false:allData["sparepart"][item.toLocaleLowerCase()]["minggu"]}>Minggu</Checkbox>
-                              <div className="totalhk2">{allData["totalwork_sparepart"][item.toLocaleLowerCase()]}</div>
+                              <Checkbox onChange={(e) =>onChangeCheckBox(e,"sparepart",item.toLocaleLowerCase(),"sabtu",dataShow)} className="textWhite"   checked={dataShow["sparepart"][item.toLocaleLowerCase()]["sabtu"]==undefined?false:dataShow["sparepart"][item.toLocaleLowerCase()]["sabtu"]}>sabtu</Checkbox>
+                              <Checkbox  onChange={(e) =>onChangeCheckBox(e,"sparepart",item.toLocaleLowerCase(),"minggu",dataShow)} className="textWhite" checked={dataShow["sparepart"][item.toLocaleLowerCase()]["minggu"]==undefined?false:dataShow["sparepart"][item.toLocaleLowerCase()]["minggu"]}>Minggu</Checkbox>
+                              <div className="totalhk2">{dataShow["totalwork_sparepart"][item.toLocaleLowerCase()]}</div>
                             </>)}
                           </>,
                           sales: <>
                           {item=="Bulan"? (<div >
-                              <Checkbox onChange={onChangeCheckBox} className="textHeader">Sabtu</Checkbox>
-                              <Checkbox  onChange={onChangeCheckBox} className="textHeader">Minggu</Checkbox>
+                            <Checkbox onChange={(e) =>onChangeCheckBoxAll(e,"sales","sabtu",dataShow)}  className="textHeader" checked={countSalesSabtu==12} >Sabtu</Checkbox>
+                            <Checkbox  onChange={(e) =>onChangeCheckBoxAll(e,"sales","minggu",dataShow)}  className="textHeader" checked={countSalesMinggu==12} >Minggu</Checkbox>
                               <div className="totalhk">Total HK</div>
                             </div>):(<>
-                              <Checkbox onChange={(e) =>onChangeCheckBox(e,"sales",item.toLocaleLowerCase(),"sabtu")} className="textWhite"   checked={allData["sales"][item.toLocaleLowerCase()]["sabtu"]==undefined?false:allData["sales"][item.toLocaleLowerCase()]["sabtu"]}>sabtu</Checkbox>
-                              <Checkbox  onChange={(e) =>onChangeCheckBox(e,"sales",item.toLocaleLowerCase(),"minggu")} className="textWhite" checked={allData["sales"][item.toLocaleLowerCase()]["minggu"]==undefined?false:allData["sales"][item.toLocaleLowerCase()]["minggu"]}>Minggu</Checkbox>
-                              <div className="totalhk2">{allData["totalwork_sales"][item.toLocaleLowerCase()]}</div>
+                              <Checkbox onChange={(e) =>onChangeCheckBox(e,"sales",item.toLocaleLowerCase(),"sabtu",dataShow)} className="textWhite"   checked={dataShow["sales"][item.toLocaleLowerCase()]["sabtu"]==undefined?false:dataShow["sales"][item.toLocaleLowerCase()]["sabtu"]}>sabtu</Checkbox>
+                              <Checkbox  onChange={(e) =>onChangeCheckBox(e,"sales",item.toLocaleLowerCase(),"minggu",dataShow)} className="textWhite" checked={dataShow["sales"][item.toLocaleLowerCase()]["minggu"]==undefined?false:dataShow["sales"][item.toLocaleLowerCase()]["minggu"]}>Minggu</Checkbox>
+                              <div className="totalhk2">{dataShow["totalwork_sales"][item.toLocaleLowerCase()]}</div>
                             </>)}
                           </>,
                         };
@@ -976,7 +1023,7 @@ function Videos() {
     if(isWeekday){
       if(dateString!="" && dateString!=undefined){
          setYearFrom(dateString)
-        await fetchData(dateString,true);
+        await fetchData(dateString,true,allData);
       }
     }else{
       setDateFrom(dateString);
