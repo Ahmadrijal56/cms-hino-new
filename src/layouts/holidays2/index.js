@@ -393,7 +393,7 @@ function Videos() {
   const items = [
     {
       key: "1",
-      label: "HOLIDAY",
+      label: "NATIONAL / COMPANY HOLIDAY",
     },
     {
       key: "2",
@@ -1086,17 +1086,6 @@ function Videos() {
                 </ArgonTypography>
                 <ArgonTypography variant="h6">Daftar Hari Libur</ArgonTypography>
               </ArgonBox>
-              <ArgonBox>
-                <ArgonButton
-                  color="info"
-                  size="small"
-                  onClick={handleOpen}
-                  disabled={sessionStorage.getItem("companyDefault") == ""}
-                  className="iconAction"
-                >
-                  Tambah Tanggal
-                </ArgonButton>
-              </ArgonBox>
             </ArgonBox>
             <ArgonBox p={3} pt={0} pb={0}>
               <Tabs defaultActiveKey="1" items={items} onChange={onChange} itemActiveColor="$ccc" />
@@ -1114,18 +1103,32 @@ function Videos() {
                 {isWeekday ? "" :
                   (<>
                     <span className="titleDate">Ke </span>
-                    <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large"  disabledDate={disabledDateTo} placeholder="Pilih Tanggal"/></>)
+                    <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large"  disabledDate={disabledDateTo} placeholder="Pilih Tanggal"/>         
+                    <br></br>
+                    <Input
+                          size="large"
+                          placeholder="Cari"
+                          prefix={<SearchOutlined />}
+                          onChange={clickSearch}
+                          style={{marginTop:20}}
+                        />
+                    </>)
                 } 
               </ArgonBox>
               {isWeekday ? "" :
                   (<>
-              <ArgonBox p={3} pt={0}>
-                <Input
-                  size="large"
-                  placeholder="Cari"
-                  prefix={<SearchOutlined />}
-                  onChange={clickSearch}
-                />
+              <ArgonBox >
+
+               <ArgonButton
+                  color="info"
+                  size="small"
+                  onClick={handleOpen}
+                  disabled={sessionStorage.getItem("companyDefault") == ""}
+                  className="iconAction"
+                >
+                  Tambah Tanggal
+                </ArgonButton>
+                    <div style={{height:80, backgroundColor:"#FFF"}}></div>
               </ArgonBox>
               </>)}
             </ArgonBox>
