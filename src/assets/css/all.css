@@ -175,11 +175,14 @@
 
   .textHeader{
     float: left;
+
+    margin-left: 60px;
   }
 
   .textWhite{
     color: #fff ;
 
+    margin-left: 60px;
     float: left;
   }
 

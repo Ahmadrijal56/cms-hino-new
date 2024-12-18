@@ -105,14 +105,17 @@ const columnsDelete = [
   {
     title: "SERVICE",
     dataIndex: "service",
+    align: 'center',
   },
   {
     title: "SPAREPART",
     dataIndex: "sparepart",
+    align: 'center',
   },
   {
     title: "SALES",
-    dataIndex: "sales"
+    dataIndex: "sales",
+    align: 'center',
   }
 ];
 
@@ -315,11 +318,6 @@ function Videos() {
         }
     }
   const [allData, setAllData] = useState(resetData);
-  let totalwork_service={}
-  let respDataSparepart={}
-  let totalwork_sparepart={}
-  let respDataSales={}
-  let totalwork_sales={}
   const [companyDefault, setCompanyDefault] = useState("");
   const [companyCode, setCompanyCode] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -344,6 +342,7 @@ function Videos() {
   const [updateStatusId, setIsUpdateStatusId] = useState("");
   const [isActive, setActive] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
+  const [isChanges, setIsChanges] = useState(false);
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: currentPage,
@@ -543,6 +542,7 @@ function Videos() {
             setOpen(false);
             setLoading(false)
             message.success(response.data.Message)
+            setIsChanges(false)
            }
         }
       })
@@ -681,6 +681,7 @@ function Videos() {
     setAllData(data)
      await fetchData(yearFrom,false,data)
      setLoading(false);
+     setIsChanges(true);
   };
 
 
@@ -695,6 +696,7 @@ function Videos() {
     setAllData(data)
      await fetchData(yearFrom,false,data)
      setLoading(false);
+     setIsChanges(true);
   };
 
   const fetchData = async(date, isLoad, showAll) => {
@@ -1019,6 +1021,22 @@ function Videos() {
 
   }, [companyDefault]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (isChanges) {
+        event.preventDefault();
+        event.returnValue = 'Aaasada'; // Pesan default di beberapa browser
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // Cleanup listener ketika komponen unmount
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isChanges]);
+
   const onChangeDateStart = async(date, dateString) => {
     if(isWeekday){
       if(dateString!="" && dateString!=undefined){
@@ -1096,6 +1114,7 @@ function Videos() {
               alignItems="center"
               p={3}
               pt={0}
+              pb={0}
             >
               <ArgonBox p={3} pt={0} pl={0}>
                 <span className="titleDate">{isWeekday ? "Tahun" :"Dari"} </span>
@@ -1115,19 +1134,31 @@ function Videos() {
                     </>)
                 } 
               </ArgonBox>
-              {isWeekday ? "" :
+              {isWeekday ?  <ArgonBox >
+                {isChanges ?  <ArgonButton
+                      color="info"
+                      size="small"
+                      onClick={onUpdateHoliday}
+                      disabled={sessionStorage.getItem("companyDefault") == ""}
+                      className="iconAction"
+                    >
+                      Apply
+                    </ArgonButton> :""}
+
+                    <div style={{height:20, backgroundColor:"#FFF"}}></div>
+                    </ArgonBox>
+                :
                   (<>
               <ArgonBox >
-
-               <ArgonButton
-                  color="info"
-                  size="small"
-                  onClick={handleOpen}
-                  disabled={sessionStorage.getItem("companyDefault") == ""}
-                  className="iconAction"
-                >
-                  Tambah Tanggal
-                </ArgonButton>
+                  <ArgonButton
+                      color="info"
+                      size="small"
+                      onClick={handleOpen}
+                      disabled={sessionStorage.getItem("companyDefault") == ""}
+                      className="iconAction"
+                    >
+                      Tambah Tanggal
+                    </ArgonButton>
                     <div style={{height:80, backgroundColor:"#FFF"}}></div>
               </ArgonBox>
               </>)}
@@ -1152,13 +1183,6 @@ function Videos() {
                 //pagination={tableParams.pagination}
                 pagination={isWeekday ? {...tableParams.pagination, pageSize: 50, position: [bottom] }:tableParams.pagination}
               />
-                {
-                  isWeekday? (<>
-                    <Button type="primary" htmlType="submit" onClick={onUpdateHoliday} className="btnUpdateWeek">
-                          Update
-                        </Button>
-                  </>) :(<></>)
-                }
                 
               {/* <Pagination showQuickJumper defaultCurrent={2} total={500} onChange={onChangePage} className={dataGrid.length==0?"pageNumberEmpty":"pageNumber"}  disabled={dataGrid.length==0? true:false}/> */}
             </ArgonBox>
