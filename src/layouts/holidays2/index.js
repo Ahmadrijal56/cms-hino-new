@@ -539,6 +539,7 @@ function Videos() {
         ) {
           if (response.status === 200 || response.status === 201)
            {
+            fetchData(yearFrom,true);
             setOpen(false);
             setLoading(false)
             message.success(response.data.Message)
