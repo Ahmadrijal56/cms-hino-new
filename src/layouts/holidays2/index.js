@@ -1117,21 +1117,13 @@ function Videos() {
               pt={0}
               pb={0}
             >
-              <ArgonBox p={3} pt={0} pl={0}>
+              <ArgonBox p={3} pt={isWeekday ?3:9} pl={0}>
                 <span className="titleDate">{isWeekday ? "Tahun" :"Dari"} </span>
                 <DatePicker onChange={onChangeDateStart} value={isWeekday ? dayjs(yearFrom, dateFormatYear):null} format={isWeekday ? dateFormatYear:dateFormat} size="large" placeholder="Pilih Tanggal" picker={isWeekday ? "year" :""}/>
                 {isWeekday ? "" :
                   (<>
                     <span className="titleDate">Ke </span>
                     <DatePicker onChange={onChangeDateTo} format={dateFormat} size="large"  disabledDate={disabledDateTo} placeholder="Pilih Tanggal"/>         
-                    <br></br>
-                    <Input
-                          size="large"
-                          placeholder="Cari"
-                          prefix={<SearchOutlined />}
-                          onChange={clickSearch}
-                          style={{marginTop:20}}
-                        />
                     </>)
                 } 
               </ArgonBox>
@@ -1153,14 +1145,19 @@ function Videos() {
               <ArgonBox >
                   <ArgonButton
                       color="info"
-                      size="small"
                       onClick={handleOpen}
                       disabled={sessionStorage.getItem("companyDefault") == ""}
-                      className="iconAction"
+                      className="iconAction2"
                     >
                       Tambah Tanggal
                     </ArgonButton>
-                    <div style={{height:80, backgroundColor:"#FFF"}}></div>
+                    <Input
+                          size="large"
+                          placeholder="Cari"
+                          prefix={<SearchOutlined />}
+                          onChange={clickSearch}
+                          style={{marginTop:20}}
+                        />
               </ArgonBox>
               </>)}
             </ArgonBox>
