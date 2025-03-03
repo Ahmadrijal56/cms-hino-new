@@ -542,7 +542,7 @@ function Videos() {
             fetchData(yearFrom,true);
             setOpen(false);
             setLoading(false)
-            message.success(response.data.Message)
+            message.success(response.data.message)
             setIsChanges(false)
            }
         }
