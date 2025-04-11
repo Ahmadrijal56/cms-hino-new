@@ -285,7 +285,6 @@ function Videos() {
     setIsUpdate(true);
     setDescription(item.description)
     let date=moment(item.holidays_date)
-    console.log("set id1232323::", item.id)
     setIdHoliday(item.id)
     setDefaultDate(date)
     setActive(item.active)
