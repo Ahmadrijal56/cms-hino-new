@@ -175,6 +175,7 @@ function Videos() {
   const [defaultDate, setDefaultDate] = useState("");
   const [description, setDescription] = useState("");
   const [defaultComp, setDefaultComp] = useState([]);
+  const [idHoliday, setIdHoliday] = useState(0);
   const [id, setId] = useState([]);
   const [isTrash, setIsTrash] = useState(false);
   const [dateFrom, setDateFrom] = useState("");
@@ -284,6 +285,7 @@ function Videos() {
     setIsUpdate(true);
     setDescription(item.description)
     let date=moment(item.holidays_date)
+    setIdHoliday(item.id)
     setDefaultDate(date)
     setActive(item.active)
     setSelectedDate(date.format("YYYY-MM-DD"))
@@ -295,6 +297,7 @@ function Videos() {
   const onFinish = async (values) => {
     setLoading(true)
     const article = {
+      id: idHoliday,
       CompanyCode: companyCode,
       Description: values.description,
       Holidays_date: selectedDate,
