@@ -47,6 +47,7 @@ function Holidays() {
   const [dataGrid,setDataGrid] = useState([]);
   const [open, setOpen] = useState(false);
   const [keyHoliday, setKeyHoliday] = useState(0);
+  const [idHoliday, setIdHoliday] = useState(0);
   const [selectedDate, setSelectedDate] = useState("");
   const [defaultDate, setDefaultDate] = useState("");
   const [description, setDescription] = useState("");
@@ -91,6 +92,7 @@ function Holidays() {
   const onFinish = async (values) => {
     setLoading(true)
     const article = {
+      id: idHoliday,
       CompanyCode: companyCode,
       Description: values.description,
       Holidays_date: selectedDate,
@@ -254,6 +256,7 @@ function Holidays() {
     setIsUpdate(true);
     setDescription(item.description)
     let date=moment(item.holidays_date)
+    setIdHoliday(item.id)
     setDefaultDate(date)
     setActive(item.active)
     setSelectedDate(date.format("YYYY-MM-DD"))
