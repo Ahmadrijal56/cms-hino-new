@@ -114,6 +114,12 @@
   cursor: pointer;
 }
 
+.iconAction2 {
+  margin-left: 10px !important;
+  cursor: pointer;
+  float: right;
+}
+
 .scroll {
   background: #fff;
   border-radius: 20px;
@@ -171,4 +177,32 @@
 
   .none{
     display: none;
+  }
+
+  .textHeader{
+    float: left;
+
+    margin-left: 60px;
+  }
+
+  .textWhite{
+    color: #fff ;
+
+    margin-left: 60px;
+    float: left;
+  }
+
+  .totalhk{
+    float: left;
+    margin-left: 2em;
+  }
+
+  .totalhk2{
+    float: left;
+    margin-left: 3em;
+  }
+
+
+  .btnUpdateWeek{
+    margin: 20px 30px;
   }
