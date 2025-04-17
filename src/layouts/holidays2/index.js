@@ -400,7 +400,7 @@ function Videos() {
     },
     {
       key: "2",
-      label: "WEEKEND",
+      label: "Work Day",
     },
   ];
 
