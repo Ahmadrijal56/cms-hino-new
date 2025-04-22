@@ -1219,9 +1219,9 @@ function Videos() {
                             message: "Please input the date",
                           },
                         ]}
-                        initialValue={defaultDate}
+                        initialValue={dayjs(defaultDate)}
                       >
-                        <DatePicker onChange={onChangeDate}  format="YYYY-MM-DD" />
+                        <DatePicker onChange={onChangeDate}  format="YYYY-MM-DD"  />
                       </Form.Item>
 
                       <Form.Item
