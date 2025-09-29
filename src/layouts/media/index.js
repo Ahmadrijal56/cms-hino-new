@@ -191,6 +191,8 @@ function Videos() {
   const [locationFilter, setLocationFilter] = useState("");
   const [category, setCategory] = useState("");
   const [isApplyAll, setIsApplyAll] = useState(false);
+  const [originalApplyAll, setOriginalApplyAll] = useState(null); // Nilai original dari API
+  const [hasApplyAllChanged, setHasApplyAllChanged] = useState(false); // Track perubahan
   const [mediaName, setMediaName] = useState("");
   const [mediaDesc, setMediaDesc] = useState("");
   const [isUpdate, setUpdate] = useState(false);
@@ -292,6 +294,12 @@ function Videos() {
 
   const onChangeApply = (e) => {
     setIsApplyAll(e.target.checked);
+    setHasApplyAllChanged(true); // Mark bahwa ada perubahan
+    console.log('🔧 Checkbox changed:', {
+      'new value': e.target.checked,
+      'original value': originalApplyAll,
+      'has changed': true
+    });
   };
 
   const onChangeTags = (pageNumber) => {
@@ -403,6 +411,8 @@ function Videos() {
       // let date=moment(item.holidays_date)
       // setDefaultDate(date)
       setIsApplyAll(false);
+      setOriginalApplyAll(false); // Set original untuk create baru
+      setHasApplyAllChanged(false); // Reset tracking
       setPublishDate(moment().format("YYYY-MM-DD"));
       setExpiredDate(moment().add(1,'days').format("YYYY-MM-DD"));
       setDefaultComp([]);
@@ -432,7 +442,17 @@ function Videos() {
     // setDescription(item.description)
     // let date=moment(item.holidays_date)
     // setDefaultDate(date)
-    await setIsApplyAll(item.applytoall);
+    // Simpan nilai original dari API
+    const originalValue = item.applytoall === "true" || item.applytoall === true;
+    await setIsApplyAll(originalValue);
+    setOriginalApplyAll(originalValue); // Simpan nilai original
+    setHasApplyAllChanged(false); // Reset tracking perubahan
+    
+    console.log('✏️ Edit initialized:', {
+      'API value': item.applytoall,
+      'converted': originalValue,
+      'has changed': false
+    });
     //let datePublish = moment(item.publishdate);
     await setPublishDate(item.publishdate);
     //let dateExpired = moment(item.expireddate);
@@ -501,14 +521,26 @@ function Videos() {
         formData.append("file", file);
       });
     }
-    if (isApplyAll) {
+    // Gunakan nilai yang tepat: jika ada perubahan gunakan yang baru, jika tidak gunakan original
+    const finalApplyAllValue = hasApplyAllChanged ? isApplyAll : originalApplyAll;
+    
+    console.log('🚀 Form submission:', {
+      'has changed': hasApplyAllChanged,
+      'current value': isApplyAll,
+      'original value': originalApplyAll,
+      'final value used': finalApplyAllValue
+    });
+    
+    if (finalApplyAllValue) {
       formData.append("applytoall", true);
     } else {
       var compActive = [];
-      values.company.forEach((item) => {
-        let company = item.split("@==");
-        compActive.push(company[0]);
-      });
+      if (values.company && values.company.length > 0) {
+        values.company.forEach((item) => {
+          let company = item.split("@==");
+          compActive.push(company[0]);
+        });
+      }
       var text = JSON.stringify(compActive);
       formData.append("applytoall", false);
       formData.append("forcompanycode", text);
@@ -1563,14 +1595,15 @@ function Videos() {
           {userType.toString().toUpperCase()=='DEALER' ? (<></>):(
             <Form.Item label="Terapkan ke semua" name="applytoall" >
            <Popover content={contentAll} title="Terapkan ke semua?" trigger="hover">
-              <Checkbox onChange={onChangeApply} checked={isApplyAll.toString().toLowerCase()=="true"}></Checkbox>
+              <Checkbox onChange={onChangeApply} checked={isApplyAll}></Checkbox>
             </Popover>
           </Form.Item>
           )}
 
           
 
-          {!(isApplyAll.toString().toLowerCase()=="true") ? (
+          {/* Field perusahaan muncul jika applytoall false (gunakan nilai final) */}
+          {!((hasApplyAllChanged ? isApplyAll : originalApplyAll)) ? (
             <Form.Item label="Perusahaan" name="company" initialValue={defaultComp}>
               <Select
                 mode="tags"
@@ -1580,6 +1613,38 @@ function Videos() {
                 placeholder="Perusahaan"
                 onChange={onChangeTags}
                 options={optionsComp}
+                tagRender={(props) => {
+                  const { label, value, closable, onClose } = props;
+                  // Ekstrak nama perusahaan dari value jika format kode@==nama
+                  let displayName = label;
+                  if (value && value.includes('@==')) {
+                    displayName = value.split('@==')[1];
+                  }
+                  
+                  return (
+                    <span
+                      style={{
+                        marginRight: 3,
+                        backgroundColor: '#f0f0f0',
+                        border: '1px solid #d9d9d9',
+                        borderRadius: '2px',
+                        padding: '2px 7px',
+                        fontSize: '12px',
+                        display: 'inline-block',
+                      }}
+                    >
+                      {displayName}
+                      {closable && (
+                        <span
+                          style={{ marginLeft: 5, cursor: 'pointer' }}
+                          onClick={onClose}
+                        >
+                          ×
+                        </span>
+                      )}
+                    </span>
+                  );
+                }}
               />
             </Form.Item>
           ) : (
