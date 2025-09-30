@@ -1415,10 +1415,10 @@ function Videos() {
                   initialValue={sortLocation}
                 >
               <Select onChange={onChangeFileSort}  defaultValue="">
-                        <Select.Option value="" >Pilh Type</Select.Option>
+                        <Select.Option value="" >Pilih Type</Select.Option>
                         <Select.Option value="text">Text</Select.Option>
-                        <Select.Option value="image">Image</Select.Option>
-                        <Select.Option value="video">Video</Select.Option>
+                        {/* <Select.Option value="image">Image dan Video</Select.Option> */}
+                        <Select.Option value="video">Image dan Video</Select.Option>
                       </Select>
                       </Form.Item>): locationFilter=="" ? (<></>):(<div style={{width:450, marginTop:20, fontWeight:"bold"}}>Dealer Content Board</div>)
                } 
