@@ -921,15 +921,17 @@ function Videos() {
                   >
                     edit
                   </Icon>
-                  <Icon
-                    fontSize="small"
-                    className="iconAction"
-                    onClick={() => {
-                      onDelete(item);
-                    }}
-                  >
-                    delete
-                  </Icon>
+                  {!(moment(item.holidays_date).isBefore(moment(), 'day')) && (
+                    <Icon
+                      fontSize="small"
+                      className="iconAction"
+                      onClick={() => {
+                        onDelete(item);
+                      }}
+                    >
+                      delete
+                    </Icon>
+                  )}
                   {/* <Icon fontSize="small" className="iconAction" onClick={() => {}}>
                     visibility
                   </Icon> */}
@@ -1221,7 +1223,14 @@ function Videos() {
                         ]}
                         initialValue={defaultDate==""?defaultDate:dayjs(defaultDate)}
                       >
-                        <DatePicker onChange={onChangeDate}  format="YYYY-MM-DD"  />
+                        <DatePicker
+                          onChange={onChangeDate}
+                          format="YYYY-MM-DD"
+                          disabled={
+                            isUpdate && defaultDate && dayjs(defaultDate).isBefore(dayjs(), 'day')
+                          }
+                          disabledDate={(current) => current && current < dayjs().startOf('day')}
+                        />
                       </Form.Item>
 
                       <Form.Item
@@ -1235,7 +1244,11 @@ function Videos() {
                         ]}
                         initialValue={description}
                       >
-                        <Input/>
+                        <Input
+                          disabled={
+                            isUpdate && defaultDate && dayjs(defaultDate).isBefore(dayjs(), 'day')
+                          }
+                        />
                       </Form.Item>
 
 
@@ -1253,6 +1266,11 @@ function Videos() {
                           {isUpdate ? 'Save Update': 'Add'} Holiday
                         </Button>
                       </Form.Item>
+                      {(isUpdate && defaultDate && dayjs(defaultDate).isBefore(dayjs(), 'day')) && (
+                        <div style={{ color: 'red', textAlign: 'center', marginTop: 8 }}>
+                          Tanggal yang sudah terlewati tidak bisa diubah.
+                        </div>
+                      )}
                     </Form>
                   </Modal>
     </DashboardLayout>
