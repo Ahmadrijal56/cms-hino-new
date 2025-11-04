@@ -692,18 +692,25 @@ function Videos() {
   };
 
 
-  const onChangeCheckBoxAll = async(e, type, week,showData) => {
+  const onChangeCheckBoxAll = async(e, type, week, showData) => {
     setLoading(true);
-    let data=showData;
-    arrMonth.map(function (item) {
-      if(item!="Bulan"){
-        data[type][item.toLowerCase()][week]=e.target.checked;
+    let data = showData;
+    const now = dayjs();
+    arrMonth.forEach(function (item, idx) {
+      if (item !== "Bulan") {
+        const monthIdx = idx - 1;
+        const thisYear = parseInt(yearFrom, 10);
+        const monthDate = dayjs(`${thisYear}-${(monthIdx + 1).toString().padStart(2, '0')}-01`);
+        const isPastMonth = monthDate.endOf('month').isBefore(now, 'day');
+        if (!isPastMonth) {
+          data[type][item.toLowerCase()][week] = e.target.checked;
+        }
       }
     });
-    setAllData(data)
-     await fetchData(yearFrom,false,data)
-     setLoading(false);
-     setIsChanges(true);
+    setAllData(data);
+    await fetchData(yearFrom, false, data);
+    setLoading(false);
+    setIsChanges(true);
   };
 
   const fetchData = async(date, isLoad, showAll) => {
@@ -766,43 +773,114 @@ function Videos() {
           }
         });
               
-                     const resp =   arrMonth.map(function (item) {
+                     const resp = arrMonth.map(function (item, idx) {
+                        // Skip header row
+                        if (item === "Bulan") {
+                          return {
+                            name: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
+                              <b>{item}</b>
+                            </ArgonTypography>,
+                            service: <div>
+                              <Checkbox
+                                onChange={(e) => onChangeCheckBoxAll(e, "service", "sabtu", dataShow)}
+                                className="textHeader"
+                                checked={countServiceSabtu === 12}
+                                disabled={true}
+                              >Sabtu</Checkbox>
+                              <Checkbox
+                                onChange={(e) => onChangeCheckBoxAll(e, "service", "minggu", dataShow)}
+                                className="textHeader"
+                                checked={countServiceMinggu === 12}
+                                disabled={true}
+                              >Minggu</Checkbox>
+                              <div className="totalhk">Total HK</div>
+                            </div>,
+                            sparepart: <div>
+                              <Checkbox
+                                onChange={(e) => onChangeCheckBoxAll(e, "sparepart", "sabtu", dataShow)}
+                                className="textHeader"
+                                checked={countSparepartSabtu === 12}
+                                disabled={true}
+                              >Sabtu</Checkbox>
+                              <Checkbox
+                                onChange={(e) => onChangeCheckBoxAll(e, "sparepart", "minggu", dataShow)}
+                                className="textHeader"
+                                checked={countSparepartMinggu === 12}
+                                disabled={true}
+                              >Minggu</Checkbox>
+                              <div className="totalhk">Total HK</div>
+                            </div>,
+                            sales: <div>
+                              <Checkbox
+                                onChange={(e) => onChangeCheckBoxAll(e, "sales", "sabtu", dataShow)}
+                                className="textHeader"
+                                checked={countSalesSabtu === 12}
+                                disabled={true}
+                              >Sabtu</Checkbox>
+                              <Checkbox
+                                onChange={(e) => onChangeCheckBoxAll(e, "sales", "minggu", dataShow)}
+                                className="textHeader"
+                                checked={countSalesMinggu === 12}
+                                disabled={true}
+                              >Minggu</Checkbox>
+                              <div className="totalhk">Total HK</div>
+                            </div>,
+                          };
+                        }
+                        // Determine if this month is in the past
+                        const monthIdx = idx - 1; // arrMonth[0] is 'Bulan'
+                        const thisYear = parseInt(yearFrom, 10);
+                        const now = dayjs();
+                        const monthDate = dayjs(`${thisYear}-${(monthIdx + 1).toString().padStart(2, '0')}-01`);
+                        const isPastMonth = monthDate.endOf('month').isBefore(now, 'day');
                         return {
                           name: <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                             <b>{item}</b>
                           </ArgonTypography>,
                           service: <>
-                          {item=="Bulan"? (<div >
-                              <Checkbox onChange={(e) =>onChangeCheckBoxAll(e,"service","sabtu",dataShow)}  className="textHeader" checked={countServiceSabtu==12}>Sabtu</Checkbox>
-                              <Checkbox  onChange={(e) =>onChangeCheckBoxAll(e,"service","minggu",dataShow)}  className="textHeader" checked={countServiceMinggu==12}>Minggu</Checkbox>
-                              <div className="totalhk">Total HK</div>
-                            </div>):(<>
-                              <Checkbox onChange={(e) =>onChangeCheckBox(e,"service",item.toLocaleLowerCase(),"sabtu",dataShow)} className="textWhite"   checked={dataShow["service"][item.toLocaleLowerCase()]["sabtu"]==undefined?false:dataShow["service"][item.toLocaleLowerCase()]["sabtu"]}>sabtu</Checkbox>
-                              <Checkbox  onChange={(e) =>onChangeCheckBox(e,"service",item.toLocaleLowerCase(),"minggu",dataShow)} className="textWhite" checked={dataShow["service"][item.toLocaleLowerCase()]["minggu"]==undefined?false:dataShow["service"][item.toLocaleLowerCase()]["minggu"]}>Minggu</Checkbox>
-                              <div className="totalhk2">{dataShow["totalwork_service"][item.toLocaleLowerCase()]}</div>
-                            </>)}
+                            <Checkbox
+                              onChange={(e) => onChangeCheckBox(e, "service", item.toLocaleLowerCase(), "sabtu", dataShow)}
+                              className="textWhite"
+                              checked={dataShow["service"][item.toLocaleLowerCase()]["sabtu"] == undefined ? false : dataShow["service"][item.toLocaleLowerCase()]["sabtu"]}
+                              disabled={isPastMonth}
+                            >sabtu</Checkbox>
+                            <Checkbox
+                              onChange={(e) => onChangeCheckBox(e, "service", item.toLocaleLowerCase(), "minggu", dataShow)}
+                              className="textWhite"
+                              checked={dataShow["service"][item.toLocaleLowerCase()]["minggu"] == undefined ? false : dataShow["service"][item.toLocaleLowerCase()]["minggu"]}
+                              disabled={isPastMonth}
+                            >Minggu</Checkbox>
+                            <div className="totalhk2">{dataShow["totalwork_service"][item.toLocaleLowerCase()]}</div>
                           </>,
                           sparepart: <>
-                          {item=="Bulan"? (<div >
-                            <Checkbox onChange={(e) =>onChangeCheckBoxAll(e,"sparepart","sabtu",dataShow)}  className="textHeader" checked={countSparepartSabtu==12} >Sabtu</Checkbox>
-                            <Checkbox  onChange={(e) =>onChangeCheckBoxAll(e,"sparepart","minggu",dataShow)}  className="textHeader" checked={countSparepartMinggu==12} >Minggu</Checkbox>
-                              <div className="totalhk">Total HK</div>
-                            </div>):(<>
-                              <Checkbox onChange={(e) =>onChangeCheckBox(e,"sparepart",item.toLocaleLowerCase(),"sabtu",dataShow)} className="textWhite"   checked={dataShow["sparepart"][item.toLocaleLowerCase()]["sabtu"]==undefined?false:dataShow["sparepart"][item.toLocaleLowerCase()]["sabtu"]}>sabtu</Checkbox>
-                              <Checkbox  onChange={(e) =>onChangeCheckBox(e,"sparepart",item.toLocaleLowerCase(),"minggu",dataShow)} className="textWhite" checked={dataShow["sparepart"][item.toLocaleLowerCase()]["minggu"]==undefined?false:dataShow["sparepart"][item.toLocaleLowerCase()]["minggu"]}>Minggu</Checkbox>
-                              <div className="totalhk2">{dataShow["totalwork_sparepart"][item.toLocaleLowerCase()]}</div>
-                            </>)}
+                            <Checkbox
+                              onChange={(e) => onChangeCheckBox(e, "sparepart", item.toLocaleLowerCase(), "sabtu", dataShow)}
+                              className="textWhite"
+                              checked={dataShow["sparepart"][item.toLocaleLowerCase()]["sabtu"] == undefined ? false : dataShow["sparepart"][item.toLocaleLowerCase()]["sabtu"]}
+                              disabled={isPastMonth}
+                            >sabtu</Checkbox>
+                            <Checkbox
+                              onChange={(e) => onChangeCheckBox(e, "sparepart", item.toLocaleLowerCase(), "minggu", dataShow)}
+                              className="textWhite"
+                              checked={dataShow["sparepart"][item.toLocaleLowerCase()]["minggu"] == undefined ? false : dataShow["sparepart"][item.toLocaleLowerCase()]["minggu"]}
+                              disabled={isPastMonth}
+                            >Minggu</Checkbox>
+                            <div className="totalhk2">{dataShow["totalwork_sparepart"][item.toLocaleLowerCase()]}</div>
                           </>,
                           sales: <>
-                          {item=="Bulan"? (<div >
-                            <Checkbox onChange={(e) =>onChangeCheckBoxAll(e,"sales","sabtu",dataShow)}  className="textHeader" checked={countSalesSabtu==12} >Sabtu</Checkbox>
-                            <Checkbox  onChange={(e) =>onChangeCheckBoxAll(e,"sales","minggu",dataShow)}  className="textHeader" checked={countSalesMinggu==12} >Minggu</Checkbox>
-                              <div className="totalhk">Total HK</div>
-                            </div>):(<>
-                              <Checkbox onChange={(e) =>onChangeCheckBox(e,"sales",item.toLocaleLowerCase(),"sabtu",dataShow)} className="textWhite"   checked={dataShow["sales"][item.toLocaleLowerCase()]["sabtu"]==undefined?false:dataShow["sales"][item.toLocaleLowerCase()]["sabtu"]}>sabtu</Checkbox>
-                              <Checkbox  onChange={(e) =>onChangeCheckBox(e,"sales",item.toLocaleLowerCase(),"minggu",dataShow)} className="textWhite" checked={dataShow["sales"][item.toLocaleLowerCase()]["minggu"]==undefined?false:dataShow["sales"][item.toLocaleLowerCase()]["minggu"]}>Minggu</Checkbox>
-                              <div className="totalhk2">{dataShow["totalwork_sales"][item.toLocaleLowerCase()]}</div>
-                            </>)}
+                            <Checkbox
+                              onChange={(e) => onChangeCheckBox(e, "sales", item.toLocaleLowerCase(), "sabtu", dataShow)}
+                              className="textWhite"
+                              checked={dataShow["sales"][item.toLocaleLowerCase()]["sabtu"] == undefined ? false : dataShow["sales"][item.toLocaleLowerCase()]["sabtu"]}
+                              disabled={isPastMonth}
+                            >sabtu</Checkbox>
+                            <Checkbox
+                              onChange={(e) => onChangeCheckBox(e, "sales", item.toLocaleLowerCase(), "minggu", dataShow)}
+                              className="textWhite"
+                              checked={dataShow["sales"][item.toLocaleLowerCase()]["minggu"] == undefined ? false : dataShow["sales"][item.toLocaleLowerCase()]["minggu"]}
+                              disabled={isPastMonth}
+                            >Minggu</Checkbox>
+                            <div className="totalhk2">{dataShow["totalwork_sales"][item.toLocaleLowerCase()]}</div>
                           </>,
                         };
                       });
