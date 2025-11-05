@@ -192,6 +192,13 @@
     float: left;
   }
 
+  .textBlack{
+    color: #000 ;
+
+    margin-left: 60px;
+    float: left;
+  }
+
   .totalhk{
     float: left;
     margin-left: 2em;

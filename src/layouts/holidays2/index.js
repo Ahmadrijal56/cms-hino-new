@@ -840,13 +840,13 @@ function Videos() {
                           service: <>
                             <Checkbox
                               onChange={(e) => onChangeCheckBox(e, "service", item.toLocaleLowerCase(), "sabtu", dataShow)}
-                              className="textWhite"
+                              className="textBlack"
                               checked={dataShow["service"][item.toLocaleLowerCase()]["sabtu"] == undefined ? false : dataShow["service"][item.toLocaleLowerCase()]["sabtu"]}
                               disabled={isPastMonth}
-                            >sabtu</Checkbox>
+                            >Sabtu</Checkbox>
                             <Checkbox
                               onChange={(e) => onChangeCheckBox(e, "service", item.toLocaleLowerCase(), "minggu", dataShow)}
-                              className="textWhite"
+                              className="textBlack"
                               checked={dataShow["service"][item.toLocaleLowerCase()]["minggu"] == undefined ? false : dataShow["service"][item.toLocaleLowerCase()]["minggu"]}
                               disabled={isPastMonth}
                             >Minggu</Checkbox>
@@ -855,13 +855,13 @@ function Videos() {
                           sparepart: <>
                             <Checkbox
                               onChange={(e) => onChangeCheckBox(e, "sparepart", item.toLocaleLowerCase(), "sabtu", dataShow)}
-                              className="textWhite"
+                              className="textBlack"
                               checked={dataShow["sparepart"][item.toLocaleLowerCase()]["sabtu"] == undefined ? false : dataShow["sparepart"][item.toLocaleLowerCase()]["sabtu"]}
                               disabled={isPastMonth}
-                            >sabtu</Checkbox>
+                            >Sabtu</Checkbox>
                             <Checkbox
                               onChange={(e) => onChangeCheckBox(e, "sparepart", item.toLocaleLowerCase(), "minggu", dataShow)}
-                              className="textWhite"
+                              className="textBlack"
                               checked={dataShow["sparepart"][item.toLocaleLowerCase()]["minggu"] == undefined ? false : dataShow["sparepart"][item.toLocaleLowerCase()]["minggu"]}
                               disabled={isPastMonth}
                             >Minggu</Checkbox>
@@ -870,13 +870,13 @@ function Videos() {
                           sales: <>
                             <Checkbox
                               onChange={(e) => onChangeCheckBox(e, "sales", item.toLocaleLowerCase(), "sabtu", dataShow)}
-                              className="textWhite"
+                              className="textBlack"
                               checked={dataShow["sales"][item.toLocaleLowerCase()]["sabtu"] == undefined ? false : dataShow["sales"][item.toLocaleLowerCase()]["sabtu"]}
                               disabled={isPastMonth}
-                            >sabtu</Checkbox>
+                            >Sabtu</Checkbox>
                             <Checkbox
                               onChange={(e) => onChangeCheckBox(e, "sales", item.toLocaleLowerCase(), "minggu", dataShow)}
-                              className="textWhite"
+                              className="textBlack"
                               checked={dataShow["sales"][item.toLocaleLowerCase()]["minggu"] == undefined ? false : dataShow["sales"][item.toLocaleLowerCase()]["minggu"]}
                               disabled={isPastMonth}
                             >Minggu</Checkbox>
