@@ -35,7 +35,7 @@ import Table from "examples/Tables/Table";
 import dayjs, { Dayjs } from "dayjs";
 import axios from "axios";
 import moment from "moment";
-import { message, Modal, Button, Form, InputNumber, Select, TimePicker } from "antd";
+import { message, Modal, Button, Form, InputNumber, Select, TimePicker, Input } from "antd";
 
 const { Option } = Select;
 
@@ -71,10 +71,13 @@ function ConfigWarehouseProducivity() {
   const [getColumn, setColumn] = useState("");
   const columns = [
     { name: "no", align: "center" },
-    { name: "value", align: "left", },
-    { name: "volume", align: "center" },
+    { name: "PR Value", align: "left", },
+    { name: "PR VOLUME", align: "center" },
     { name: "Edit", align: "center",  },
   ];
+
+  const [prValue, setPrValue] = useState("");
+  const [prVolume, setPrVolume] = useState("");
   
   const handleClose = () => setOpen(false);
 
@@ -87,28 +90,27 @@ function ConfigWarehouseProducivity() {
     setLoading(true);
     const article = {
       companycode: companyCode,
+      pr_value: values.prValue,
+      pr_volume: values.prVolume
     };
-    article[getColumn]=  await convertSecond(values.timer);
     const headers = {
       "Access-Control-Allow-Headers": "*", // this will allow all CORS requests
       "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
       "Content-Type": "application/json",
       Authorization: "Bearer " + sessionStorage.getItem("token"),
-      crudtype: isUpdate ? "update" : "insert",
+      crudtype: "insert"
     };
     await axios
-      .post(process.env.REACT_APP_MAIN_API + "/new/crudconfig_timer", article, {
+      .post(process.env.REACT_APP_MAIN + "/crudconfigproductivity", article, {
         headers,
       })
       .then(async (response) => {
+        console.log(response.data);
         if ((await response.data) != null) {
           if (response.status === 200) {
-            setTimer(dayjs('00:00:00', 'HH:mm:ss'));
-            setName("");
-            setColumn("");
             setOpen(false);
             setLoading(false);
-            message.success(response.data.message);
+            message.success(response.data.Message);
           }
         }
       })
@@ -175,6 +177,7 @@ function ConfigWarehouseProducivity() {
         await axios
           .post(process.env.REACT_APP_MAIN + "/crudconfigproductivity", {
             companycode: selected
+            
           }, {
             headers,
           })
@@ -192,12 +195,12 @@ function ConfigWarehouseProducivity() {
                       {i++}
                     </ArgonTypography>
                   ),
-                  "value": (
+                  "PR Value": (
                     <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                       {item.pr_value}
                     </ArgonTypography>
                   ),
-                  "volume": (
+                  "PR VOLUME": (
                     <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                       {item.pr_volume}
                     </ArgonTypography>
@@ -253,14 +256,20 @@ function ConfigWarehouseProducivity() {
   }, [open, companyCode, isDelete]);
 
   const onEdit = async (item) => {
+    console.log(item)
     setKeyHoliday(keyHoliday + 1);
     setIsUpdate(true);
-    setActive(item.active);
-    setTimer(await convertTime(item.timer));
-    setName(item.name);
-    setColumn(item.column);
+    // setActive(item.active);
+    // setTimer(await convertTime(item.timer));
+    // setName(item.pr_value);
+    // setColumn(item.pr_value);
+    setPrValue(item.pr_value);
+    setPrVolume(item.pr_volume);
     setOpen(true);
   };
+
+
+  console.log(prValue, prVolume)
 
   return (
     <DashboardLayout>
@@ -331,17 +340,20 @@ function ConfigWarehouseProducivity() {
           <br></br>
 
           <Form.Item
-            label="Waktu Tayang"
-            name="timer"
-            rules={[
-              {
-                required: true,
-                message: "Please input the time Service Perfromance - CPUS",
-              },
-            ]}
-            initialValue={getTimer}
+            label="PR VALUE"
+            name="prValue"
+            rules={[{ required: true, message: "Please input PR VALUE!" }]}
+            initialValue={prValue}
           >
-             <TimePicker   format="HH:mm:ss" showNow={false} needConfirm={false} size="large" disabledTime={disabledDateTime}/>
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="PR VOLUME"
+            name="prVolume"
+            rules={[{ required: true, message: "Please input PR VOLUME!" }]}
+            initialValue={prVolume}
+          >
+            <Input />
           </Form.Item>
 
           <br></br>
