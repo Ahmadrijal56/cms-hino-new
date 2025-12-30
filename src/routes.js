@@ -44,6 +44,7 @@ import Swipeconfig from "layouts/swipeconfig";
 // Argon Dashboard 2 MUI components
 import ArgonBox from "components/ArgonBox";
 import { Content } from "antd/es/layout/layout";
+import ConfigWarehouseProducivity from "layouts/configWarehouseProducivity";
 
 const routes = [
   {
@@ -107,6 +108,16 @@ const routes = [
       <ArgonBox component="i" color="info" fontSize="14px" className="ni ni-watch-time" />
     ),
     component: <Swipeconfig />,
+  },
+  {
+    type: "route",
+    name: "Warehouse Productivity",
+    key: "configWarehouseProductivity",
+    route: "/config-warehouse-productivity",
+    icon: (
+      <ArgonBox component="i" color="info" fontSize="14px" className="ni ni-watch-time" />
+    ),
+    component: <ConfigWarehouseProducivity />,
   },
 ];
 

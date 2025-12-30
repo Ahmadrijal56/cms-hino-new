@@ -28,8 +28,6 @@ import ArgonTypography from "components/ArgonTypography";
 import typography from "assets/theme/base/typography";
 
 function Footer({ company, links }) {
-  const { href, name } = company;
-  const { size } = typography;
 
   const renderLinks = () =>
     links.map((link) => (

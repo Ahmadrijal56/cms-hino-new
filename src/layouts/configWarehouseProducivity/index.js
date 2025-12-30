@@ -51,7 +51,7 @@ const range = (start, end) => {
   return result;
 };
 
-function Swipe() {
+function ConfigWarehouseProducivity() {
   const [companyDefault, setCompanyDefault] = useState("");
   const [companyCode, setCompanyCode] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -71,8 +71,8 @@ function Swipe() {
   const [getColumn, setColumn] = useState("");
   const columns = [
     { name: "no", align: "center" },
-    { name: "nama board", align: "left", },
-    { name: "waktu tayang", align: "center" },
+    { name: "value", align: "left", },
+    { name: "volume", align: "center" },
     { name: "Edit", align: "center",  },
   ];
   
@@ -167,33 +167,39 @@ function Swipe() {
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
         "Content-Type": "application/json",
         Authorization: "Bearer " + sessionStorage.getItem("token"),
+        "crudtype": "read",
       };
 
       try {
         if(selected!=""){
         await axios
-          .get(process.env.REACT_APP_MAIN_API + "/new/config_timer/"+selected, {
+          .post(process.env.REACT_APP_MAIN + "/crudconfigproductivity", {
+            companycode: selected
+          }, {
             headers,
           })
           .then(async (response) => {
             if (response.status === 200) {
               let dataMapping=[]
               let i=1
-              await response.data.forEach(function async(item) {
+
+              console.log(response.data)
+              await response.data.data.forEach(function async(item) {
+
                 dataMapping.push({
                   no: (
                     <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
                       {i++}
                     </ArgonTypography>
                   ),
-                  "nama board": (
+                  "value": (
                     <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                      {item.name}
+                      {item.pr_value}
                     </ArgonTypography>
                   ),
-                  "waktu tayang": (
+                  "volume": (
                     <ArgonTypography variant="caption" color="secondary" fontWeight="medium">
-                      {item.display}
+                      {item.pr_volume}
                     </ArgonTypography>
                   ),
                   Edit: (
@@ -267,7 +273,7 @@ function Swipe() {
           <Card>
             <ArgonBox display="flex" justifyContent="space-between" alignItems="center" p={3} >
               <ArgonBox>
-                <ArgonTypography variant="h6">Timer Configs</ArgonTypography>
+                <ArgonTypography variant="h6">Config Warehouse Productivity</ArgonTypography>
                  {companyList.length > 1 ? (
                   <Select
                     showSearch={true}
@@ -352,4 +358,4 @@ function Swipe() {
   );
 }
 
-export default Swipe;
+export default ConfigWarehouseProducivity;
